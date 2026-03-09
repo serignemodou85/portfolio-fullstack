@@ -2,19 +2,18 @@
   <header class="page-header">
     <div>
       <p class="eyebrow">Admin content</p>
-      <h1>Compétences</h1>
-      <p class="subtitle">Catégories, niveaux et expérience alignés avec le backend.</p>
+      <h1>Competences</h1>
     </div>
     <a routerLink="/admin/dashboard" class="btn btn-outline">Retour dashboard</a>
   </header>
 
   <section class="stats-strip">
     <article class="stat-card">
-      <p class="stat-label">Catégories</p>
+      <p class="stat-label">Categories</p>
       <p class="stat-value">{{ categories.length }}</p>
     </article>
     <article class="stat-card">
-      <p class="stat-label">Compétences</p>
+      <p class="stat-label">Competences</p>
       <p class="stat-value">{{ skills.length }}</p>
     </article>
   </section>
@@ -22,26 +21,50 @@
   <div class="layout">
     <section class="panel">
       <div class="panel-head">
-        <h2>{{ editingCategoryId ? 'Modifier catégorie' : 'Nouvelle catégorie' }}</h2>
-        <span class="panel-meta">`name`, `icon`, `order`</span>
+        <h2>{{ editingCategoryId ? 'Modifier categorie' : 'Nouvelle categorie' }}</h2>
       </div>
 
       <form (ngSubmit)="submitCategory()">
         <div class="field">
-          <label>Nom</label>
-          <input type="text" [(ngModel)]="categoryForm.name" name="cat_name" required />
+          <label for="cat_name">Nom</label>
+          <input id="cat_name" type="text" [(ngModel)]="categoryForm.name" name="cat_name" (input)="onCategoryNameInput()" required />
         </div>
+
         <div class="field">
-          <label>Icône</label>
-          <input type="text" [(ngModel)]="categoryForm.icon" name="cat_icon" placeholder="code, database, cloud..." />
+          <label for="cat_icon">Icone</label>
+          <div class="icon-input">
+            <span class="icon-preview">
+              <app-icon [name]="getCategoryIconPreview(categoryForm.icon, categoryForm.name)" [size]="18"></app-icon>
+            </span>
+            <input
+              id="cat_icon"
+              type="text"
+              [(ngModel)]="categoryForm.icon"
+              name="cat_icon"
+              placeholder="code, database, cloud..."
+              list="icon-suggestions"
+              (blur)="normalizeCategoryIcon()"
+            />
+          </div>
+          <datalist id="icon-suggestions">
+            <option *ngFor="let icon of iconSuggestions" [value]="icon"></option>
+          </datalist>
+          <div class="icon-chips">
+            <button type="button" class="chip" *ngFor="let icon of iconSuggestions" (click)="useSuggestedIcon(icon)">
+              <app-icon [name]="icon" [size]="14"></app-icon>
+              <span>{{ icon }}</span>
+            </button>
+          </div>
         </div>
+
         <div class="field">
-          <label>Ordre</label>
-          <input type="number" [(ngModel)]="categoryForm.order" name="cat_order" min="0" />
+          <label for="cat_order">Ordre</label>
+          <input id="cat_order" type="number" [(ngModel)]="categoryForm.order" name="cat_order" min="0" />
         </div>
+
         <div class="actions">
           <button class="btn btn-primary" type="submit">
-            {{ editingCategoryId ? 'Mettre à jour' : 'Créer la catégorie' }}
+            {{ editingCategoryId ? 'Mettre a jour' : 'Creer la categorie' }}
           </button>
           <button class="btn btn-soft" type="button" (click)="resetCategory()">Annuler</button>
         </div>
@@ -51,8 +74,8 @@
         <table class="data-table compact">
           <thead>
             <tr>
-              <th>Catégorie</th>
-              <th>Icône</th>
+              <th>Categorie</th>
+              <th>Icone</th>
               <th>Ordre</th>
               <th>Actions</th>
             </tr>
@@ -62,11 +85,16 @@
               <td>
                 <p class="cell-title">{{ cat.name }}</p>
               </td>
-              <td>{{ cat.icon || '-' }}</td>
+              <td>
+                <span class="icon-cell">
+                  <app-icon [name]="getCategoryIconPreview(cat.icon, cat.name)" [size]="16"></app-icon>
+                  <span>{{ cat.icon || getCategoryIconPreview('', cat.name) }}</span>
+                </span>
+              </td>
               <td>{{ cat.order }}</td>
               <td>
                 <div class="row-actions">
-                  <button class="btn btn-soft" (click)="editCategory(cat)">Éditer</button>
+                  <button class="btn btn-soft" (click)="editCategory(cat)">Editer</button>
                   <button class="btn btn-danger" (click)="cat.id && deleteCategory(cat.id)">Supprimer</button>
                 </div>
               </td>
@@ -75,64 +103,65 @@
         </table>
       </div>
       <ng-template #emptyCategory>
-        <div class="empty-state">Aucune catégorie pour le moment.</div>
+        <div class="empty-state">Aucune categorie pour le moment.</div>
       </ng-template>
     </section>
 
     <section class="panel">
       <div class="panel-head">
-        <h2>{{ editingSkillId ? 'Modifier compétence' : 'Nouvelle compétence' }}</h2>
-        <span class="panel-meta">Tous les champs du modèle `Skill`</span>
+        <h2>{{ editingSkillId ? 'Modifier competence' : 'Nouvelle competence' }}</h2>
       </div>
 
       <form (ngSubmit)="submitSkill()">
         <div class="grid two">
           <div class="field">
-            <label>Nom</label>
-            <input type="text" [(ngModel)]="skillForm.name" name="skill_name" required />
+            <label for="skill_name">Nom</label>
+            <input id="skill_name" type="text" [(ngModel)]="skillForm.name" name="skill_name" required />
           </div>
+
           <div class="field">
-            <label>Catégorie</label>
-            <select [(ngModel)]="skillForm.category" name="skill_category" required>
-              <option *ngFor="let cat of categories" [value]="cat.id ?? 0">{{ cat.name }}</option>
+            <label for="skill_category">Categorie</label>
+            <select id="skill_category" [(ngModel)]="skillForm.category" name="skill_category" [disabled]="!categories.length" required>
+              <option [ngValue]="null" disabled>Selectionnez une categorie</option>
+              <option *ngFor="let cat of categories" [ngValue]="cat.id ?? null">{{ cat.name }}</option>
             </select>
           </div>
         </div>
 
         <div class="grid three">
           <div class="field">
-            <label>Niveau</label>
-            <select [(ngModel)]="skillForm.proficiency" name="skill_proficiency">
-              <option [value]="1">Débutant</option>
-              <option [value]="2">Intermédiaire</option>
-              <option [value]="3">Avancé</option>
+            <label for="skill_proficiency">Niveau</label>
+            <select id="skill_proficiency" [(ngModel)]="skillForm.proficiency" name="skill_proficiency">
+              <option [value]="1">Debutant</option>
+              <option [value]="2">Intermediaire</option>
+              <option [value]="3">Avance</option>
               <option [value]="4">Expert</option>
             </select>
           </div>
           <div class="field">
-            <label>Pourcentage</label>
-            <input type="number" [(ngModel)]="skillForm.percentage" name="skill_percentage" min="0" max="100" />
+            <label for="skill_percentage">Pourcentage</label>
+            <input id="skill_percentage" type="number" [(ngModel)]="skillForm.percentage" name="skill_percentage" min="0" max="100" />
           </div>
           <div class="field">
-            <label>Années d'expérience</label>
-            <input type="number" [(ngModel)]="skillForm.years_of_experience" name="skill_years" step="0.1" min="0" />
+            <label for="skill_years">Annees d experience</label>
+            <input id="skill_years" type="number" [(ngModel)]="skillForm.years_of_experience" name="skill_years" step="0.1" min="0" />
           </div>
         </div>
 
         <div class="grid two">
           <div class="field">
-            <label>Icône</label>
-            <input type="text" [(ngModel)]="skillForm.icon" name="skill_icon" />
+            <label for="skill_icon">Icone</label>
+            <input id="skill_icon" type="text" [(ngModel)]="skillForm.icon" name="skill_icon" />
           </div>
           <div class="field">
-            <label>Ordre</label>
-            <input type="number" [(ngModel)]="skillForm.order" name="skill_order" min="0" />
+            <label for="skill_order">Ordre</label>
+            <input id="skill_order" type="number" [(ngModel)]="skillForm.order" name="skill_order" min="0" />
           </div>
         </div>
 
         <div class="actions">
-          <button class="btn btn-primary" type="submit">
-            {{ editingSkillId ? 'Mettre à jour' : 'Créer la compétence' }}
+          <button class="btn btn-primary" type="submit" [disabled]="!categories.length && !editingSkillId">
+            {{ editingSkillId ? 'Mettre a jour' : 'Creer la competence' }}
           </button>
           <button class="btn btn-soft" type="button" (click)="resetSkill()">Annuler</button>
         </div>
@@ -142,11 +171,11 @@
         <table class="data-table">
           <thead>
             <tr>
-              <th>Compétence</th>
-              <th>Catégorie</th>
+              <th>Competence</th>
+              <th>Categorie</th>
               <th>Niveau</th>
               <th>Progression</th>
-              <th>Expérience</th>
+              <th>Experience</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -154,7 +183,7 @@
             <tr *ngFor="let skill of skills">
               <td>
                 <p class="cell-title">{{ skill.name }}</p>
-                <p class="cell-sub">{{ skill.icon || 'sans icône' }}</p>
+                <p class="cell-sub">{{ skill.icon || 'sans icone' }}</p>
               </td>
               <td>{{ skill.category_name || skill.category }}</td>
               <td>
@@ -169,7 +198,7 @@
               <td>{{ skill.years_of_experience }} an(s)</td>
               <td>
                 <div class="row-actions">
-                  <button class="btn btn-soft" (click)="editSkill(skill)">Éditer</button>
+                  <button class="btn btn-soft" (click)="editSkill(skill)">Editer</button>
                   <button class="btn btn-danger" (click)="deleteSkill(skill.id)">Supprimer</button>
                 </div>
               </td>
@@ -178,7 +207,7 @@
         </table>
       </div>
       <ng-template #emptySkill>
-        <div class="empty-state">Aucune compétence pour le moment.</div>
+        <div class="empty-state">Aucune competence pour le moment.</div>
       </ng-template>
     </section>
   </div>

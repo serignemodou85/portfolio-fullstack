@@ -20,7 +20,12 @@
       <article class="skill-card fade-up" *ngFor="let category of categories">
         <div class="skill-card-head">
           <div>
-            <p class="category-icon">{{ category.icon || '::' }}</p>
+            <p class="category-icon">
+              <span class="category-icon-badge">
+                <app-icon [name]="getCategoryIcon(category.icon, category.name)" [size]="16"></app-icon>
+              </span>
+              <span class="category-icon-label">{{ category.icon || getCategoryIcon('', category.name) }}</span>
+            </p>
             <h2>{{ category.name }}</h2>
           </div>
           <span class="count">{{ category.skills.length }} skills</span>

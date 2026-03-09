@@ -9,13 +9,33 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import PasswordResetRequestSerializer, PasswordResetConfirmSerializer
 
 User = get_user_model()
 
 
+class EmailOrUsernameTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """
+    Permet de se connecter avec username OU email.
+    Le front continue d'envoyer `username` pour compatibilite.
+    """
+
+    def validate(self, attrs):
+        identifier = (attrs.get('username') or '').strip()
+        if '@' in identifier:
+            try:
+                user = User.objects.get(email__iexact=identifier)
+                attrs['username'] = user.get_username()
+            except User.DoesNotExist:
+                # Garde le comportement standard (401 identifiants invalides)
+                pass
+        return super().validate(attrs)
+
+
 class ThrottledTokenObtainPairView(TokenObtainPairView):
+    serializer_class = EmailOrUsernameTokenObtainPairSerializer
     throttle_classes = [ScopedRateThrottle]
     throttle_scope = 'auth_login'
 

@@ -33,6 +33,13 @@ class Experience(models.Model):
         null=True,
         verbose_name="Logo entreprise"
     )
+
+    certificate_file = models.FileField(
+        upload_to='experience/certificates/',
+        blank=True,
+        null=True,
+        verbose_name="Certificat (PDF/image)"
+    )
     
     order = models.IntegerField(
         default=0,

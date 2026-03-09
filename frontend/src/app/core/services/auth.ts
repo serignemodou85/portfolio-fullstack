@@ -20,9 +20,25 @@ export class AuthService {
 
   constructor(private http: HttpClient) {
     const token = this.getAccessToken();
-    if (token) {
-      this.loadCurrentUser();
+    const refresh = this.getRefreshToken();
+
+    if (!token) {
+      return;
     }
+
+    if (this.isTokenExpired(token)) {
+      if (refresh && !this.isTokenExpired(refresh)) {
+        this.refreshToken().subscribe({
+          next: () => this.loadCurrentUser(),
+          error: () => this.logout()
+        });
+      } else {
+        this.logout();
+      }
+      return;
+    }
+
+    this.loadCurrentUser();
   }
 
   login(credentials: LoginRequest): Observable<TokenResponse> {
@@ -108,6 +124,29 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.getAccessToken();
+    const token = this.getAccessToken();
+    return !!token && !this.isTokenExpired(token);
+  }
+
+  private isTokenExpired(token: string): boolean {
+    try {
+      const payloadBase64 = token.split('.')[1];
+      if (!payloadBase64) {
+        return true;
+      }
+
+      const normalized = payloadBase64.replace(/-/g, '+').replace(/_/g, '/');
+      const json = atob(normalized);
+      const payload = JSON.parse(json);
+      const exp = Number(payload?.exp);
+      if (!exp) {
+        return true;
+      }
+
+      const now = Math.floor(Date.now() / 1000);
+      return now >= exp;
+    } catch {
+      return true;
+    }
   }
 }

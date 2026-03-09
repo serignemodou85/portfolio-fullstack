@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ExperienceService } from '../../../core/services/experience.service';
 import { ExperienceItem } from '../../../core/models/experience.model';
 
@@ -32,8 +32,12 @@ export class ExperienceAdmin implements OnInit {
   };
 
   companyLogo: File | null = null;
+  certificateFile: File | null = null;
 
-  constructor(private experienceService: ExperienceService) {}
+  constructor(
+    private experienceService: ExperienceService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadExperiences();
@@ -41,8 +45,17 @@ export class ExperienceAdmin implements OnInit {
 
   loadExperiences(): void {
     this.experienceService.getExperiences().subscribe({
-      next: (items) => (this.experiences = items),
-      error: () => (this.error = 'Impossible de charger les experiences.')
+      next: (items) => {
+        this.experiences = items;
+        this.error = null;
+      },
+      error: (err) => {
+        if (err?.status === 401) {
+          this.router.navigate(['/admin/login'], { queryParams: { returnUrl: '/admin/experiences' } });
+          return;
+        }
+        this.error = this.getErrorMessage(err, 'Impossible de charger les experiences.');
+      }
     });
   }
 
@@ -75,6 +88,7 @@ export class ExperienceAdmin implements OnInit {
       order: 0
     };
     this.companyLogo = null;
+    this.certificateFile = null;
   }
 
   onFileSelected(event: any): void {
@@ -84,7 +98,31 @@ export class ExperienceAdmin implements OnInit {
     }
   }
 
+  onCertificateSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.certificateFile = file;
+    }
+  }
+
+  onTypeChange(): void {
+    if (this.formData.type === 'certification') {
+      this.companyLogo = null;
+      return;
+    }
+    this.certificateFile = null;
+  }
+
   submit(): void {
+    if (!this.formData.title || !this.formData.company || !this.formData.start_date || !this.formData.description.trim()) {
+      this.error = 'Titre, entreprise, date de debut et description sont obligatoires.';
+      return;
+    }
+
+    if (this.formData.is_current) {
+      this.formData.end_date = '';
+    }
+
     this.loading = true;
     this.error = null;
     const payload = new FormData();
@@ -95,6 +133,9 @@ export class ExperienceAdmin implements OnInit {
     });
     if (this.companyLogo) {
       payload.append('company_logo', this.companyLogo);
+    }
+    if (this.certificateFile) {
+      payload.append('certificate_file', this.certificateFile);
     }
 
     const request$ = this.editingId
@@ -107,8 +148,13 @@ export class ExperienceAdmin implements OnInit {
         this.resetForm();
         this.loading = false;
       },
-      error: () => {
-        this.error = 'Erreur lors de la sauvegarde.';
+      error: (err) => {
+        if (err?.status === 401) {
+          this.router.navigate(['/admin/login'], { queryParams: { returnUrl: '/admin/experiences' } });
+          this.loading = false;
+          return;
+        }
+        this.error = this.getErrorMessage(err, 'Erreur lors de la sauvegarde.');
         this.loading = false;
       }
     });
@@ -121,7 +167,25 @@ export class ExperienceAdmin implements OnInit {
     }
     this.experienceService.deleteExperience(id).subscribe({
       next: () => this.loadExperiences(),
-      error: () => (this.error = 'Erreur lors de la suppression.')
+      error: (err) => (this.error = this.getErrorMessage(err, 'Erreur lors de la suppression.'))
     });
+  }
+
+  private getErrorMessage(err: any, fallback: string): string {
+    if (!err?.error) {
+      return fallback;
+    }
+    if (typeof err.error.detail === 'string') {
+      return err.error.detail;
+    }
+    if (Array.isArray(err.error.non_field_errors) && err.error.non_field_errors.length) {
+      return err.error.non_field_errors[0];
+    }
+    for (const value of Object.values(err.error)) {
+      if (Array.isArray(value) && value.length && typeof value[0] === 'string') {
+        return value[0];
+      }
+    }
+    return fallback;
   }
 }

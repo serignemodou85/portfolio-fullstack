@@ -25,6 +25,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = authService.getAccessToken();
   const publicRead = isPublicReadRequest(req.url, req.method);
 
+  const redirectToLogin = () => {
+    const current = `${window.location.pathname}${window.location.search}`;
+    window.location.assign(`/admin/login?returnUrl=${encodeURIComponent(current)}`);
+  };
+
   if (token && !publicRead) {
     req = req.clone({
       setHeaders: {
@@ -39,6 +44,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         const refreshToken = authService.getRefreshToken();
         if (!refreshToken) {
           authService.logout();
+          redirectToLogin();
           return throwError(() => error);
         }
         return authService.refreshToken().pipe(
@@ -54,6 +60,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           catchError((refreshError: HttpErrorResponse) => {
             if (refreshError?.status === 401 || refreshError?.status === 403) {
               authService.logout();
+              redirectToLogin();
             }
             return throwError(() => refreshError);
           })

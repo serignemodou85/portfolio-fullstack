@@ -2,8 +2,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { SkillCategory, SkillCategoryWithSkills, SkillItem } from '../models/skill.model';
+
+interface PaginatedResponse<T> {
+  count?: number;
+  next?: string | null;
+  previous?: string | null;
+  results: T[];
+}
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +23,9 @@ export class SkillService {
   constructor(private http: HttpClient) {}
 
   getCategories(): Observable<SkillCategory[]> {
-    return this.http.get<SkillCategory[]>(`${this.categoriesUrl}/`);
+    return this.http.get<SkillCategory[] | PaginatedResponse<SkillCategory>>(`${this.categoriesUrl}/`).pipe(
+      map((res) => Array.isArray(res) ? res : (res.results ?? []))
+    );
   }
 
   getCategoriesWithSkills(): Observable<SkillCategoryWithSkills[]> {
@@ -35,7 +45,9 @@ export class SkillService {
   }
 
   getSkills(): Observable<SkillItem[]> {
-    return this.http.get<SkillItem[]>(`${this.skillsUrl}/`);
+    return this.http.get<SkillItem[] | PaginatedResponse<SkillItem>>(`${this.skillsUrl}/`).pipe(
+      map((res) => Array.isArray(res) ? res : (res.results ?? []))
+    );
   }
 
   createSkill(payload: Partial<SkillItem>): Observable<SkillItem> {

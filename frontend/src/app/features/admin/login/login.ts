@@ -44,7 +44,7 @@ export class Login {
         this.router.navigate([this.returnUrl]);
       },
       error: (err) => {
-        this.error = 'Identifiants incorrects';
+        this.error = err?.error?.detail || 'Identifiants incorrects';
         this.loading = false;
         console.error(err);
       }

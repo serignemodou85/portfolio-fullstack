@@ -31,9 +31,9 @@
             {{ error }}
           </div>
 
-          <!-- Username -->
+          <!-- Username / Email -->
           <div class="form-group">
-            <label for="username">Nom d'utilisateur</label>
+            <label for="username">Nom d'utilisateur ou email</label>
             <div class="input-wrapper">
               <input
                 type="text"
@@ -42,6 +42,7 @@
                 [(ngModel)]="credentials.username"
                 required
                 autocomplete="username"
+                placeholder="votre username ou email"
                 [disabled]="loading"
               />
             </div>

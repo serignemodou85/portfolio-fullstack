@@ -5,15 +5,18 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { SkillService } from '../../../core/services/skill.service';
 import { SkillCategory, SkillItem } from '../../../core/models/skill.model';
+import { IconComponent } from '../../../shared/components/icon/icon.component';
+import { ICON_SUGGESTIONS, resolveIconFromKeyword } from '../../../shared/utils/icon-keyword';
 
 @Component({
   selector: 'app-skills-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, IconComponent],
   templateUrl: './skills-admin.html',
   styleUrl: './skills-admin.scss'
 })
 export class SkillsAdmin implements OnInit {
+  readonly iconSuggestions = ICON_SUGGESTIONS;
   categories: SkillCategory[] = [];
   skills: SkillItem[] = [];
   error: string | null = null;
@@ -32,7 +35,7 @@ export class SkillsAdmin implements OnInit {
   editingSkillId: number | null = null;
   skillForm: {
     name: string;
-    category: number;
+    category: number | null;
     proficiency: 1 | 2 | 3 | 4;
     percentage: number;
     icon: string;
@@ -40,7 +43,7 @@ export class SkillsAdmin implements OnInit {
     order: number;
   } = {
     name: '',
-    category: 0,
+    category: null,
     proficiency: 2,
     percentage: 50,
     icon: '',
@@ -71,6 +74,9 @@ export class SkillsAdmin implements OnInit {
   }
 
   submitCategory(): void {
+    if (!this.categoryForm.icon.trim()) {
+      this.categoryForm.icon = this.suggestIcon(this.categoryForm.name);
+    }
     const payload: Partial<SkillCategory> = { ...this.categoryForm };
     const request$ = this.editingCategoryId
       ? this.skillService.updateCategory(this.editingCategoryId, payload)
@@ -114,7 +120,14 @@ export class SkillsAdmin implements OnInit {
   }
 
   submitSkill(): void {
-    const payload: Partial<SkillItem> = { ...this.skillForm };
+    if (!this.skillForm.category) {
+      this.error = 'Creez ou selectionnez une categorie avant d ajouter une competence.';
+      return;
+    }
+    const payload: Partial<SkillItem> = {
+      ...this.skillForm,
+      category: this.skillForm.category
+    };
     const request$ = this.editingSkillId
       ? this.skillService.updateSkill(this.editingSkillId, payload)
       : this.skillService.createSkill(payload);
@@ -156,12 +169,34 @@ export class SkillsAdmin implements OnInit {
     this.editingSkillId = null;
     this.skillForm = {
       name: '',
-      category: this.categories[0]?.id || 0,
+      category: this.categories[0]?.id || null,
       proficiency: 2,
       percentage: 50,
       icon: '',
       years_of_experience: 0,
       order: 0
     };
+  }
+
+  onCategoryNameInput(): void {
+    if (!this.categoryForm.icon.trim()) {
+      this.categoryForm.icon = this.suggestIcon(this.categoryForm.name);
+    }
+  }
+
+  normalizeCategoryIcon(): void {
+    this.categoryForm.icon = this.suggestIcon(this.categoryForm.icon || this.categoryForm.name);
+  }
+
+  useSuggestedIcon(icon: string): void {
+    this.categoryForm.icon = icon;
+  }
+
+  getCategoryIconPreview(value?: string, fallback?: string): string {
+    return resolveIconFromKeyword(value || fallback || '');
+  }
+
+  private suggestIcon(keyword: string): string {
+    return resolveIconFromKeyword(keyword);
   }
 }

@@ -10,6 +10,7 @@ export interface ExperienceItem {
   end_date?: string | null;
   is_current: boolean;
   company_logo?: string | null;
+  certificate_file?: string | null;
   order: number;
   created_at: string;
   updated_at: string;

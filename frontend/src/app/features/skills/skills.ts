@@ -4,11 +4,13 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { SkillService } from '../../core/services/skill.service';
 import { SkillCategoryWithSkills } from '../../core/models/skill.model';
+import { IconComponent } from '../../shared/components/icon/icon.component';
+import { resolveIconFromKeyword } from '../../shared/utils/icon-keyword';
 
 @Component({
   selector: 'app-skills',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, IconComponent],
   templateUrl: './skills.html',
   styleUrl: './skills.scss'
 })
@@ -43,5 +45,9 @@ export class Skills implements OnInit {
       return 'intermediate';
     }
     return 'beginner';
+  }
+
+  getCategoryIcon(icon: string | undefined, name: string): string {
+    return resolveIconFromKeyword(icon || name);
   }
 }

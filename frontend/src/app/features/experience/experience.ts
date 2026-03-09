@@ -14,6 +14,7 @@ import { ExperienceItem } from '../../core/models/experience.model';
 })
 export class Experience implements OnInit {
   experiences: ExperienceItem[] = [];
+  selectedType: 'all' | 'work' | 'education' | 'certification' = 'all';
   loading = true;
   error: string | null = null;
 
@@ -32,6 +33,25 @@ export class Experience implements OnInit {
     });
   }
 
+  get filteredExperiences(): ExperienceItem[] {
+    if (this.selectedType === 'all') {
+      return this.experiences;
+    }
+    return this.experiences.filter((item) => item.type === this.selectedType);
+  }
+
+  get currentCount(): number {
+    return this.experiences.filter((item) => item.is_current).length;
+  }
+
+  get certificationCount(): number {
+    return this.experiences.filter((item) => item.type === 'certification').length;
+  }
+
+  setFilter(type: 'all' | 'work' | 'education' | 'certification'): void {
+    this.selectedType = type;
+  }
+
   getTypeLabel(type: string): string {
     if (type === 'work') {
       return 'Experience';
@@ -40,5 +60,15 @@ export class Experience implements OnInit {
       return 'Formation';
     }
     return 'Certification';
+  }
+
+  getTypeClass(type: ExperienceItem['type']): string {
+    if (type === 'work') {
+      return 'type-work';
+    }
+    if (type === 'education') {
+      return 'type-education';
+    }
+    return 'type-certification';
   }
 }
