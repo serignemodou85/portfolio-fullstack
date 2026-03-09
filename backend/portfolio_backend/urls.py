@@ -10,7 +10,11 @@ from rest_framework_simplejwt.views import TokenRefreshView
 # Import des ViewSets
 from accounts.views import UserViewSet
 from accounts.views import dashboard_stats
-from accounts.auth_views import ThrottledTokenObtainPairView
+from accounts.auth_views import (
+    ThrottledTokenObtainPairView,
+    PasswordResetRequestView,
+    PasswordResetConfirmView,
+)
 from projects.views import ProjectViewSet
 from experience.views import ExperienceViewSet
 from skills.views import SkillCategoryViewSet, SkillViewSet
@@ -31,6 +35,8 @@ def api_root(request):
             'auth': {
                 'login': '/api/auth/login/',
                 'refresh': '/api/auth/refresh/',
+                'password_reset_request': '/api/auth/password-reset/request/',
+                'password_reset_confirm': '/api/auth/password-reset/confirm/',
             },
             'resources': {
                 'projects': '/api/projects/',
@@ -67,6 +73,8 @@ urlpatterns = [
     # Authentification JWT
     path('api/auth/login/', ThrottledTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/auth/password-reset/request/', PasswordResetRequestView.as_view(), name='password-reset-request'),
+    path('api/auth/password-reset/confirm/', PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
     path('api/dashboard/stats/', dashboard_stats, name='dashboard-stats'),
     
     

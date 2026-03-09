@@ -22,7 +22,6 @@
 cd backend
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
 cp .env.example .env  # Configure tes variables d'environnement
 python manage.py migrate
 python manage.py createsuperuser

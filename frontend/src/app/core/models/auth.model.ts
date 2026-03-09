@@ -23,3 +23,14 @@ export interface User {
   twitter_url?: string;
   website_url?: string;
 }
+
+export interface PasswordResetRequestPayload {
+  email: string;
+}
+
+export interface PasswordResetConfirmPayload {
+  uid: string;
+  token: string;
+  new_password: string;
+  new_password2: string;
+}

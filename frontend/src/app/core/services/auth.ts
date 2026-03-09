@@ -3,7 +3,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { LoginRequest, TokenResponse, User } from '../models/auth.model';
+import {
+  LoginRequest,
+  TokenResponse,
+  User,
+  PasswordResetRequestPayload,
+  PasswordResetConfirmPayload
+} from '../models/auth.model';
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +33,14 @@ export class AuthService {
           this.loadCurrentUser();
         })
       );
+  }
+
+  requestPasswordReset(payload: PasswordResetRequestPayload): Observable<{ detail: string }> {
+    return this.http.post<{ detail: string }>(`${environment.authUrl}/password-reset/request/`, payload);
+  }
+
+  confirmPasswordReset(payload: PasswordResetConfirmPayload): Observable<{ detail: string }> {
+    return this.http.post<{ detail: string }>(`${environment.authUrl}/password-reset/confirm/`, payload);
   }
 
   logout(): void {

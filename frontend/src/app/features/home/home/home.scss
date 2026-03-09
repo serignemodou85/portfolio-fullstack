@@ -145,17 +145,20 @@
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(230px, 290px));
   gap: 1rem;
+  justify-content: center;
 }
 
 .project-card {
-  border-radius: 16px;
+  border-radius: 18px;
   overflow: hidden;
   border: 1px solid #dbe4ef;
   background: #fff;
   box-shadow: 0 14px 26px rgba(15, 23, 42, 0.06);
   transition: transform 0.28s ease, box-shadow 0.28s ease;
+  display: flex;
+  flex-direction: column;
 
   &:hover {
     transform: translateY(-4px);
@@ -165,14 +168,28 @@
 
 .card-media {
   position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: linear-gradient(160deg, #e2e8f0, #f8fafc);
 
   img {
     width: 100%;
-    height: 190px;
-    aspect-ratio: 16 / 10;
+    height: 100%;
+    display: block;
     object-fit: cover;
     object-position: center;
+    transition: transform 0.35s ease;
   }
+}
+
+.project-card:hover .card-media img {
+  transform: scale(1.04);
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .status-badge {
@@ -235,7 +252,8 @@
 }
 
 .card-actions {
-  margin-top: 0.85rem;
+  margin-top: auto;
+  padding-top: 0.85rem;
 }
 
 .section-articles {
@@ -363,5 +381,15 @@
   .section-head {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-media {
+    aspect-ratio: 4 / 3;
   }
 }

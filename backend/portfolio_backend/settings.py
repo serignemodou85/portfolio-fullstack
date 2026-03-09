@@ -207,6 +207,8 @@ REST_FRAMEWORK = {
         'anon': '120/hour',
         'user': '1200/hour',
         'auth_login': '10/minute',
+        'auth_password_reset_request': '5/hour',
+        'auth_password_reset_confirm': '10/hour',
         'contact_create': '20/hour',
     },
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -285,3 +287,6 @@ CONTACT_ADMIN_EMAILS = [email.strip() for email in _contact_admin_emails.split('
 
 # Active/désactive l'email automatique envoyé au client après envoi du formulaire
 CONTACT_AUTO_REPLY_ENABLED = env_bool('CONTACT_AUTO_REPLY_ENABLED', True)
+
+# URL frontend utilisee dans les emails (liens reset password).
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:4200')

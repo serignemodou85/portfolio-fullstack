@@ -42,6 +42,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/admin/login/login').then(m => m.Login)
   },
   {
+    path: 'admin/reset-password',
+    loadComponent: () => import('./features/admin/password-reset-request/password-reset-request').then(m => m.PasswordResetRequest)
+  },
+  {
+    path: 'admin/reset-password/confirm',
+    loadComponent: () => import('./features/admin/password-reset-confirm/password-reset-confirm').then(m => m.PasswordResetConfirm)
+  },
+  {
     path: 'admin',
     canActivate: [authGuard],
     children: [
