@@ -1,0 +1,130 @@
+<section class="home-hero">
+  <div class="container hero-grid">
+    <div class="hero-copy fade-up stagger-1">
+      <p class="eyebrow">Portfolio public</p>
+      <h1>Data Scientist, Data Engineer et Full-Stack Developer</h1>
+      <p class="lead">
+        Je construis des produits data et web de bout en bout: collecte, modele, API et interface.
+        Objectif: des solutions lisibles, robustes et utiles au metier.
+      </p>
+
+      <div class="quick-badges">
+        <span class="badge-pill">Python</span>
+        <span class="badge-pill">Machine Learning</span>
+        <span class="badge-pill">Django REST</span>
+        <span class="badge-pill">Angular</span>
+        <span class="badge-pill">SQL</span>
+        <span class="badge-pill">Spark</span>
+      </div>
+
+      <div class="hero-actions">
+        <a routerLink="/projects" class="btn btn-primary">Voir mes projets</a>
+        <a routerLink="/contact" class="btn btn-outline">Demarrer une discussion</a>
+        <a href="assets/documents/cvModouFall.pdf" target="_blank" class="btn btn-soft">CV PDF</a>
+      </div>
+
+      <div class="hero-metrics">
+        <article>
+          <p class="metric-value">{{ featuredProjects.length }}+</p>
+          <p class="metric-label">projets mis en avant</p>
+        </article>
+        <article>
+          <p class="metric-value">{{ featuredArticles.length }}+</p>
+          <p class="metric-label">articles techniques</p>
+        </article>
+        <article>
+          <p class="metric-value">End-to-End</p>
+          <p class="metric-label">approche delivery</p>
+        </article>
+      </div>
+    </div>
+
+    <div class="hero-visual fade-up stagger-2">
+      <div class="visual-card">
+        <img src="assets/images/cv.jpg" alt="Modou Fall" />
+      </div>
+      <div class="visual-float one">Data Pipeline</div>
+      <div class="visual-float two">API + Dashboard</div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-projects">
+  <div class="container">
+    <div class="section-head fade-up">
+      <div>
+        <p class="eyebrow">Selection</p>
+        <h2>Projets recents</h2>
+      </div>
+      <a routerLink="/projects" class="btn btn-outline">Tous les projets</a>
+    </div>
+
+    <div *ngIf="loading" class="loading">
+      <div class="spinner"></div>
+    </div>
+
+    <div class="card-grid" *ngIf="!loading">
+      <article class="project-card fade-up" *ngFor="let project of featuredProjects">
+        <div class="card-media">
+          <img [src]="project.thumbnail" [alt]="project.title" />
+          <span
+            class="status-badge"
+            [class.completed]="project.status === 'completed'"
+            [class.progress]="project.status === 'in_progress'"
+            [class.archived]="project.status === 'archived'"
+          >
+            {{ project.status === 'completed' ? 'Termine' : (project.status === 'in_progress' ? 'En cours' : 'Archive') }}
+          </span>
+        </div>
+        <div class="card-body">
+          <h3>{{ project.title }}</h3>
+          <p>{{ project.description }}</p>
+          <div class="tags">
+            <span *ngFor="let tech of project.technologies.split(',') | slice:0:4">{{ tech.trim() }}</span>
+          </div>
+          <div class="card-actions">
+            <a [routerLink]="['/projects', project.slug]" class="btn btn-soft">Voir le detail</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section section-articles">
+  <div class="container">
+    <div class="section-head fade-up">
+      <div>
+        <p class="eyebrow">Publication</p>
+        <h2>Articles en avant</h2>
+      </div>
+      <a routerLink="/blog" class="btn btn-outline">Voir le blog</a>
+    </div>
+
+    <div class="article-grid" *ngIf="featuredArticles.length; else noArticles">
+      <article class="article-card fade-up" *ngFor="let article of featuredArticles">
+        <img [src]="article.featured_image" [alt]="article.title" />
+        <div class="article-body">
+          <span class="article-meta">{{ article.reading_time }} min</span>
+          <h3>{{ article.title }}</h3>
+          <p>{{ article.excerpt }}</p>
+          <a [routerLink]="['/blog', article.slug]" class="read-link">Lire l'article</a>
+        </div>
+      </article>
+    </div>
+
+    <ng-template #noArticles>
+      <div class="empty-state">Aucun article mis en avant pour le moment.</div>
+    </ng-template>
+  </div>
+</section>
+
+<section class="section section-cta">
+  <div class="container">
+    <div class="cta-box fade-up">
+      <h2>Vous avez un projet data ou applicatif ?</h2>
+      <p>Je peux intervenir sur l'architecture, le dev backend/frontend et la mise en production.</p>
+      <a routerLink="/contact" class="btn btn-primary">Planifier un echange</a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,40 @@
+# ========================================
+# SECRETS & ENVIRONNEMENT
+# ========================================
+backend/.env
+backend/.env.*
+!backend/.env.example
+*.pem
+*.key
+
+# ========================================
+# PYTHON / DJANGO
+# ========================================
+backend/venv/
+backend/**/__pycache__/
+backend/**/*.pyc
+backend/db.sqlite3
+backend/staticfiles/
+backend/media/
+*.log
+
+# ========================================
+# ANGULAR / NODE
+# ========================================
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/.cache/
+
+# ========================================
+# IDE
+# ========================================
+.vscode/
+.idea/
+
+# ========================================
+# OS
+# ========================================
+.DS_Store
+Thumbs.db
+

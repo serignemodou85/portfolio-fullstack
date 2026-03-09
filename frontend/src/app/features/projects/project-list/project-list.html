@@ -1,0 +1,61 @@
+<section class="projects-page">
+  <div class="container">
+    <header class="page-head fade-up">
+      <div>
+        <p class="eyebrow">Portfolio</p>
+        <h1>Tous les projets</h1>
+        <p>Selection complete avec filtres par statut et acces detaille.</p>
+      </div>
+      <a routerLink="/contact" class="btn btn-outline">Parler d'un projet</a>
+    </header>
+
+    <section class="filters fade-up stagger-1">
+      <button class="filter-btn" [class.active]="selectedStatus === 'all'" (click)="filterByStatus('all')">Tous</button>
+      <button class="filter-btn" [class.active]="selectedStatus === 'completed'" (click)="filterByStatus('completed')">Termines</button>
+      <button class="filter-btn" [class.active]="selectedStatus === 'in_progress'" (click)="filterByStatus('in_progress')">En cours</button>
+    </section>
+
+    <div *ngIf="loading" class="loading">
+      <div class="spinner"></div>
+      <p>Chargement des projets...</p>
+    </div>
+
+    <div *ngIf="error" class="error-card">
+      {{ error }}
+    </div>
+
+    <div class="grid" *ngIf="!loading && !error">
+      <article class="project-card fade-up" *ngFor="let project of filteredProjects">
+        <div class="media">
+          <img [src]="project.thumbnail" [alt]="project.title" />
+          <span
+            class="status-badge"
+            [class.completed]="project.status === 'completed'"
+            [class.progress]="project.status === 'in_progress'"
+            [class.archived]="project.status === 'archived'"
+          >
+            {{ getStatusLabel(project.status) }}
+          </span>
+        </div>
+
+        <div class="body">
+          <h2>{{ project.title }}</h2>
+          <p class="description">{{ project.description }}</p>
+
+          <div class="technologies">
+            <span class="tech-tag" *ngFor="let tech of project.technologies.split(',') | slice:0:5">{{ tech.trim() }}</span>
+          </div>
+
+          <div class="footer">
+            <span class="meta">{{ project.start_date | date:'yyyy' }}</span>
+            <a [routerLink]="['/projects', project.slug]" class="btn btn-soft">Voir le projet</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div *ngIf="!loading && !error && filteredProjects.length === 0" class="empty-state">
+      Aucun projet ne correspond au filtre actuel.
+    </div>
+  </div>
+</section>

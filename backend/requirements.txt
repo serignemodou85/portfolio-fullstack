@@ -1,0 +1,26 @@
+# Django Core
+Django==6.0.1
+
+# Django REST Framework
+djangorestframework==3.15.2
+
+# JWT Authentication
+djangorestframework-simplejwt==5.3.1
+
+# CORS Headers
+django-cors-headers==4.6.0
+
+# Database
+mysqlclient==2.2.4
+
+# Filtering
+django-filter==24.3
+
+# Image Processing (si nécessaire pour Pillow)
+Pillow==11.0.0
+
+# Environment Variables (recommandé pour production)
+python-decouple==3.8
+
+# Production Server (optionnel)
+gunicorn==23.0.0

@@ -1,0 +1,81 @@
+<!-- src/app/features/admin/login/login.html -->
+
+<section class="login-page">
+  <div class="login-wrapper">
+
+    <!-- Left Side (Branding / Message) -->
+    <div class="login-aside">
+      <div class="brand">
+        <div class="brand-logo">MF</div>
+        <h2>Admin Dashboard</h2>
+        <p>
+          Espace sécurisé de gestion des projets, contenus
+          et données du portfolio.
+        </p>
+      </div>
+    </div>
+
+    <!-- Right Side (Form) -->
+    <div class="login-container">
+      <div class="login-card">
+
+        <div class="login-header">
+          <h1>Connexion</h1>
+          <p>Accédez à votre espace administrateur</p>
+        </div>
+
+        <form (ngSubmit)="onSubmit()" #loginForm="ngForm" novalidate>
+
+          <!-- Error message -->
+          <div *ngIf="error" class="alert alert-error">
+            {{ error }}
+          </div>
+
+          <!-- Username -->
+          <div class="form-group">
+            <label for="username">Nom d'utilisateur</label>
+            <div class="input-wrapper">
+              <input
+                type="text"
+                id="username"
+                name="username"
+                [(ngModel)]="credentials.username"
+                required
+                autocomplete="username"
+                [disabled]="loading"
+              />
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <div class="input-wrapper">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                [(ngModel)]="credentials.password"
+                required
+                autocomplete="current-password"
+                [disabled]="loading"
+              />
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <button
+            type="submit"
+            class="btn-login"
+            [disabled]="!loginForm.valid || loading"
+          >
+            <span class="spinner" *ngIf="loading"></span>
+            {{ loading ? 'Connexion en cours...' : 'Se connecter' }}
+          </button>
+        </form>
+
+      </div>
+    </div>
+
+  </div>
+</section>

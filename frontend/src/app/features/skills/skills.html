@@ -1,0 +1,53 @@
+<section class="skills-page">
+  <div class="container">
+    <header class="page-head fade-up">
+      <div>
+        <p class="eyebrow">Competences</p>
+        <h1>Stack technique</h1>
+        <p>Vue par categories avec niveau, progression et annees d'experience.</p>
+      </div>
+      <a routerLink="/contact" class="btn btn-outline">Demander une mission</a>
+    </header>
+
+    <div *ngIf="loading" class="loading">
+      <div class="spinner"></div>
+      <p>Chargement des competences...</p>
+    </div>
+
+    <div *ngIf="error" class="error-card">{{ error }}</div>
+
+    <div class="skills-grid" *ngIf="!loading && !error">
+      <article class="skill-card fade-up" *ngFor="let category of categories">
+        <div class="skill-card-head">
+          <div>
+            <p class="category-icon">{{ category.icon || '::' }}</p>
+            <h2>{{ category.name }}</h2>
+          </div>
+          <span class="count">{{ category.skills.length }} skills</span>
+        </div>
+
+        <div class="skill-list">
+          <div class="skill-row" *ngFor="let skill of category.skills">
+            <div class="row-head">
+              <span class="name">{{ skill.name }}</span>
+              <span class="level" [class]="proficiencyClass(skill.proficiency)">{{ skill.proficiency_display || skill.proficiency }}</span>
+            </div>
+            <div class="meter">
+              <span class="fill" [style.width.%]="skill.percentage"></span>
+            </div>
+            <div class="row-meta">
+              <span>{{ skill.percentage }}%</span>
+              <span>{{ skill.years_of_experience }} an(s)</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <section class="cta-box fade-up">
+      <h2>Besoin d'une expertise data + produit ?</h2>
+      <p>Je peux contribuer sur l'analyse, le backend et l'interface utilisateur.</p>
+      <a routerLink="/contact" class="btn btn-primary">Me contacter</a>
+    </section>
+  </div>
+</section>

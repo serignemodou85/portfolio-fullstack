@@ -1,0 +1,127 @@
+<div class="admin-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Content management</p>
+      <h1>Experiences</h1>
+      <p class="subtitle">Gestion des experiences professionnelles et formations.</p>
+    </div>
+    <a routerLink="/admin/dashboard" class="btn btn-outline">Retour dashboard</a>
+  </header>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>{{ editingId ? 'Modifier une experience' : 'Nouvelle experience' }}</h2>
+      <span class="panel-meta">Champs synchronises avec le backend</span>
+    </div>
+
+    <form (ngSubmit)="submit()">
+      <div class="grid three">
+        <div class="field">
+          <label>Type</label>
+          <select [(ngModel)]="formData.type" name="type" required>
+            <option value="work">Work</option>
+            <option value="education">Education</option>
+            <option value="certification">Certification</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Titre</label>
+          <input type="text" [(ngModel)]="formData.title" name="title" required />
+        </div>
+        <div class="field">
+          <label>Entreprise / Ecole</label>
+          <input type="text" [(ngModel)]="formData.company" name="company" required />
+        </div>
+      </div>
+
+      <div class="grid three">
+        <div class="field">
+          <label>Lieu</label>
+          <input type="text" [(ngModel)]="formData.location" name="location" />
+        </div>
+        <div class="field">
+          <label>Date debut</label>
+          <input type="date" [(ngModel)]="formData.start_date" name="start_date" required />
+        </div>
+        <div class="field">
+          <label>Date fin</label>
+          <input type="date" [(ngModel)]="formData.end_date" name="end_date" />
+        </div>
+      </div>
+
+      <div class="grid two">
+        <div class="field">
+          <label>Ordre affichage</label>
+          <input type="number" [(ngModel)]="formData.order" name="order" min="0" />
+        </div>
+        <div class="field">
+          <label>Logo entreprise</label>
+          <input type="file" (change)="onFileSelected($event)" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Description</label>
+        <textarea [(ngModel)]="formData.description" name="description" rows="4"></textarea>
+      </div>
+
+      <label class="check">
+        <input type="checkbox" [(ngModel)]="formData.is_current" name="is_current" />
+        <span>Experience en cours</span>
+      </label>
+
+      <div class="actions">
+        <button class="btn btn-primary" type="submit" [disabled]="loading">
+          {{ editingId ? 'Mettre a jour' : 'Ajouter' }}
+        </button>
+        <button class="btn btn-soft" type="button" (click)="resetForm()">Annuler</button>
+      </div>
+    </form>
+    <p *ngIf="error" class="error">{{ error }}</p>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Liste des experiences</h2>
+      <span class="panel-meta">{{ experiences.length }} elements</span>
+    </div>
+
+    <div class="table-wrap" *ngIf="experiences.length; else emptyData">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Titre</th>
+            <th>Type</th>
+            <th>Societe</th>
+            <th>Periode</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let exp of experiences">
+            <td><strong>{{ exp.title }}</strong></td>
+            <td><span class="badge">{{ exp.type }}</span></td>
+            <td>{{ exp.company }}</td>
+            <td>{{ exp.start_date | date:'MM/yyyy' }} - {{ exp.end_date ? (exp.end_date | date:'MM/yyyy') : 'Present' }}</td>
+            <td>
+              <span class="badge" [class.badge-success]="exp.is_current">
+                {{ exp.is_current ? 'en cours' : 'termine' }}
+              </span>
+            </td>
+            <td>
+              <div class="row-actions">
+                <button class="btn btn-soft" (click)="startEdit(exp)">Editer</button>
+                <button class="btn btn-danger" (click)="deleteExperience(exp.id)">Supprimer</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ng-template #emptyData>
+      <div class="empty-state">Aucune experience disponible.</div>
+    </ng-template>
+  </section>
+</div>

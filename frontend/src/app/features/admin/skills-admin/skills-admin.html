@@ -1,0 +1,187 @@
+<div class="admin-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Admin content</p>
+      <h1>Compétences</h1>
+      <p class="subtitle">Catégories, niveaux et expérience alignés avec le backend.</p>
+    </div>
+    <a routerLink="/admin/dashboard" class="btn btn-outline">Retour dashboard</a>
+  </header>
+
+  <section class="stats-strip">
+    <article class="stat-card">
+      <p class="stat-label">Catégories</p>
+      <p class="stat-value">{{ categories.length }}</p>
+    </article>
+    <article class="stat-card">
+      <p class="stat-label">Compétences</p>
+      <p class="stat-value">{{ skills.length }}</p>
+    </article>
+  </section>
+
+  <div class="layout">
+    <section class="panel">
+      <div class="panel-head">
+        <h2>{{ editingCategoryId ? 'Modifier catégorie' : 'Nouvelle catégorie' }}</h2>
+        <span class="panel-meta">`name`, `icon`, `order`</span>
+      </div>
+
+      <form (ngSubmit)="submitCategory()">
+        <div class="field">
+          <label>Nom</label>
+          <input type="text" [(ngModel)]="categoryForm.name" name="cat_name" required />
+        </div>
+        <div class="field">
+          <label>Icône</label>
+          <input type="text" [(ngModel)]="categoryForm.icon" name="cat_icon" placeholder="code, database, cloud..." />
+        </div>
+        <div class="field">
+          <label>Ordre</label>
+          <input type="number" [(ngModel)]="categoryForm.order" name="cat_order" min="0" />
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" type="submit">
+            {{ editingCategoryId ? 'Mettre à jour' : 'Créer la catégorie' }}
+          </button>
+          <button class="btn btn-soft" type="button" (click)="resetCategory()">Annuler</button>
+        </div>
+      </form>
+
+      <div class="table-wrap" *ngIf="categories.length; else emptyCategory">
+        <table class="data-table compact">
+          <thead>
+            <tr>
+              <th>Catégorie</th>
+              <th>Icône</th>
+              <th>Ordre</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cat of categories">
+              <td>
+                <p class="cell-title">{{ cat.name }}</p>
+              </td>
+              <td>{{ cat.icon || '-' }}</td>
+              <td>{{ cat.order }}</td>
+              <td>
+                <div class="row-actions">
+                  <button class="btn btn-soft" (click)="editCategory(cat)">Éditer</button>
+                  <button class="btn btn-danger" (click)="cat.id && deleteCategory(cat.id)">Supprimer</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ng-template #emptyCategory>
+        <div class="empty-state">Aucune catégorie pour le moment.</div>
+      </ng-template>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>{{ editingSkillId ? 'Modifier compétence' : 'Nouvelle compétence' }}</h2>
+        <span class="panel-meta">Tous les champs du modèle `Skill`</span>
+      </div>
+
+      <form (ngSubmit)="submitSkill()">
+        <div class="grid two">
+          <div class="field">
+            <label>Nom</label>
+            <input type="text" [(ngModel)]="skillForm.name" name="skill_name" required />
+          </div>
+          <div class="field">
+            <label>Catégorie</label>
+            <select [(ngModel)]="skillForm.category" name="skill_category" required>
+              <option *ngFor="let cat of categories" [value]="cat.id ?? 0">{{ cat.name }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid three">
+          <div class="field">
+            <label>Niveau</label>
+            <select [(ngModel)]="skillForm.proficiency" name="skill_proficiency">
+              <option [value]="1">Débutant</option>
+              <option [value]="2">Intermédiaire</option>
+              <option [value]="3">Avancé</option>
+              <option [value]="4">Expert</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Pourcentage</label>
+            <input type="number" [(ngModel)]="skillForm.percentage" name="skill_percentage" min="0" max="100" />
+          </div>
+          <div class="field">
+            <label>Années d'expérience</label>
+            <input type="number" [(ngModel)]="skillForm.years_of_experience" name="skill_years" step="0.1" min="0" />
+          </div>
+        </div>
+
+        <div class="grid two">
+          <div class="field">
+            <label>Icône</label>
+            <input type="text" [(ngModel)]="skillForm.icon" name="skill_icon" />
+          </div>
+          <div class="field">
+            <label>Ordre</label>
+            <input type="number" [(ngModel)]="skillForm.order" name="skill_order" min="0" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" type="submit">
+            {{ editingSkillId ? 'Mettre à jour' : 'Créer la compétence' }}
+          </button>
+          <button class="btn btn-soft" type="button" (click)="resetSkill()">Annuler</button>
+        </div>
+      </form>
+
+      <div class="table-wrap" *ngIf="skills.length; else emptySkill">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Compétence</th>
+              <th>Catégorie</th>
+              <th>Niveau</th>
+              <th>Progression</th>
+              <th>Expérience</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let skill of skills">
+              <td>
+                <p class="cell-title">{{ skill.name }}</p>
+                <p class="cell-sub">{{ skill.icon || 'sans icône' }}</p>
+              </td>
+              <td>{{ skill.category_name || skill.category }}</td>
+              <td>
+                <span class="badge">{{ skill.proficiency_display || skill.proficiency }}</span>
+              </td>
+              <td>
+                <div class="progress">
+                  <span class="progress-fill" [style.width.%]="skill.percentage"></span>
+                </div>
+                <span class="progress-text">{{ skill.percentage }}%</span>
+              </td>
+              <td>{{ skill.years_of_experience }} an(s)</td>
+              <td>
+                <div class="row-actions">
+                  <button class="btn btn-soft" (click)="editSkill(skill)">Éditer</button>
+                  <button class="btn btn-danger" (click)="deleteSkill(skill.id)">Supprimer</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ng-template #emptySkill>
+        <div class="empty-state">Aucune compétence pour le moment.</div>
+      </ng-template>
+    </section>
+  </div>
+
+  <p *ngIf="error" class="error">{{ error }}</p>
+</div>

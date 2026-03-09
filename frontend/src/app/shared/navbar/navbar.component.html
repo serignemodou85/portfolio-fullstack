@@ -1,0 +1,41 @@
+<nav class="navbar">
+  <div class="container nav-shell">
+    <a routerLink="/" class="brand">
+      <span class="brand-mark">MF</span>
+      <div class="brand-copy">
+        <span class="brand-name">Modou Fall</span>
+        <span class="brand-role">Data & Full-Stack</span>
+      </div>
+    </a>
+
+    <div class="nav-links desktop">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Accueil</a>
+      <a routerLink="/projects" routerLinkActive="active">Projets</a>
+      <a routerLink="/experience" routerLinkActive="active">Experience</a>
+      <a routerLink="/skills" routerLinkActive="active">Skills</a>
+      <a routerLink="/blog" routerLinkActive="active">Blog</a>
+      <a routerLink="/contact" routerLinkActive="active">Contact</a>
+    </div>
+
+    <div class="nav-cta desktop">
+      <a routerLink="/contact" class="btn btn-ghost">Discuter</a>
+      <a *ngIf="isAuthenticated()" routerLink="/admin/dashboard" class="btn btn-primary">Admin</a>
+    </div>
+
+    <button class="mobile-menu-btn" (click)="toggleMobileMenu()" aria-label="Menu principal">
+      <span [class.open]="mobileMenuOpen"></span>
+    </button>
+  </div>
+
+  <div class="mobile-menu" [class.open]="mobileMenuOpen">
+    <div class="container mobile-menu-inner">
+      <a routerLink="/" (click)="toggleMobileMenu()" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Accueil</a>
+      <a routerLink="/projects" (click)="toggleMobileMenu()" routerLinkActive="active">Projets</a>
+      <a routerLink="/experience" (click)="toggleMobileMenu()" routerLinkActive="active">Experience</a>
+      <a routerLink="/skills" (click)="toggleMobileMenu()" routerLinkActive="active">Skills</a>
+      <a routerLink="/blog" (click)="toggleMobileMenu()" routerLinkActive="active">Blog</a>
+      <a routerLink="/contact" (click)="toggleMobileMenu()" routerLinkActive="active">Contact</a>
+      <a *ngIf="isAuthenticated()" routerLink="/admin/dashboard" (click)="toggleMobileMenu()" class="btn btn-primary">Admin</a>
+    </div>
+  </div>
+</nav>

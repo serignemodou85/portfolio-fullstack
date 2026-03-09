@@ -1,0 +1,62 @@
+<div *ngIf="loading" class="loading">
+  <div class="spinner"></div>
+  <p>Chargement du projet...</p>
+</div>
+
+<div *ngIf="error" class="error-page">
+  <h1>{{ error }}</h1>
+  <a routerLink="/projects" class="btn btn-outline">Retour aux projets</a>
+</div>
+
+<div *ngIf="project && !loading" class="project-detail">
+  <header class="hero">
+    <div class="container hero-content fade-up">
+      <a routerLink="/projects" class="back-link">Retour aux projets</a>
+      <div class="hero-top">
+        <h1>{{ project.title }}</h1>
+        <span class="status-badge" [class.completed]="project.status === 'completed'" [class.progress]="project.status === 'in_progress'" [class.archived]="project.status === 'archived'">
+          {{ getStatusLabel(project.status) }}
+        </span>
+      </div>
+      <p class="lead">{{ project.description }}</p>
+      <div class="meta">
+        <span>{{ project.start_date | date:'MMMM yyyy' }}</span>
+        <span *ngIf="project.end_date">{{ project.end_date | date:'MMMM yyyy' }}</span>
+        <span>{{ project.views || 0 }} vues</span>
+      </div>
+      <div class="actions">
+        <a *ngIf="project.github_url" [href]="project.github_url" target="_blank" class="btn btn-soft">GitHub</a>
+        <a *ngIf="project.live_url" [href]="project.live_url" target="_blank" class="btn btn-primary">Demo live</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="cover">
+    <div class="container">
+      <img [src]="project.thumbnail" [alt]="project.title" />
+    </div>
+  </section>
+
+  <section class="content container">
+    <article class="panel fade-up">
+      <h2>Technologies</h2>
+      <div class="tech-grid">
+        <span class="tech-badge" *ngFor="let tech of project.technologies.split(',')">{{ tech.trim() }}</span>
+      </div>
+    </article>
+
+    <article class="panel fade-up" *ngIf="project.full_description">
+      <h2>A propos du projet</h2>
+      <p class="description">{{ project.full_description }}</p>
+    </article>
+
+    <article class="panel fade-up" *ngIf="project.image_1 || project.image_2 || project.image_3">
+      <h2>Galerie</h2>
+      <div class="gallery">
+        <img *ngIf="project.image_1" [src]="project.image_1" alt="capture 1" />
+        <img *ngIf="project.image_2" [src]="project.image_2" alt="capture 2" />
+        <img *ngIf="project.image_3" [src]="project.image_3" alt="capture 3" />
+      </div>
+    </article>
+  </section>
+</div>

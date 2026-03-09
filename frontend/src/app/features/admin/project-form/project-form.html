@@ -1,0 +1,236 @@
+<div class="form-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Admin content</p>
+      <h1>{{ isEditMode ? 'Modifier le projet' : 'Nouveau projet' }}</h1>
+      <p class="subtitle">Formulaire complet synchronise avec le modele backend `Project`.</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn btn-ghost" (click)="onCancel()" [disabled]="loading">
+        Retour dashboard
+      </button>
+    </div>
+  </header>
+
+  <section class="form-card">
+    <div *ngIf="success" class="alert alert-success">
+      Projet {{ isEditMode ? 'modifie' : 'cree' }} avec succes.
+    </div>
+    <div *ngIf="error" class="alert alert-error">
+      {{ error }}
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #projectForm="ngForm">
+      <div class="form-section">
+        <div class="section-head">
+          <h2>Informations principales</h2>
+          <span class="section-meta">Titre, slug, descriptions</span>
+        </div>
+
+        <div class="grid two">
+          <div class="form-group">
+            <label for="title">Titre *</label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              [(ngModel)]="formData.title"
+              (blur)="generateSlug()"
+              required
+              [disabled]="loading"
+              placeholder="Ex: Plateforme d'analyse"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="slug">Slug *</label>
+            <input
+              type="text"
+              id="slug"
+              name="slug"
+              [(ngModel)]="formData.slug"
+              required
+              [disabled]="loading"
+              placeholder="plateforme-analyse"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description courte *</label>
+          <textarea
+            id="description"
+            name="description"
+            [(ngModel)]="formData.description"
+            required
+            rows="3"
+            [disabled]="loading"
+            placeholder="Resume du projet"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="full_description">Description complete</label>
+          <textarea
+            id="full_description"
+            name="full_description"
+            [(ngModel)]="formData.full_description"
+            rows="6"
+            [disabled]="loading"
+            placeholder="Contexte, objectifs, resultats, stack"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-head">
+          <h2>Medias</h2>
+          <span class="section-meta">Couverture + 3 images additionnelles</span>
+        </div>
+
+        <div class="grid two">
+          <div class="form-group">
+            <label for="technologies">Technologies *</label>
+            <input
+              type="text"
+              id="technologies"
+              name="technologies"
+              [(ngModel)]="formData.technologies"
+              required
+              [disabled]="loading"
+              placeholder="Angular, Django, PostgreSQL"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="thumbnail">Image de couverture {{ isEditMode ? '' : '*' }}</label>
+            <input
+              type="file"
+              id="thumbnail"
+              accept="image/*"
+              (change)="onFileSelected($event)"
+              [disabled]="loading"
+            />
+          </div>
+        </div>
+
+        <div class="grid three">
+          <div class="form-group">
+            <label for="image_1">Image 1</label>
+            <input
+              type="file"
+              id="image_1"
+              accept="image/*"
+              (change)="onAdditionalImageSelected($event, 1)"
+              [disabled]="loading"
+            />
+          </div>
+          <div class="form-group">
+            <label for="image_2">Image 2</label>
+            <input
+              type="file"
+              id="image_2"
+              accept="image/*"
+              (change)="onAdditionalImageSelected($event, 2)"
+              [disabled]="loading"
+            />
+          </div>
+          <div class="form-group">
+            <label for="image_3">Image 3</label>
+            <input
+              type="file"
+              id="image_3"
+              accept="image/*"
+              (change)="onAdditionalImageSelected($event, 3)"
+              [disabled]="loading"
+            />
+          </div>
+        </div>
+
+        <div *ngIf="thumbnailPreview" class="image-preview">
+          <img [src]="thumbnailPreview" alt="Preview" />
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-head">
+          <h2>Publication</h2>
+          <span class="section-meta">Statut, dates, liens et mise en avant</span>
+        </div>
+
+        <div class="grid three">
+          <div class="form-group">
+            <label for="status">Statut du projet *</label>
+            <select id="status" name="status" [(ngModel)]="formData.status" required [disabled]="loading">
+              <option value="in_progress">En cours</option>
+              <option value="completed">Termine</option>
+              <option value="archived">Archive</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="start_date">Date debut *</label>
+            <input type="date" id="start_date" name="start_date" [(ngModel)]="formData.start_date" required [disabled]="loading" />
+          </div>
+
+          <div class="form-group">
+            <label for="end_date">Date fin</label>
+            <input type="date" id="end_date" name="end_date" [(ngModel)]="formData.end_date" [disabled]="loading" />
+          </div>
+        </div>
+
+        <div class="grid two">
+          <div class="form-group">
+            <label for="github_url">Lien GitHub</label>
+            <input
+              type="url"
+              id="github_url"
+              name="github_url"
+              [(ngModel)]="formData.github_url"
+              [disabled]="loading"
+              placeholder="https://github.com/..."
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="live_url">Lien demo</label>
+            <input
+              type="url"
+              id="live_url"
+              name="live_url"
+              [(ngModel)]="formData.live_url"
+              [disabled]="loading"
+              placeholder="https://..."
+            />
+          </div>
+        </div>
+
+        <div class="grid two">
+          <label class="check">
+            <input type="checkbox" name="is_featured" [(ngModel)]="formData.is_featured" [disabled]="loading" />
+            <span>Projet mis en avant</span>
+          </label>
+
+          <div class="form-group">
+            <label for="order">Ordre affichage</label>
+            <input type="number" id="order" name="order" [(ngModel)]="formData.order" [disabled]="loading" min="0" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="views">Vues</label>
+          <input type="number" id="views" name="views" [(ngModel)]="formData.views" [disabled]="loading" min="0" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="loading">
+          Annuler
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="!projectForm.valid || loading">
+          {{ loading ? 'Enregistrement...' : (isEditMode ? 'Mettre a jour' : 'Creer le projet') }}
+        </button>
+      </div>
+    </form>
+  </section>
+</div>

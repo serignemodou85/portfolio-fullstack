@@ -1,0 +1,151 @@
+<section class="contact-page">
+  <div class="container">
+    <header class="page-head fade-up">
+      <div>
+        <p class="eyebrow">Contact</p>
+        <h1>Parlons de votre besoin</h1>
+        <p>Decrivez votre contexte et je vous reviens avec une proposition claire.</p>
+      </div>
+    </header>
+
+    <div class="layout">
+      <section class="contact-form-card fade-up stagger-1" aria-labelledby="contact-form-title">
+        <h2 id="contact-form-title">Envoyer un message</h2>
+
+        <form (ngSubmit)="onSubmit(contactFormRef)" #contactFormRef="ngForm" novalidate>
+          <div *ngIf="success" class="alert alert-success">
+            Votre message a ete envoye. Merci.
+          </div>
+
+          <div *ngIf="warning" class="alert alert-warning">
+            {{ warning }}
+          </div>
+
+          <div *ngIf="error" class="alert alert-error">
+            {{ error }}
+          </div>
+
+          <div class="grid two">
+            <div class="form-group">
+              <label for="name">Nom complet *</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                [(ngModel)]="formData.name"
+                required
+                #nameCtrl="ngModel"
+                [disabled]="loading"
+                placeholder="Prénom Nom"
+              />
+              <div class="field-error" *ngIf="nameCtrl.invalid && (nameCtrl.dirty || nameCtrl.touched)">
+                Votre nom est requis.
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email *</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                [(ngModel)]="formData.email"
+                required
+                email
+                #emailCtrl="ngModel"
+                [disabled]="loading"
+                placeholder="....@email.com"
+              />
+              <div class="field-error" *ngIf="emailCtrl.invalid && (emailCtrl.dirty || emailCtrl.touched)">
+                <span *ngIf="emailCtrl.errors?.['required']">L'adresse email est requise.</span>
+                <span *ngIf="emailCtrl.errors?.['email']">Email invalide.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid two">
+            <div class="form-group">
+              <label for="phone">Telephone</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                [(ngModel)]="formData.phone"
+                [disabled]="loading"
+                placeholder="+33 ...."
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="subject">Sujet *</label>
+              <input
+                type="text"
+                id="subject"
+                name="subject"
+                [(ngModel)]="formData.subject"
+                required
+                #subjectCtrl="ngModel"
+                [disabled]="loading"
+                placeholder="Demande de collaboration"
+              />
+              <div class="field-error" *ngIf="subjectCtrl.invalid && (subjectCtrl.dirty || subjectCtrl.touched)">
+                Ce champ est obligatoire.
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="message">Message *</label>
+            <textarea
+              id="message"
+              name="message"
+              [(ngModel)]="formData.message"
+              required
+              #messageCtrl="ngModel"
+              rows="6"
+              [disabled]="loading"
+              placeholder="Contexte, objectifs, delai, budget approximatif..."
+            ></textarea>
+            <div class="field-error" *ngIf="messageCtrl.invalid && (messageCtrl.dirty || messageCtrl.touched)">
+              Merci de detailler votre demande.
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary submit" [disabled]="!contactFormRef.valid || loading">
+            {{ loading ? 'Envoi en cours...' : 'Envoyer' }}
+          </button>
+
+          <p class="privacy-note">
+            Vos informations sont utilisees uniquement pour traiter votre message.
+          </p>
+        </form>
+      </section>
+
+      <aside class="contact-info fade-up stagger-2">
+        <article class="info-card">
+          <h3>Email</h3>
+          <p>modou2000f@gmail.com</p>
+        </article>
+
+        <article class="info-card">
+          <h3>Telephone</h3>
+          <p>+33 7 58 36 59 70</p>
+          <p>+221 77 688 30 73</p>
+        </article>
+
+        <article class="info-card">
+          <h3>Localisation</h3>
+          <p>France</p>
+        </article>
+
+        <article class="info-card">
+          <h3>Reseaux</h3>
+          <div class="social-links">
+            <a href="https://github.com" target="_blank" class="btn btn-soft">GitHub</a>
+            <a href="https://linkedin.com" target="_blank" class="btn btn-soft">LinkedIn</a>
+          </div>
+        </article>
+      </aside>
+    </div>
+  </div>
+</section>

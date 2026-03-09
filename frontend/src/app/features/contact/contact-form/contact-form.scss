@@ -1,0 +1,170 @@
+.contact-page {
+  padding: 2.4rem 0 3rem;
+}
+
+.page-head {
+  margin-bottom: 1.2rem;
+
+  h1 {
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    margin: 0.4rem 0;
+  }
+}
+
+.eyebrow {
+  color: #1d4ed8;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-weight: 700;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1.35fr 0.8fr;
+  gap: 1rem;
+}
+
+.contact-form-card,
+.info-card {
+  border: 1px solid #dbe4ef;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 14px 26px rgba(15, 23, 42, 0.06);
+}
+
+.contact-form-card {
+  padding: 1rem;
+
+  h2 {
+    margin-bottom: 0.9rem;
+    font-size: 1.24rem;
+  }
+}
+
+.alert {
+  border-radius: 10px;
+  padding: 0.7rem 0.85rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.alert-success {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #047857;
+}
+
+.alert-warning {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+}
+
+.alert-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
+.grid {
+  display: grid;
+  gap: 0.8rem;
+
+  &.two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.form-group {
+  margin-bottom: 0.9rem;
+
+  label {
+    display: block;
+    margin-bottom: 0.32rem;
+    color: #334155;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    border: 1px solid #cdd7e4;
+    border-radius: 10px;
+    padding: 0.66rem 0.8rem;
+    font-size: 0.92rem;
+    background: #fff;
+    color: #0f172a;
+
+    &:focus {
+      outline: none;
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    &:disabled {
+      background: #f8fafc;
+      color: #94a3b8;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+  }
+}
+
+.field-error {
+  margin-top: 0.3rem;
+  color: #be123c;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.submit {
+  width: 100%;
+}
+
+.privacy-note {
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.contact-info {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.info-card {
+  padding: 0.9rem;
+
+  h3 {
+    font-size: 1rem;
+    margin-bottom: 0.35rem;
+  }
+
+  p + p {
+    margin-top: 0.2rem;
+  }
+}
+
+.social-links {
+  margin-top: 0.6rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 980px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .grid.two {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,57 @@
+<section class="blog-page">
+  <div class="container">
+    <header class="page-head fade-up">
+      <div>
+        <p class="eyebrow">Blog</p>
+        <h1>Notes techniques</h1>
+        <p>Articles sur le developpement, la data et les choix d'architecture.</p>
+      </div>
+      <a routerLink="/contact" class="btn btn-outline">Proposer un sujet</a>
+    </header>
+
+    <div *ngIf="loading" class="loading">
+      <div class="spinner"></div>
+      <p>Chargement des articles...</p>
+    </div>
+
+    <div *ngIf="error" class="error-card">{{ error }}</div>
+
+    <div class="articles-grid" *ngIf="!loading && !error">
+      <article class="article-card fade-up" *ngFor="let article of articles">
+        <div class="media">
+          <img [src]="article.featured_image" [alt]="article.title" />
+          <span class="category">{{ article.category_name || 'General' }}</span>
+        </div>
+
+        <div class="body">
+          <div class="meta-row">
+            <span>{{ article.published_at | date:'dd/MM/yyyy' }}</span>
+            <span>{{ article.reading_time }} min</span>
+            <span>{{ article.views_count }} vues</span>
+          </div>
+
+          <h2>
+            <a [routerLink]="['/blog', article.slug]">{{ article.title }}</a>
+          </h2>
+
+          <p class="excerpt">{{ article.excerpt }}</p>
+
+          <div class="tags" *ngIf="article.tags.length">
+            <span *ngFor="let tag of article.tags">#{{ tag.name }}</span>
+          </div>
+
+          <div class="footer">
+            <span class="status-badge" [class.published]="article.status === 'published'" [class.archived]="article.status === 'archived'">
+              {{ getStatusLabel(article.status) }}
+            </span>
+            <a [routerLink]="['/blog', article.slug]" class="btn btn-soft">Lire</a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div *ngIf="!loading && !error && articles.length === 0" class="empty-state">
+      Aucun article publie pour le moment.
+    </div>
+  </div>
+</section>

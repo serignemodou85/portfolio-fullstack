@@ -1,0 +1,51 @@
+<div *ngIf="loading" class="loading">
+  <div class="spinner"></div>
+  <p>Chargement de l'article...</p>
+</div>
+
+<div *ngIf="error" class="error-page">
+  <h1>{{ error }}</h1>
+  <a routerLink="/blog" class="btn btn-outline">Retour au blog</a>
+</div>
+
+<article *ngIf="article && !loading" class="article-detail">
+  <header class="hero">
+    <div class="container hero-content fade-up">
+      <a routerLink="/blog" class="back-link">Retour au blog</a>
+      <span class="category">{{ article.category?.name || 'General' }}</span>
+      <h1>{{ article.title }}</h1>
+
+      <div class="meta">
+        <span>{{ article.author?.first_name || article.author?.username }} {{ article.author?.last_name || '' }}</span>
+        <span>{{ article.published_at | date:'dd/MM/yyyy' }}</span>
+        <span>{{ article.reading_time }} min</span>
+        <span>{{ article.views_count }} vues</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="cover container">
+    <img [src]="article.featured_image" [alt]="article.title" />
+  </section>
+
+  <section class="content container">
+    <div class="panel fade-up">
+      <p class="text">{{ article.content }}</p>
+    </div>
+
+    <div class="panel fade-up" *ngIf="article.tags.length > 0">
+      <h2>Tags</h2>
+      <div class="tags">
+        <span *ngFor="let tag of article.tags">#{{ tag.name }}</span>
+      </div>
+    </div>
+
+    <div class="panel fade-up">
+      <h2>Partager</h2>
+      <div class="share-actions">
+        <a [href]="'https://twitter.com/intent/tweet?url=' + getCurrentUrl() + '&text=' + article.title" target="_blank" class="btn btn-soft">Twitter</a>
+        <a [href]="'https://www.linkedin.com/sharing/share-offsite/?url=' + getCurrentUrl()" target="_blank" class="btn btn-soft">LinkedIn</a>
+      </div>
+    </div>
+  </section>
+</article>
