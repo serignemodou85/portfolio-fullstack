@@ -6,10 +6,7 @@
   --line: #e5e7eb;
   --primary: #2563eb;
   --danger: #dc2626;
-  min-height: 100vh;
-  background: var(--bg);
   color: var(--text);
-  padding: 2rem;
 }
 
 .page-header {
@@ -82,6 +79,10 @@
   gap: 0.35rem;
 }
 
+.field.inline {
+  gap: 0.25rem;
+}
+
 .field label {
   font-size: 0.76rem;
   text-transform: uppercase;
@@ -127,6 +128,18 @@ textarea {
   border: 1px solid var(--line);
   border-radius: 12px;
   overflow: auto;
+}
+
+.table-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+  align-items: flex-end;
+}
+
+.table-tools .field {
+  min-width: 180px;
 }
 
 .data-table {
@@ -178,6 +191,15 @@ textarea {
   text-decoration: none;
 }
 
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .btn-primary {
   background: var(--primary);
   color: #fff;
@@ -193,6 +215,28 @@ textarea {
   background: #fef2f2;
   color: var(--danger);
   border-color: #fecaca;
+}
+
+.table-footer {
+  margin-top: 0.8rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.page-count {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.icon-rotate {
+  display: inline-flex;
+  transform: rotate(180deg);
 }
 
 .error {
@@ -222,10 +266,6 @@ textarea {
 }
 
 @media (max-width: 900px) {
-  .admin-page {
-    padding: 1rem;
-  }
-
   .page-header {
     flex-direction: column;
     align-items: flex-start;
@@ -236,3 +276,4 @@ textarea {
     grid-template-columns: 1fr;
   }
 }
+

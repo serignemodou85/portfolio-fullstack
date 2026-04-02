@@ -1,77 +1,114 @@
-﻿<div class="archives-page">
-  <header class="page-header">
-    <div>
-      <p class="eyebrow">Admin projects</p>
-      <h1>Archives projets</h1>
-      <p class="subtitle">Restaurer un projet ou le supprimer definitivement.</p>
-    </div>
-    <div class="header-actions">
-      <a routerLink="/admin/dashboard" class="btn btn-outline btn-back">
-        <app-icon name="arrow-right" [size]="16"></app-icon>
-        
-      </a>
-      <a routerLink="/admin/projects/new" class="btn btn-primary">
-        <app-icon name="plus" [size]="16"></app-icon>
-        
-      </a>
-    </div>
-  </header>
+<app-admin-shell>
+  <div class="archives-page">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Admin projects</p>
+        <h1>Archives projets</h1>
+        <p class="subtitle">Restaurer un projet ou le supprimer definitivement.</p>
+      </div>
+      <div class="header-actions">
+        <a routerLink="/admin/dashboard" class="btn btn-outline btn-back">
+          <app-icon name="arrow-right" [size]="16"></app-icon>
+          
+        </a>
+        <a routerLink="/admin/projects/new" class="btn btn-primary">
+          <app-icon name="plus" [size]="16"></app-icon>
+          
+        </a>
+      </div>
+    </header>
 
-  <section class="panel">
-    <div class="panel-head">
-      <h2>Liste des projets archives</h2>
-      <span class="panel-meta">{{ archivedProjects.length }} projet(s)</span>
-    </div>
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Liste des projets archives</h2>
+        <span class="panel-meta">{{ processedArchives.length }} projet(s)</span>
+      </div>
 
-    <div *ngIf="loading" class="loading-state">Chargement...</div>
-    <div *ngIf="error" class="error-state">{{ error }}</div>
+      <div *ngIf="loading" class="loading-state">Chargement...</div>
+      <div *ngIf="error" class="error-state">{{ error }}</div>
 
-    <div class="table-wrap" *ngIf="!loading && !error && archivedProjects.length; else emptyState">
-      <table class="archive-table">
-        <thead>
-          <tr>
-            <th>Projet</th>
-            <th>Technologies</th>
-            <th>Date archivage</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let project of archivedProjects">
-            <td>
-              <div class="project-cell">
-                <img [src]="project.thumbnail" alt="thumbnail" />
-                <div>
-                  <p class="project-name">{{ project.title }}</p>
-                  <p class="project-desc">{{ project.description }}</p>
+      <div class="table-wrap" *ngIf="!loading && !error && processedArchives.length; else emptyState">
+        <div class="table-tools">
+          <div class="field inline">
+            <label for="archive_search">Recherche</label>
+            <input id="archive_search" type="search" [(ngModel)]="searchTerm" name="archive_search" placeholder="Titre, techno..." />
+          </div>
+          <div class="field inline">
+            <label for="archive_sort">Tri</label>
+            <select id="archive_sort" [(ngModel)]="sortKey" name="archive_sort">
+              <option value="updated_desc">Archivage recent</option>
+              <option value="updated_asc">Archivage ancien</option>
+              <option value="title_asc">Titre A-Z</option>
+              <option value="title_desc">Titre Z-A</option>
+            </select>
+          </div>
+          <div class="field inline">
+            <label for="archive_page_size">Par page</label>
+            <select id="archive_page_size" [(ngModel)]="pageSize" name="archive_page_size" (ngModelChange)="setPageSize($event)">
+              <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+            </select>
+          </div>
+        </div>
+        <table class="archive-table">
+          <thead>
+            <tr>
+              <th>Projet</th>
+              <th>Technologies</th>
+              <th>Date archivage</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let project of pagedArchives; trackBy: trackByProject">
+              <td>
+                <div class="project-cell">
+                  <img [src]="project.thumbnail" alt="thumbnail" />
+                  <div>
+                    <p class="project-name">{{ project.title }}</p>
+                    <p class="project-desc">{{ project.description }}</p>
+                  </div>
                 </div>
-              </div>
-            </td>
-            <td>
-              <p class="tech">{{ project.technologies }}</p>
-            </td>
-            <td>
-              {{ project.updated_at ? (project.updated_at | date:'dd/MM/yyyy HH:mm') : '-' }}
-            </td>
-            <td>
-              <div class="row-actions">
-                <button class="btn btn-soft" (click)="restoreProject(project)">
-                  <app-icon name="check" [size]="16"></app-icon>
-                  
-                </button>
-                <button class="btn btn-danger" (click)="deletePermanently(project)">
-                  <app-icon name="trash" [size]="16"></app-icon>
-                  
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+              </td>
+              <td>
+                <p class="tech">{{ project.technologies }}</p>
+              </td>
+              <td>
+                {{ project.updated_at ? (project.updated_at | date:'dd/MM/yyyy HH:mm') : '-' }}
+              </td>
+              <td>
+                <div class="row-actions">
+                  <button class="btn btn-soft" (click)="restoreProject(project)">
+                    <app-icon name="check" [size]="16"></app-icon>
+                    
+                  </button>
+                  <button class="btn btn-danger" (click)="deletePermanently(project)">
+                    <app-icon name="trash" [size]="16"></app-icon>
+                    
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-    <ng-template #emptyState>
-      <div class="empty-state" *ngIf="!loading && !error">Aucun projet archive.</div>
-    </ng-template>
-  </section>
-</div>
+      <ng-template #emptyState>
+        <div class="empty-state" *ngIf="!loading && !error">Aucun projet archive.</div>
+      </ng-template>
+
+      <div class="table-footer" *ngIf="!loading && !error && totalPages > 1">
+        <div class="pagination">
+          <button class="btn btn-icon btn-soft" (click)="setPage(page - 1)" [disabled]="page === 1">
+            <span class="icon-rotate">
+              <app-icon name="arrow-right" [size]="14"></app-icon>
+            </span>
+          </button>
+          <span class="page-count">Page {{ page }} / {{ totalPages }}</span>
+          <button class="btn btn-icon btn-soft" (click)="setPage(page + 1)" [disabled]="page === totalPages">
+            <app-icon name="arrow-right" [size]="14"></app-icon>
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+</app-admin-shell>

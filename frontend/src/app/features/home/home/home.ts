@@ -6,6 +6,8 @@ import { ProjectService } from '../../projects/services/project';
 import { ArticleService } from '../../blog/services/article';
 import { ProjectList } from '../../../core/models/project.model';
 import { ArticleList } from '../../../core/models/article.model';
+import { UserService } from '../../../core/services/user.service';
+import { User } from '../../../core/models/auth.model';
 
 @Component({
   selector: 'app-home',
@@ -17,15 +19,18 @@ import { ArticleList } from '../../../core/models/article.model';
 export class Home implements OnInit {
   featuredProjects: ProjectList[] = [];
   featuredArticles: ArticleList[] = [];
+  profile: User | null = null;
   loading = true;
 
   constructor(
     private projectService: ProjectService,
-    private articleService: ArticleService
+    private articleService: ArticleService,
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
     this.loadFeaturedContent();
+    this.loadProfile();
   }
 
   loadFeaturedContent(): void {
@@ -53,6 +58,17 @@ export class Home implements OnInit {
       },
       error: () => { this.featuredArticles = []; },
       complete: checkDone
+    });
+  }
+
+  loadProfile(): void {
+    this.userService.getPublicProfile().subscribe({
+      next: (profile) => {
+        this.profile = profile;
+      },
+      error: () => {
+        this.profile = null;
+      }
     });
   }
 }

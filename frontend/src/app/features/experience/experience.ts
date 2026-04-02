@@ -17,20 +17,35 @@ export class Experience implements OnInit {
   selectedType: 'all' | 'work' | 'education' | 'certification' = 'all';
   loading = true;
   error: string | null = null;
+  pageSize = 6;
+  page = 1;
 
   constructor(private experienceService: ExperienceService) {}
 
   ngOnInit(): void {
-    this.experienceService.getExperiences().subscribe({
+    this.experienceService.getExperiences({ page_size: 1000 }).subscribe({
       next: (items) => {
         this.experiences = items;
+        this.syncPage();
         this.loading = false;
       },
       error: () => {
-        this.error = 'Impossible de charger les expériences.';
+        this.error = 'Impossible de charger les experiences.';
         this.loading = false;
       }
     });
+  }
+
+  get pagedExperiences(): ExperienceItem[] {
+    return this.paginate(this.filteredExperiences, this.page);
+  }
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredExperiences.length / this.pageSize));
+  }
+
+  setPage(page: number): void {
+    this.page = this.clampPage(page, this.totalPages);
   }
 
   get filteredExperiences(): ExperienceItem[] {
@@ -50,6 +65,7 @@ export class Experience implements OnInit {
 
   setFilter(type: 'all' | 'work' | 'education' | 'certification'): void {
     this.selectedType = type;
+    this.page = 1;
   }
 
   getTypeLabel(type: string): string {
@@ -70,5 +86,22 @@ export class Experience implements OnInit {
       return 'type-education';
     }
     return 'type-certification';
+  }
+
+  private paginate<T>(items: T[], page: number): T[] {
+    const start = (page - 1) * this.pageSize;
+    return items.slice(start, start + this.pageSize);
+  }
+
+  private clampPage(page: number, total: number): number {
+    return Math.min(Math.max(page, 1), total);
+  }
+
+  private syncPage(): void {
+    this.page = this.clampPage(this.page, this.totalPages);
+  }
+
+  trackByExperience(index: number, item: ExperienceItem): number {
+    return item.id ?? index;
   }
 }

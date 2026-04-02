@@ -16,7 +16,8 @@ function isPublicReadRequest(url: string, method: string): boolean {
     url.includes('/api/skill-categories') ||
     url.includes('/api/blog/articles') ||
     url.includes('/api/blog/categories') ||
-    url.includes('/api/blog/tags')
+    url.includes('/api/blog/tags') ||
+    url.includes('/api/users/public_profile')
   );
 }
 

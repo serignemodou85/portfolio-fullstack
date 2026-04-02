@@ -1,6 +1,6 @@
 // src/app/core/services/skill.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
@@ -22,8 +22,15 @@ export class SkillService {
 
   constructor(private http: HttpClient) {}
 
-  getCategories(): Observable<SkillCategory[]> {
-    return this.http.get<SkillCategory[] | PaginatedResponse<SkillCategory>>(`${this.categoriesUrl}/`).pipe(
+  getCategories(options?: { page?: number; page_size?: number }): Observable<SkillCategory[]> {
+    let params = new HttpParams();
+    if (options?.page) {
+      params = params.set('page', String(options.page));
+    }
+    if (options?.page_size) {
+      params = params.set('page_size', String(options.page_size));
+    }
+    return this.http.get<SkillCategory[] | PaginatedResponse<SkillCategory>>(`${this.categoriesUrl}/`, { params }).pipe(
       map((res) => Array.isArray(res) ? res : (res.results ?? []))
     );
   }
@@ -44,8 +51,15 @@ export class SkillService {
     return this.http.delete<void>(`${this.categoriesUrl}/${id}/`);
   }
 
-  getSkills(): Observable<SkillItem[]> {
-    return this.http.get<SkillItem[] | PaginatedResponse<SkillItem>>(`${this.skillsUrl}/`).pipe(
+  getSkills(options?: { page?: number; page_size?: number }): Observable<SkillItem[]> {
+    let params = new HttpParams();
+    if (options?.page) {
+      params = params.set('page', String(options.page));
+    }
+    if (options?.page_size) {
+      params = params.set('page_size', String(options.page_size));
+    }
+    return this.http.get<SkillItem[] | PaginatedResponse<SkillItem>>(`${this.skillsUrl}/`, { params }).pipe(
       map((res) => Array.isArray(res) ? res : (res.results ?? []))
     );
   }

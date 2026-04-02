@@ -6,11 +6,13 @@ import { RouterLink } from '@angular/router';
 import { BlogService } from '../../../core/services/blog.service';
 import { ArticleList } from '../../../core/models/article.model';
 import { BlogCategory, BlogTag } from '../../../core/models/blog.model';
+import { IconComponent } from '../../../shared/components/icon/icon.component';
+import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
 
 @Component({
   selector: 'app-blog-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, IconComponent, AdminShell],
   templateUrl: './blog-admin.html',
   styleUrl: './blog-admin.scss'
 })
@@ -20,6 +22,17 @@ export class BlogAdmin implements OnInit {
   articles: ArticleList[] = [];
   error: string | null = null;
   loading = false;
+  pageSize = 5;
+  pageSizeOptions = [4, 5, 10, 20];
+  categoryPage = 1;
+  tagPage = 1;
+  articlePage = 1;
+  categorySearch = '';
+  tagSearch = '';
+  articleSearch = '';
+  categorySort: 'name_asc' | 'name_desc' = 'name_asc';
+  tagSort: 'name_asc' | 'name_desc' = 'name_asc';
+  articleSort: 'date_desc' | 'date_asc' | 'title_asc' | 'title_desc' = 'date_desc';
 
   editingCategorySlug: string | null = null;
   editingTagSlug: string | null = null;
@@ -50,17 +63,24 @@ export class BlogAdmin implements OnInit {
 
   loadAll(): void {
     this.loading = true;
-    this.blogService.getCategories().subscribe({
-      next: (items) => (this.categories = items),
+    this.blogService.getCategories({ page_size: 1000 }).subscribe({
+      next: (items) => {
+        this.categories = items;
+        this.syncCategoryPage();
+      },
       error: () => (this.error = 'Erreur chargement categories.')
     });
-    this.blogService.getTags().subscribe({
-      next: (items) => (this.tags = items),
+    this.blogService.getTags({ page_size: 1000 }).subscribe({
+      next: (items) => {
+        this.tags = items;
+        this.syncTagPage();
+      },
       error: () => (this.error = 'Erreur chargement tags.')
     });
-    this.blogService.getArticles().subscribe({
+    this.blogService.getArticles({ page_size: 1000 }).subscribe({
       next: (items) => {
         this.articles = items;
+        this.syncArticlePage();
         this.loading = false;
       },
       error: () => {
@@ -68,6 +88,84 @@ export class BlogAdmin implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  get pagedCategories(): BlogCategory[] {
+    return this.paginate(this.processedCategories, this.categoryPage);
+  }
+
+  get pagedTags(): BlogTag[] {
+    return this.paginate(this.processedTags, this.tagPage);
+  }
+
+  get pagedArticles(): ArticleList[] {
+    return this.paginate(this.processedArticles, this.articlePage);
+  }
+
+  get categoryTotalPages(): number {
+    return Math.max(1, Math.ceil(this.processedCategories.length / this.pageSize));
+  }
+
+  get tagTotalPages(): number {
+    return Math.max(1, Math.ceil(this.processedTags.length / this.pageSize));
+  }
+
+  get articleTotalPages(): number {
+    return Math.max(1, Math.ceil(this.processedArticles.length / this.pageSize));
+  }
+
+  setCategoryPage(page: number): void {
+    this.categoryPage = this.clampPage(page, this.categoryTotalPages);
+  }
+
+  setTagPage(page: number): void {
+    this.tagPage = this.clampPage(page, this.tagTotalPages);
+  }
+
+  setArticlePage(page: number): void {
+    this.articlePage = this.clampPage(page, this.articleTotalPages);
+  }
+
+  setPageSize(size: number): void {
+    this.pageSize = size;
+    this.syncCategoryPage();
+    this.syncTagPage();
+    this.syncArticlePage();
+  }
+
+  get processedCategories(): BlogCategory[] {
+    const query = this.categorySearch.trim().toLowerCase();
+    let items = this.categories;
+    if (query) {
+      items = items.filter((cat) =>
+        [cat.name, cat.slug, cat.description].filter(Boolean).some((v) => String(v).toLowerCase().includes(query))
+      );
+    }
+    return this.sortCategories(items);
+  }
+
+  get processedTags(): BlogTag[] {
+    const query = this.tagSearch.trim().toLowerCase();
+    let items = this.tags;
+    if (query) {
+      items = items.filter((tag) =>
+        [tag.name, tag.slug].filter(Boolean).some((v) => String(v).toLowerCase().includes(query))
+      );
+    }
+    return this.sortTags(items);
+  }
+
+  get processedArticles(): ArticleList[] {
+    const query = this.articleSearch.trim().toLowerCase();
+    let items = this.articles;
+    if (query) {
+      items = items.filter((article) =>
+        [article.title, article.excerpt, article.category_name]
+          .filter(Boolean)
+          .some((v) => String(v).toLowerCase().includes(query))
+      );
+    }
+    return this.sortArticles(items);
   }
 
   submitCategory(): void {
@@ -260,5 +358,73 @@ export class BlogAdmin implements OnInit {
     const offset = date.getTimezoneOffset();
     const localDate = new Date(date.getTime() - (offset * 60000));
     return localDate.toISOString().slice(0, 16);
+  }
+
+  private paginate<T>(items: T[], page: number): T[] {
+    const start = (page - 1) * this.pageSize;
+    return items.slice(start, start + this.pageSize);
+  }
+
+  private clampPage(page: number, total: number): number {
+    return Math.min(Math.max(page, 1), total);
+  }
+
+  private syncCategoryPage(): void {
+    this.categoryPage = this.clampPage(this.categoryPage, this.categoryTotalPages);
+  }
+
+  private syncTagPage(): void {
+    this.tagPage = this.clampPage(this.tagPage, this.tagTotalPages);
+  }
+
+  private syncArticlePage(): void {
+    this.articlePage = this.clampPage(this.articlePage, this.articleTotalPages);
+  }
+
+  private sortCategories(items: BlogCategory[]): BlogCategory[] {
+    return [...items].sort((a, b) => {
+      if (this.categorySort === 'name_desc') {
+        return b.name.localeCompare(a.name);
+      }
+      return a.name.localeCompare(b.name);
+    });
+  }
+
+  private sortTags(items: BlogTag[]): BlogTag[] {
+    return [...items].sort((a, b) => {
+      if (this.tagSort === 'name_desc') {
+        return b.name.localeCompare(a.name);
+      }
+      return a.name.localeCompare(b.name);
+    });
+  }
+
+  private sortArticles(items: ArticleList[]): ArticleList[] {
+    return [...items].sort((a, b) => {
+      if (this.articleSort === 'title_asc') {
+        return a.title.localeCompare(b.title);
+      }
+      if (this.articleSort === 'title_desc') {
+        return b.title.localeCompare(a.title);
+      }
+      const dateA = new Date(a.published_at || a.created_at || '').getTime();
+      const dateB = new Date(b.published_at || b.created_at || '').getTime();
+      if (this.articleSort === 'date_asc') {
+        return dateA - dateB;
+      }
+      return dateB - dateA;
+    });
+  }
+
+  trackByCategory(index: number, item: BlogCategory): string {
+    return item.slug || `${index}`;
+  }
+
+  trackByTag(index: number, item: BlogTag): string {
+    return item.slug || `${index}`;
+  }
+
+  trackByArticle(index: number, item: ArticleList): string {
+    return item.slug || `${index}`;
   }
 }

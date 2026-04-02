@@ -8,9 +8,6 @@
       </div>
       <a routerLink="/contact" class="btn btn-outline">Proposer une mission</a>
     </header>
-    <!--Stats row je veux paginner mon tableau pour afficher tous les elements (formations et experiences) -->
-    
-
     <section class="stats-row fade-up" *ngIf="!loading && !error">
       <article class="stat-box">
         <p class="label">Total</p>
@@ -41,7 +38,7 @@
     </section>
 
     <div class="timeline" *ngIf="!loading && !error">
-      <article class="timeline-item fade-up" *ngFor="let exp of filteredExperiences">
+      <article class="timeline-item fade-up" *ngFor="let exp of pagedExperiences; trackBy: trackByExperience">
         <div class="marker">
           <span [class]="getTypeClass(exp.type)">{{ getTypeLabel(exp.type) }}</span>
         </div>
@@ -75,6 +72,12 @@
           <p class="description">{{ exp.description }}</p>
         </div>
       </article>
+    </div>
+
+    <div class="pagination" *ngIf="!loading && !error && totalPages > 1">
+      <button class="page-btn" (click)="setPage(page - 1)" [disabled]="page === 1">Precedent</button>
+      <span class="page-count">Page {{ page }} / {{ totalPages }}</span>
+      <button class="page-btn" (click)="setPage(page + 1)" [disabled]="page === totalPages">Suivant</button>
     </div>
 
     <div class="empty-state" *ngIf="!loading && !error && !filteredExperiences.length">

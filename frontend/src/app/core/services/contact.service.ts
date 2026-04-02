@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
@@ -20,9 +20,16 @@ export class ContactService {
 
   constructor(private http: HttpClient) {}
 
-  getMessages(): Observable<ContactMessage[]> {
+  getMessages(options?: { page?: number; page_size?: number }): Observable<ContactMessage[]> {
+    let params = new HttpParams();
+    if (options?.page) {
+      params = params.set('page', String(options.page));
+    }
+    if (options?.page_size) {
+      params = params.set('page_size', String(options.page_size));
+    }
     return this.http
-      .get<ContactMessage[] | PaginatedResponse<ContactMessage>>(`${this.apiUrl}/`)
+      .get<ContactMessage[] | PaginatedResponse<ContactMessage>>(`${this.apiUrl}/`, { params })
       .pipe(map((res) => (Array.isArray(res) ? res : (res.results ?? []))));
   }
 

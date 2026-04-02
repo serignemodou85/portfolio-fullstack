@@ -1,0 +1,106 @@
+<app-admin-shell>
+  <div class="admin-page">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Admin profile</p>
+        <h1>Mon profil</h1>
+        <p class="subtitle">Mettez a jour vos informations et la photo affichee sur la page d'accueil.</p>
+      </div>
+      <a routerLink="/admin/dashboard" class="btn btn-outline">Retour dashboard</a>
+    </header>
+
+    <section class="panel" *ngIf="!loading; else loadingState">
+      <div class="panel-head">
+        <h2>Informations publiques</h2>
+      </div>
+
+      <form (ngSubmit)="submit()">
+        <div class="profile-grid">
+          <div class="profile-card">
+            <div class="avatar">
+              <img *ngIf="previewUrl; else placeholder" [src]="previewUrl" alt="Profil" />
+              <ng-template #placeholder>
+                <div class="avatar-placeholder">Photo</div>
+              </ng-template>
+            </div>
+            <label class="btn btn-soft" for="profile_image">Changer la photo</label>
+            <input id="profile_image" type="file" accept="image/*" (change)="onImageSelected($event)" />
+            <p class="hint">Image affichee sur la page d'accueil.</p>
+          </div>
+
+          <div class="profile-form">
+            <div class="grid two">
+              <div class="field">
+                <label for="first_name">Prenom</label>
+                <input id="first_name" type="text" [(ngModel)]="formData.first_name" name="first_name" autocomplete="given-name" />
+              </div>
+              <div class="field">
+                <label for="last_name">Nom</label>
+                <input id="last_name" type="text" [(ngModel)]="formData.last_name" name="last_name" autocomplete="family-name" />
+              </div>
+            </div>
+
+            <div class="grid two">
+              <div class="field">
+                <label for="email">Email</label>
+                <input id="email" type="email" [(ngModel)]="formData.email" name="email" autocomplete="email" />
+              </div>
+              <div class="field">
+                <label for="phone">Telephone</label>
+                <input id="phone" type="text" [(ngModel)]="formData.phone" name="phone" autocomplete="tel" />
+              </div>
+            </div>
+
+            <div class="grid two">
+              <div class="field">
+                <label for="location">Localisation</label>
+                <input id="location" type="text" [(ngModel)]="formData.location" name="location" autocomplete="address-level2" />
+              </div>
+              <div class="field">
+                <label for="website">Site web</label>
+                <input id="website" type="url" [(ngModel)]="formData.website_url" name="website_url" autocomplete="url" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="bio">Bio courte</label>
+              <textarea id="bio" rows="3" [(ngModel)]="formData.bio" name="bio" autocomplete="off"></textarea>
+            </div>
+
+            <div class="grid two">
+              <div class="field">
+                <label for="github">GitHub</label>
+                <input id="github" type="url" [(ngModel)]="formData.github_url" name="github_url" autocomplete="url" />
+              </div>
+              <div class="field">
+                <label for="linkedin">LinkedIn</label>
+                <input id="linkedin" type="url" [(ngModel)]="formData.linkedin_url" name="linkedin_url" autocomplete="url" />
+              </div>
+            </div>
+
+            <div class="grid two">
+              <div class="field">
+                <label for="twitter">Twitter</label>
+                <input id="twitter" type="url" [(ngModel)]="formData.twitter_url" name="twitter_url" autocomplete="url" />
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn btn-primary" type="submit" [disabled]="saving">Enregistrer</button>
+              <button class="btn btn-soft" type="button" (click)="loadProfile()">Recharger</button>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <p *ngIf="error" class="error">{{ error }}</p>
+      <p *ngIf="success" class="success">{{ success }}</p>
+    </section>
+
+    <ng-template #loadingState>
+      <div class="panel">
+        <div class="empty-state">Chargement du profil...</div>
+      </div>
+    </ng-template>
+  </div>
+</app-admin-shell>

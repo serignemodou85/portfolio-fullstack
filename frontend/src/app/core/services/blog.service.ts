@@ -1,7 +1,8 @@
 // src/app/core/services/blog.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { ArticleList, ArticleDetail } from '../models/article.model';
 import { BlogCategory, BlogTag } from '../models/blog.model';
@@ -16,8 +17,17 @@ export class BlogService {
 
   constructor(private http: HttpClient) {}
 
-  getCategories(): Observable<BlogCategory[]> {
-    return this.http.get<BlogCategory[]>(`${this.categoriesUrl}/`);
+  getCategories(options?: { page?: number; page_size?: number }): Observable<BlogCategory[]> {
+    let params = new HttpParams();
+    if (options?.page) {
+      params = params.set('page', String(options.page));
+    }
+    if (options?.page_size) {
+      params = params.set('page_size', String(options.page_size));
+    }
+    return this.http.get<BlogCategory[] | PaginatedResponse<BlogCategory>>(`${this.categoriesUrl}/`, { params }).pipe(
+      map((res) => Array.isArray(res) ? res : (res.results ?? []))
+    );
   }
 
   createCategory(payload: Partial<BlogCategory>): Observable<BlogCategory> {
@@ -32,8 +42,17 @@ export class BlogService {
     return this.http.delete<void>(`${this.categoriesUrl}/${slug}/`);
   }
 
-  getTags(): Observable<BlogTag[]> {
-    return this.http.get<BlogTag[]>(`${this.tagsUrl}/`);
+  getTags(options?: { page?: number; page_size?: number }): Observable<BlogTag[]> {
+    let params = new HttpParams();
+    if (options?.page) {
+      params = params.set('page', String(options.page));
+    }
+    if (options?.page_size) {
+      params = params.set('page_size', String(options.page_size));
+    }
+    return this.http.get<BlogTag[] | PaginatedResponse<BlogTag>>(`${this.tagsUrl}/`, { params }).pipe(
+      map((res) => Array.isArray(res) ? res : (res.results ?? []))
+    );
   }
 
   createTag(payload: Partial<BlogTag>): Observable<BlogTag> {
@@ -48,8 +67,17 @@ export class BlogService {
     return this.http.delete<void>(`${this.tagsUrl}/${slug}/`);
   }
 
-  getArticles(): Observable<ArticleList[]> {
-    return this.http.get<ArticleList[]>(`${this.articlesUrl}/`);
+  getArticles(options?: { page?: number; page_size?: number }): Observable<ArticleList[]> {
+    let params = new HttpParams();
+    if (options?.page) {
+      params = params.set('page', String(options.page));
+    }
+    if (options?.page_size) {
+      params = params.set('page_size', String(options.page_size));
+    }
+    return this.http.get<ArticleList[] | PaginatedResponse<ArticleList>>(`${this.articlesUrl}/`, { params }).pipe(
+      map((res) => Array.isArray(res) ? res : (res.results ?? []))
+    );
   }
 
   getArticle(slug: string): Observable<ArticleDetail> {
@@ -71,4 +99,11 @@ export class BlogService {
   deleteArticle(slug: string): Observable<void> {
     return this.http.delete<void>(`${this.articlesUrl}/${slug}/`);
   }
+}
+
+interface PaginatedResponse<T> {
+  count?: number;
+  next?: string | null;
+  previous?: string | null;
+  results: T[];
 }

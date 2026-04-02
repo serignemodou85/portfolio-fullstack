@@ -7,10 +7,7 @@
   --primary: #1d4ed8;
   --primary-soft: #e0ebff;
   --danger: #dc2626;
-  min-height: 100vh;
-  background: var(--bg);
   color: var(--text);
-  padding: 2.2rem;
 }
 
 .page-header {
@@ -124,6 +121,10 @@ form {
   gap: 0.35rem;
 }
 
+.field.inline {
+  gap: 0.25rem;
+}
+
 .field label {
   font-size: 0.76rem;
   text-transform: uppercase;
@@ -209,6 +210,18 @@ select:focus {
   border: 1px solid var(--line);
   border-radius: 14px;
   overflow: auto;
+}
+
+.table-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+  align-items: flex-end;
+}
+
+.table-tools .field {
+  min-width: 180px;
 }
 
 .data-table {
@@ -300,6 +313,15 @@ select:focus {
   text-decoration: none;
 }
 
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .btn-primary {
   background: var(--primary);
   color: #fff;
@@ -317,6 +339,28 @@ select:focus {
   border-color: #fecdd3;
 }
 
+.table-footer {
+  margin-top: 0.8rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.page-count {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.icon-rotate {
+  display: inline-flex;
+  transform: rotate(180deg);
+}
+
 .error {
   color: #b91c1c;
   margin-top: 0.6rem;
@@ -332,10 +376,6 @@ select:focus {
 }
 
 @media (max-width: 900px) {
-  .admin-page {
-    padding: 1rem;
-  }
-
   .page-header {
     flex-direction: column;
     align-items: flex-start;
@@ -350,3 +390,4 @@ select:focus {
     grid-template-columns: 1fr;
   }
 }
+

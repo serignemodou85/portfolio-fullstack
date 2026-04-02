@@ -22,13 +22,19 @@ export class ProjectService {
 
   constructor(private http: HttpClient) {}
 
-  getProjects(filters?: { status?: string; is_featured?: boolean }): Observable<ProjectList[]> {
+  getProjects(filters?: { status?: string; is_featured?: boolean; page?: number; page_size?: number }): Observable<ProjectList[]> {
     let params = new HttpParams();
     if (filters?.status) {
       params = params.set('status', filters.status);
     }
     if (filters?.is_featured !== undefined) {
       params = params.set('is_featured', filters.is_featured.toString());
+    }
+    if (filters?.page) {
+      params = params.set('page', String(filters.page));
+    }
+    if (filters?.page_size) {
+      params = params.set('page_size', String(filters.page_size));
     }
     return this.http.get<ProjectList[] | PaginatedResponse<ProjectList>>(this.apiUrl, { params }).pipe(
       map((res) => Array.isArray(res) ? res : (res.results ?? []))

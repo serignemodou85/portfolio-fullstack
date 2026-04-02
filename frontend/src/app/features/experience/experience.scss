@@ -237,6 +237,36 @@
   line-height: 1.65;
 }
 
+.pagination {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.page-btn {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #0f172a;
+  border-radius: 999px;
+  padding: 0.42rem 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.page-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.page-count {
+  font-size: 0.85rem;
+  color: #475569;
+  font-weight: 600;
+}
+
 .empty-state {
   border: 1px dashed #cbd5e1;
   border-radius: 14px;

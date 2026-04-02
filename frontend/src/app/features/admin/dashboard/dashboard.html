@@ -1,21 +1,23 @@
-<div class="dashboard">
-  <header class="topbar">
-    <div>
-      <p class="eyebrow">Modou Fall</p>
-      <h1>Tableau de bord</h1>
-      <p class="subtitle" *ngIf="currentUser">
-        {{ currentUser.first_name || currentUser.username }}
-      </p>
-    </div>
+<app-admin-shell>
+  <main class="dashboard">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Bienvenue Serigne Modou Dans ton espace administrateur</p>
+        <h1>Tableau de bord</h1>
+        <p class="subtitle" *ngIf="currentUser">
+          {{ currentUser.first_name || currentUser.username }}
+        </p>
+      </div>
 
-    <div class="topbar-actions">
-      <a routerLink="/admin/projects/new" class="btn btn-primary">
-        <app-icon name="plus" [size]="16"></app-icon>
-      </a>
-      <button class="btn btn-outline" (click)="logout()">Deconnexion</button>
-    </div>
+      <div class="topbar-actions">
+        <a routerLink="/admin/profile" class="btn btn-outline">
+          <app-icon name="user" [size]="16"></app-icon>
+          <span>Profil</span>
+        </a>
+        <button class="btn btn-outline" (click)="logout()">Deconnexion</button>
+      </div>
 
-  </header>
+    </header>
 
   <section class="kpi-grid">
     <article class="kpi-card">
@@ -57,41 +59,22 @@
 
   <section class="panel">
     <div class="panel-head">
-      <h2>Gestion du contenu</h2>
+      <h2>Resume rapide</h2>
+      <span class="panel-meta">Vue globale de l'activite</span>
     </div>
-
-    <div class="content-grid">
-      <a routerLink="/admin/projects/new" class="content-card">
-        <div class="content-card-head">
-          <app-icon name="file" [size]="16"></app-icon>
-        </div>
-        <p class="content-card-title">Projets</p>
-        <p class="content-card-text">Creation, edition, archivage</p>
-      </a>
-
-      <a routerLink="/admin/blog" class="content-card">
-        <div class="content-card-head">
-          <app-icon name="edit" [size]="16"></app-icon>
-        </div>
-        <p class="content-card-title">Blog</p>
-        <p class="content-card-text">Articles, categories, tags</p>
-      </a>
-
-      <a routerLink="/admin/experiences" class="content-card">
-        <div class="content-card-head">
-          <app-icon name="user" [size]="16"></app-icon>
-        </div>
-        <p class="content-card-title">Experiences</p>
-        <p class="content-card-text">Parcours et formations</p>
-      </a>
-
-      <a routerLink="/admin/skills" class="content-card">
-        <div class="content-card-head">
-          <app-icon name="settings" [size]="16"></app-icon>
-        </div>
-        <p class="content-card-title">Competences</p>
-        <p class="content-card-text">Skills et niveaux</p>
-      </a>
+    <div class="summary-grid">
+      <div class="summary-card">
+        <p class="summary-title">Projets actifs</p>
+        <p class="summary-value">{{ stats.activeProjects || 0 }}</p>
+      </div>
+      <div class="summary-card">
+        <p class="summary-title">Articles publies</p>
+        <p class="summary-value">{{ stats.totalArticles }}</p>
+      </div>
+      <div class="summary-card">
+        <p class="summary-title">Messages non lus</p>
+        <p class="summary-value">{{ stats.unreadMessages || 0 }}</p>
+      </div>
     </div>
   </section>
 
@@ -99,7 +82,7 @@
     <div class="panel-head">
       <h2>Projets actifs</h2>
       <div class="panel-head-actions">
-        <span class="panel-meta">{{ recentProjects.length }} affiches</span>
+        <span class="panel-meta">{{ processedProjects.length }} affiches</span>
         <a routerLink="/admin/projects/archives" class="btn btn-outline">
           <app-icon name="archive" [size]="16"></app-icon>
           <span>Voir archives</span>
@@ -107,7 +90,28 @@
       </div>
     </div>
 
-    <div class="table-wrap" *ngIf="recentProjects.length; else emptyActive">
+    <div class="table-wrap" *ngIf="processedProjects.length; else emptyActive">
+      <div class="table-tools">
+        <div class="field inline">
+          <label for="project_search">Recherche</label>
+          <input id="project_search" type="search" [(ngModel)]="projectSearch" name="project_search" placeholder="Titre, techno..." />
+        </div>
+        <div class="field inline">
+          <label for="project_sort">Tri</label>
+          <select id="project_sort" [(ngModel)]="projectSort" name="project_sort">
+            <option value="updated_desc">Maj recente</option>
+            <option value="updated_asc">Maj ancienne</option>
+            <option value="title_asc">Titre A-Z</option>
+            <option value="title_desc">Titre Z-A</option>
+          </select>
+        </div>
+        <div class="field inline">
+          <label for="project_page_size">Par page</label>
+          <select id="project_page_size" [(ngModel)]="pageSize" name="project_page_size" (ngModelChange)="setPageSize($event)">
+            <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+          </select>
+        </div>
+      </div>
       <table class="project-table">
         <thead>
           <tr>
@@ -119,7 +123,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let project of recentProjects">
+          <tr *ngFor="let project of pagedProjects; trackBy: trackByProject">
             <td>
               <div class="project-cell">
                 <img [src]="project.thumbnail" alt="thumbnail" />
@@ -156,6 +160,20 @@
       </table>
     </div>
 
+    <div class="table-footer" *ngIf="projectTotalPages > 1">
+      <div class="pagination">
+        <button class="btn btn-icon btn-soft" (click)="setProjectPage(projectPage - 1)" [disabled]="projectPage === 1">
+          <span class="icon-rotate">
+            <app-icon name="arrow-right" [size]="14"></app-icon>
+          </span>
+        </button>
+        <span class="page-count">Page {{ projectPage }} / {{ projectTotalPages }}</span>
+        <button class="btn btn-icon btn-soft" (click)="setProjectPage(projectPage + 1)" [disabled]="projectPage === projectTotalPages">
+          <app-icon name="arrow-right" [size]="14"></app-icon>
+        </button>
+      </div>
+    </div>
+
     <ng-template #emptyActive>
       <div class="empty-state">Aucun projet actif.</div>
     </ng-template>
@@ -164,10 +182,31 @@
   <section class="panel">
     <div class="panel-head">
       <h2>Messages recents</h2>
-      <span class="panel-meta">{{ recentMessages.length }} affiches</span>
+      <span class="panel-meta">{{ processedMessages.length }} affiches</span>
     </div>
 
-    <div class="table-wrap" *ngIf="!loadingMessages && !messagesError && recentMessages.length; else messageState">
+    <div class="table-wrap" *ngIf="!loadingMessages && !messagesError && processedMessages.length; else messageState">
+      <div class="table-tools">
+        <div class="field inline">
+          <label for="message_search">Recherche</label>
+          <input id="message_search" type="search" [(ngModel)]="messageSearch" name="message_search" placeholder="Nom, email..." />
+        </div>
+        <div class="field inline">
+          <label for="message_sort">Tri</label>
+          <select id="message_sort" [(ngModel)]="messageSort" name="message_sort">
+            <option value="date_desc">Date recente</option>
+            <option value="date_asc">Date ancienne</option>
+            <option value="name_asc">Nom A-Z</option>
+            <option value="name_desc">Nom Z-A</option>
+          </select>
+        </div>
+        <div class="field inline">
+          <label for="message_page_size">Par page</label>
+          <select id="message_page_size" [(ngModel)]="pageSize" name="message_page_size" (ngModelChange)="setPageSize($event)">
+            <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+          </select>
+        </div>
+      </div>
       <table class="project-table messages-table">
         <thead>
           <tr>
@@ -179,7 +218,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let message of recentMessages">
+          <tr *ngFor="let message of pagedMessages; trackBy: trackByMessage">
             <td>
               <div class="contact-cell">
                 <p class="project-name">{{ message.name }}</p>
@@ -214,6 +253,20 @@
       </table>
     </div>
 
+    <div class="table-footer" *ngIf="!loadingMessages && !messagesError && messageTotalPages > 1">
+      <div class="pagination">
+        <button class="btn btn-icon btn-soft" (click)="setMessagePage(messagePage - 1)" [disabled]="messagePage === 1">
+          <span class="icon-rotate">
+            <app-icon name="arrow-right" [size]="14"></app-icon>
+          </span>
+        </button>
+        <span class="page-count">Page {{ messagePage }} / {{ messageTotalPages }}</span>
+        <button class="btn btn-icon btn-soft" (click)="setMessagePage(messagePage + 1)" [disabled]="messagePage === messageTotalPages">
+          <app-icon name="arrow-right" [size]="14"></app-icon>
+        </button>
+      </div>
+    </div>
+
     <ng-template #messageState>
       <div class="empty-state" *ngIf="loadingMessages">Chargement des messages...</div>
       <div class="empty-state" *ngIf="!loadingMessages && messagesError">{{ messagesError }}</div>
@@ -222,5 +275,5 @@
       </div>
     </ng-template>
   </section>
-  
-</div>
+  </main>
+</app-admin-shell>

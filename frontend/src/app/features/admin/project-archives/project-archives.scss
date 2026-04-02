@@ -1,14 +1,10 @@
-﻿.archives-page {
-  --bg: #f5f7fb;
+.archives-page {
   --panel: #ffffff;
   --line: #e5e7eb;
   --text: #111827;
   --muted: #6b7280;
   --primary: #2563eb;
-  min-height: 100vh;
-  background: var(--bg);
   color: var(--text);
-  padding: 2rem;
 }
 
 .page-header {
@@ -63,6 +59,37 @@
 .panel-meta {
   color: var(--muted);
   font-size: 0.84rem;
+}
+
+.table-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+  align-items: flex-end;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field.inline {
+  gap: 0.25rem;
+}
+
+.table-tools .field {
+  min-width: 180px;
+}
+
+input,
+select {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.9rem;
+  background: #fff;
 }
 
 .table-wrap {
@@ -145,6 +172,15 @@
   gap: 0.38rem;
 }
 
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .btn-primary {
   background: var(--primary);
   color: #fff;
@@ -171,6 +207,28 @@
   transform: rotate(180deg);
 }
 
+.table-footer {
+  margin-top: 0.8rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.page-count {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.icon-rotate {
+  display: inline-flex;
+  transform: rotate(180deg);
+}
+
 .loading-state,
 .error-state,
 .empty-state {
@@ -190,12 +248,9 @@
 }
 
 @media (max-width: 900px) {
-  .archives-page {
-    padding: 1rem;
-  }
-
   .page-header {
     flex-direction: column;
     align-items: flex-start;
   }
 }
+

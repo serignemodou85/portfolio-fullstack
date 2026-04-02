@@ -1,265 +1,378 @@
-<div class="admin-page">
-  <header class="page-header">
-    <div>
-      <p class="eyebrow">Admin content</p>
-      <h1>Blog manager</h1>
-      <p class="subtitle">Articles, categories et tags avec workflow editorial complet.</p>
+<app-admin-shell>
+  <div class="admin-page">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Admin content</p>
+        <h1>Blog manager</h1>
+        <p class="subtitle">Articles, categories et tags avec workflow editorial complet.</p>
+      </div>
+      <a routerLink="/admin/dashboard" class="btn btn-outline">Retour dashboard</a>
+    </header>
+
+    <section class="stats-strip">
+      <article class="stat-card">
+        <p class="stat-label">Articles</p>
+        <p class="stat-value">{{ articles.length }}</p>
+      </article>
+      <article class="stat-card">
+        <p class="stat-label">Categories</p>
+        <p class="stat-value">{{ categories.length }}</p>
+      </article>
+      <article class="stat-card">
+        <p class="stat-label">Tags</p>
+        <p class="stat-value">{{ tags.length }}</p>
+      </article>
+    </section>
+
+    <div class="layout-small">
+      <section class="panel">
+        <div class="panel-head">
+          <h2>{{ editingCategorySlug ? 'Modifier categorie' : 'Nouvelle categorie' }}</h2>
+        </div>
+        <form (ngSubmit)="submitCategory()">
+          <div class="field">
+            <label>Nom</label>
+            <input type="text" [(ngModel)]="categoryForm.name" name="cat_name" required />
+          </div>
+          <div class="field">
+            <label>Slug</label>
+            <input type="text" [(ngModel)]="categoryForm.slug" name="cat_slug" />
+          </div>
+          <div class="field">
+            <label>Description</label>
+            <textarea [(ngModel)]="categoryForm.description" name="cat_desc" rows="3"></textarea>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" type="submit">
+              {{ editingCategorySlug ? 'Mettre a jour' : 'Creer' }}
+            </button>
+            <button class="btn btn-soft" type="button" (click)="resetCategory()">Annuler</button>
+          </div>
+        </form>
+        <div class="table-wrap" *ngIf="processedCategories.length; else emptyCategories">
+          <div class="table-tools">
+            <div class="field inline">
+              <label for="blog_cat_search">Recherche</label>
+              <input id="blog_cat_search" type="search" [(ngModel)]="categorySearch" name="blog_cat_search" placeholder="Nom, slug..." />
+            </div>
+            <div class="field inline">
+              <label for="blog_cat_sort">Tri</label>
+              <select id="blog_cat_sort" [(ngModel)]="categorySort" name="blog_cat_sort">
+                <option value="name_asc">Nom A-Z</option>
+                <option value="name_desc">Nom Z-A</option>
+              </select>
+            </div>
+            <div class="field inline">
+              <label for="blog_cat_page_size">Par page</label>
+              <select id="blog_cat_page_size" [(ngModel)]="pageSize" name="blog_cat_page_size" (ngModelChange)="setPageSize($event)">
+                <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+              </select>
+            </div>
+          </div>
+          <table class="data-table compact">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Slug</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cat of pagedCategories; trackBy: trackByCategory">
+                <td><p class="cell-title">{{ cat.name }}</p></td>
+                <td>{{ cat.slug }}</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="btn btn-icon btn-soft" (click)="editCategory(cat)" title="Editer">
+                      <app-icon name="edit" [size]="16"></app-icon>
+                    </button>
+                    <button class="btn btn-icon btn-danger" (click)="deleteCategory(cat)" title="Supprimer">
+                      <app-icon name="trash" [size]="16"></app-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-footer" *ngIf="categoryTotalPages > 1">
+          <div class="pagination">
+            <button class="btn btn-icon btn-soft" (click)="setCategoryPage(categoryPage - 1)" [disabled]="categoryPage === 1">
+              <span class="icon-rotate">
+                <app-icon name="arrow-right" [size]="14"></app-icon>
+              </span>
+            </button>
+            <span class="page-count">Page {{ categoryPage }} / {{ categoryTotalPages }}</span>
+            <button class="btn btn-icon btn-soft" (click)="setCategoryPage(categoryPage + 1)" [disabled]="categoryPage === categoryTotalPages">
+              <app-icon name="arrow-right" [size]="14"></app-icon>
+            </button>
+          </div>
+        </div>
+        <ng-template #emptyCategories>
+          <div class="empty-state">Aucune categorie.</div>
+        </ng-template>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>{{ editingTagSlug ? 'Modifier tag' : 'Nouveau tag' }}</h2>
+        </div>
+        <form (ngSubmit)="submitTag()">
+          <div class="field">
+            <label>Nom</label>
+            <input type="text" [(ngModel)]="tagForm.name" name="tag_name" required />
+          </div>
+          <div class="field">
+            <label>Slug</label>
+            <input type="text" [(ngModel)]="tagForm.slug" name="tag_slug" />
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" type="submit">
+              {{ editingTagSlug ? 'Mettre a jour' : 'Creer' }}
+            </button>
+            <button class="btn btn-soft" type="button" (click)="resetTag()">Annuler</button>
+          </div>
+        </form>
+        <div class="table-wrap" *ngIf="processedTags.length; else emptyTags">
+          <div class="table-tools">
+            <div class="field inline">
+              <label for="blog_tag_search">Recherche</label>
+              <input id="blog_tag_search" type="search" [(ngModel)]="tagSearch" name="blog_tag_search" placeholder="Nom, slug..." />
+            </div>
+            <div class="field inline">
+              <label for="blog_tag_sort">Tri</label>
+              <select id="blog_tag_sort" [(ngModel)]="tagSort" name="blog_tag_sort">
+                <option value="name_asc">Nom A-Z</option>
+                <option value="name_desc">Nom Z-A</option>
+              </select>
+            </div>
+            <div class="field inline">
+              <label for="blog_tag_page_size">Par page</label>
+              <select id="blog_tag_page_size" [(ngModel)]="pageSize" name="blog_tag_page_size" (ngModelChange)="setPageSize($event)">
+                <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+              </select>
+            </div>
+          </div>
+          <table class="data-table compact">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Slug</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let tag of pagedTags; trackBy: trackByTag">
+                <td><p class="cell-title">{{ tag.name }}</p></td>
+                <td>{{ tag.slug }}</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="btn btn-icon btn-soft" (click)="editTag(tag)" title="Editer">
+                      <app-icon name="edit" [size]="16"></app-icon>
+                    </button>
+                    <button class="btn btn-icon btn-danger" (click)="deleteTag(tag)" title="Supprimer">
+                      <app-icon name="trash" [size]="16"></app-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-footer" *ngIf="tagTotalPages > 1">
+          <div class="pagination">
+            <button class="btn btn-icon btn-soft" (click)="setTagPage(tagPage - 1)" [disabled]="tagPage === 1">
+              <span class="icon-rotate">
+                <app-icon name="arrow-right" [size]="14"></app-icon>
+              </span>
+            </button>
+            <span class="page-count">Page {{ tagPage }} / {{ tagTotalPages }}</span>
+            <button class="btn btn-icon btn-soft" (click)="setTagPage(tagPage + 1)" [disabled]="tagPage === tagTotalPages">
+              <app-icon name="arrow-right" [size]="14"></app-icon>
+            </button>
+          </div>
+        </div>
+        <ng-template #emptyTags>
+          <div class="empty-state">Aucun tag.</div>
+        </ng-template>
+      </section>
     </div>
-    <a routerLink="/admin/dashboard" class="btn btn-outline">Retour dashboard</a>
-  </header>
 
-  <section class="stats-strip">
-    <article class="stat-card">
-      <p class="stat-label">Articles</p>
-      <p class="stat-value">{{ articles.length }}</p>
-    </article>
-    <article class="stat-card">
-      <p class="stat-label">Categories</p>
-      <p class="stat-value">{{ categories.length }}</p>
-    </article>
-    <article class="stat-card">
-      <p class="stat-label">Tags</p>
-      <p class="stat-value">{{ tags.length }}</p>
-    </article>
-  </section>
-
-  <div class="layout-small">
     <section class="panel">
       <div class="panel-head">
-        <h2>{{ editingCategorySlug ? 'Modifier categorie' : 'Nouvelle categorie' }}</h2>
+        <h2>{{ editingArticleSlug ? 'Modifier article' : 'Nouvel article' }}</h2>
+        <span class="panel-meta">Tous les champs editables du modele `Article`</span>
       </div>
-      <form (ngSubmit)="submitCategory()">
-        <div class="field">
-          <label>Nom</label>
-          <input type="text" [(ngModel)]="categoryForm.name" name="cat_name" required />
+
+      <form (ngSubmit)="submitArticle()">
+        <div class="grid two">
+          <div class="field">
+            <label>Titre</label>
+            <input type="text" [(ngModel)]="articleForm.title" name="art_title" required />
+          </div>
+          <div class="field">
+            <label>Slug</label>
+            <input type="text" [(ngModel)]="articleForm.slug" name="art_slug" />
+          </div>
         </div>
+
         <div class="field">
-          <label>Slug</label>
-          <input type="text" [(ngModel)]="categoryForm.slug" name="cat_slug" />
+          <label>Extrait</label>
+          <textarea [(ngModel)]="articleForm.excerpt" name="art_excerpt" rows="3"></textarea>
         </div>
+
         <div class="field">
-          <label>Description</label>
-          <textarea [(ngModel)]="categoryForm.description" name="cat_desc" rows="3"></textarea>
+          <label>Contenu</label>
+          <textarea [(ngModel)]="articleForm.content" name="art_content" rows="7"></textarea>
         </div>
+
+        <div class="grid three">
+          <div class="field">
+            <label>Categorie</label>
+            <select [(ngModel)]="articleForm.category" name="art_category">
+              <option value="">Aucune</option>
+              <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Statut</label>
+            <select [(ngModel)]="articleForm.status" name="art_status">
+              <option value="draft">Brouillon</option>
+              <option value="published">Publie</option>
+              <option value="archived">Archive</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Lecture (min)</label>
+            <input type="number" [(ngModel)]="articleForm.reading_time" name="art_time" min="1" />
+          </div>
+        </div>
+
+        <div class="grid two">
+          <div class="field">
+            <label>Date de publication</label>
+            <input type="datetime-local" [(ngModel)]="articleForm.published_at" name="art_published" />
+          </div>
+          <div class="field">
+            <label>Image de couverture</label>
+            <input type="file" (change)="onImageSelected($event)" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Tags</label>
+          <div class="tags-grid">
+            <label class="tag-item" *ngFor="let tag of tags">
+              <input
+                type="checkbox"
+                [checked]="articleForm.tags_ids.includes(tag.id)"
+                (change)="onTagSelectionChange(tag.id, $any($event.target).checked)"
+              />
+              <span>{{ tag.name }}</span>
+            </label>
+          </div>
+        </div>
+
+        <label class="check">
+          <input type="checkbox" [(ngModel)]="articleForm.is_featured" name="art_featured" />
+          <span>Mettre en avant cet article</span>
+        </label>
+
         <div class="actions">
           <button class="btn btn-primary" type="submit">
-            {{ editingCategorySlug ? 'Mettre a jour' : 'Creer' }}
+            {{ editingArticleSlug ? 'Mettre a jour' : 'Publier' }}
           </button>
-          <button class="btn btn-soft" type="button" (click)="resetCategory()">Annuler</button>
+          <button class="btn btn-soft" type="button" (click)="resetArticleForm()">Annuler</button>
         </div>
       </form>
-      <div class="table-wrap" *ngIf="categories.length; else emptyCategories">
-        <table class="data-table compact">
-          <thead>
-            <tr>
-              <th>Nom</th>
-              <th>Slug</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let cat of categories">
-              <td><p class="cell-title">{{ cat.name }}</p></td>
-              <td>{{ cat.slug }}</td>
-              <td>
-                <div class="row-actions">
-                  <button class="btn btn-soft" (click)="editCategory(cat)">Editer</button>
-                  <button class="btn btn-danger" (click)="deleteCategory(cat)">Supprimer</button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <ng-template #emptyCategories>
-        <div class="empty-state">Aucune categorie.</div>
-      </ng-template>
     </section>
 
     <section class="panel">
       <div class="panel-head">
-        <h2>{{ editingTagSlug ? 'Modifier tag' : 'Nouveau tag' }}</h2>
+        <h2>Articles</h2>
+        <span class="panel-meta" *ngIf="loading">Chargement...</span>
       </div>
-      <form (ngSubmit)="submitTag()">
-        <div class="field">
-          <label>Nom</label>
-          <input type="text" [(ngModel)]="tagForm.name" name="tag_name" required />
+
+      <div class="table-wrap" *ngIf="processedArticles.length; else emptyArticles">
+        <div class="table-tools">
+          <div class="field inline">
+            <label for="blog_article_search">Recherche</label>
+            <input id="blog_article_search" type="search" [(ngModel)]="articleSearch" name="blog_article_search" placeholder="Titre, categorie..." />
+          </div>
+          <div class="field inline">
+            <label for="blog_article_sort">Tri</label>
+            <select id="blog_article_sort" [(ngModel)]="articleSort" name="blog_article_sort">
+              <option value="date_desc">Date recente</option>
+              <option value="date_asc">Date ancienne</option>
+              <option value="title_asc">Titre A-Z</option>
+              <option value="title_desc">Titre Z-A</option>
+            </select>
+          </div>
+          <div class="field inline">
+            <label for="blog_article_page_size">Par page</label>
+            <select id="blog_article_page_size" [(ngModel)]="pageSize" name="blog_article_page_size" (ngModelChange)="setPageSize($event)">
+              <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+            </select>
+          </div>
         </div>
-        <div class="field">
-          <label>Slug</label>
-          <input type="text" [(ngModel)]="tagForm.slug" name="tag_slug" />
-        </div>
-        <div class="actions">
-          <button class="btn btn-primary" type="submit">
-            {{ editingTagSlug ? 'Mettre a jour' : 'Creer' }}
-          </button>
-          <button class="btn btn-soft" type="button" (click)="resetTag()">Annuler</button>
-        </div>
-      </form>
-      <div class="table-wrap" *ngIf="tags.length; else emptyTags">
-        <table class="data-table compact">
+        <table class="data-table">
           <thead>
             <tr>
-              <th>Nom</th>
-              <th>Slug</th>
+              <th>Article</th>
+              <th>Categorie</th>
+              <th>Statut</th>
+              <th>Lecture</th>
+              <th>Date</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let tag of tags">
-              <td><p class="cell-title">{{ tag.name }}</p></td>
-              <td>{{ tag.slug }}</td>
+            <tr *ngFor="let article of pagedArticles; trackBy: trackByArticle">
+              <td>
+                <p class="cell-title">{{ article.title }}</p>
+                <p class="cell-sub">{{ article.excerpt }}</p>
+              </td>
+              <td>{{ article.category_name || '-' }}</td>
+              <td>
+                <span class="badge" [class.published]="article.status === 'published'" [class.archived]="article.status === 'archived'">
+                  {{ statusLabel(article.status) }}
+                </span>
+              </td>
+              <td>{{ article.reading_time }} min</td>
+              <td>{{ (article.published_at || article.created_at) | date:'dd/MM/yyyy' }}</td>
               <td>
                 <div class="row-actions">
-                  <button class="btn btn-soft" (click)="editTag(tag)">Editer</button>
-                  <button class="btn btn-danger" (click)="deleteTag(tag)">Supprimer</button>
+                  <button class="btn btn-icon btn-soft" (click)="editArticle(article)" title="Editer">
+                    <app-icon name="edit" [size]="16"></app-icon>
+                  </button>
+                  <button class="btn btn-icon btn-danger" (click)="deleteArticle(article)" title="Supprimer">
+                    <app-icon name="trash" [size]="16"></app-icon>
+                  </button>
                 </div>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-      <ng-template #emptyTags>
-        <div class="empty-state">Aucun tag.</div>
+
+      <div class="table-footer" *ngIf="articleTotalPages > 1">
+        <div class="pagination">
+          <button class="btn btn-icon btn-soft" (click)="setArticlePage(articlePage - 1)" [disabled]="articlePage === 1">
+            <span class="icon-rotate">
+              <app-icon name="arrow-right" [size]="14"></app-icon>
+            </span>
+          </button>
+          <span class="page-count">Page {{ articlePage }} / {{ articleTotalPages }}</span>
+          <button class="btn btn-icon btn-soft" (click)="setArticlePage(articlePage + 1)" [disabled]="articlePage === articleTotalPages">
+            <app-icon name="arrow-right" [size]="14"></app-icon>
+          </button>
+        </div>
+      </div>
+
+      <ng-template #emptyArticles>
+        <div class="empty-state">Aucun article disponible.</div>
       </ng-template>
+      <p *ngIf="error" class="error">{{ error }}</p>
     </section>
   </div>
-
-  <section class="panel">
-    <div class="panel-head">
-      <h2>{{ editingArticleSlug ? 'Modifier article' : 'Nouvel article' }}</h2>
-      <span class="panel-meta">Tous les champs editables du modele `Article`</span>
-    </div>
-
-    <form (ngSubmit)="submitArticle()">
-      <div class="grid two">
-        <div class="field">
-          <label>Titre</label>
-          <input type="text" [(ngModel)]="articleForm.title" name="art_title" required />
-        </div>
-        <div class="field">
-          <label>Slug</label>
-          <input type="text" [(ngModel)]="articleForm.slug" name="art_slug" />
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Extrait</label>
-        <textarea [(ngModel)]="articleForm.excerpt" name="art_excerpt" rows="3"></textarea>
-      </div>
-
-      <div class="field">
-        <label>Contenu</label>
-        <textarea [(ngModel)]="articleForm.content" name="art_content" rows="7"></textarea>
-      </div>
-
-      <div class="grid three">
-        <div class="field">
-          <label>Categorie</label>
-          <select [(ngModel)]="articleForm.category" name="art_category">
-            <option value="">Aucune</option>
-            <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Statut</label>
-          <select [(ngModel)]="articleForm.status" name="art_status">
-            <option value="draft">Brouillon</option>
-            <option value="published">Publie</option>
-            <option value="archived">Archive</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Lecture (min)</label>
-          <input type="number" [(ngModel)]="articleForm.reading_time" name="art_time" min="1" />
-        </div>
-      </div>
-
-      <div class="grid two">
-        <div class="field">
-          <label>Date de publication</label>
-          <input type="datetime-local" [(ngModel)]="articleForm.published_at" name="art_published" />
-        </div>
-        <div class="field">
-          <label>Image de couverture</label>
-          <input type="file" (change)="onImageSelected($event)" />
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Tags</label>
-        <div class="tags-grid">
-          <label class="tag-item" *ngFor="let tag of tags">
-            <input
-              type="checkbox"
-              [checked]="articleForm.tags_ids.includes(tag.id)"
-              (change)="onTagSelectionChange(tag.id, $any($event.target).checked)"
-            />
-            <span>{{ tag.name }}</span>
-          </label>
-        </div>
-      </div>
-
-      <label class="check">
-        <input type="checkbox" [(ngModel)]="articleForm.is_featured" name="art_featured" />
-        <span>Mettre en avant cet article</span>
-      </label>
-
-      <div class="actions">
-        <button class="btn btn-primary" type="submit">
-          {{ editingArticleSlug ? 'Mettre a jour' : 'Publier' }}
-        </button>
-        <button class="btn btn-soft" type="button" (click)="resetArticleForm()">Annuler</button>
-      </div>
-    </form>
-  </section>
-
-  <section class="panel">
-    <div class="panel-head">
-      <h2>Articles</h2>
-      <span class="panel-meta" *ngIf="loading">Chargement...</span>
-    </div>
-
-    <div class="table-wrap" *ngIf="articles.length; else emptyArticles">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Article</th>
-            <th>Categorie</th>
-            <th>Statut</th>
-            <th>Lecture</th>
-            <th>Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let article of articles">
-            <td>
-              <p class="cell-title">{{ article.title }}</p>
-              <p class="cell-sub">{{ article.excerpt }}</p>
-            </td>
-            <td>{{ article.category_name || '-' }}</td>
-            <td>
-              <span class="badge" [class.published]="article.status === 'published'" [class.archived]="article.status === 'archived'">
-                {{ statusLabel(article.status) }}
-              </span>
-            </td>
-            <td>{{ article.reading_time }} min</td>
-            <td>{{ (article.published_at || article.created_at) | date:'dd/MM/yyyy' }}</td>
-            <td>
-              <div class="row-actions">
-                <button class="btn btn-soft" (click)="editArticle(article)">Editer</button>
-                <button class="btn btn-danger" (click)="deleteArticle(article)">Supprimer</button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <ng-template #emptyArticles>
-      <div class="empty-state">Aucun article disponible.</div>
-    </ng-template>
-    <p *ngIf="error" class="error">{{ error }}</p>
-  </section>
-</div>
+</app-admin-shell>

@@ -1,0 +1,59 @@
+<div class="admin-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <div>
+        <p class="brand-title">Modou Fall</p>
+        <p class="brand-sub">Data & Full-Stack</p>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <p class="nav-label">Navigation</p>
+      <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-link">
+        <app-icon name="chart" [size]="16"></app-icon>
+        <span>Dashboard</span>
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <p class="nav-label">Gestion contenu</p>
+      <a routerLink="/admin/projects/new" routerLinkActive="active" class="nav-link">
+        <app-icon name="file" [size]="16"></app-icon>
+        <span>Projets</span>
+      </a>
+      
+      <a routerLink="/admin/blog" routerLinkActive="active" class="nav-link">
+        <app-icon name="edit" [size]="16"></app-icon>
+        <span>Blog</span>
+      </a>
+      <a routerLink="/admin/experiences" routerLinkActive="active" class="nav-link">
+        <app-icon name="user" [size]="16"></app-icon>
+        <span>Experiences</span>
+      </a>
+      <a routerLink="/admin/skills" routerLinkActive="active" class="nav-link">
+        <app-icon name="settings" [size]="16"></app-icon>
+        <span>Competences</span>
+      </a>
+
+      <a routerLink="/admin/projects/archives" routerLinkActive="active" class="nav-link">
+        <app-icon name="archive" [size]="16"></app-icon>
+        <span>Archives</span>
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <p class="nav-label">Actions</p>
+      <a routerLink="/" class="nav-link">
+        <app-icon name="arrow-right" [size]="16"></app-icon>
+        <span>Deconnexion</span>
+      </a>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-content">
+      <ng-content></ng-content>
+    </div>
+  </main>
+</div>

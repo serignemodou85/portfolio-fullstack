@@ -57,22 +57,29 @@ portfolio-fullstack/
 - **Email** : Configuration SMTP Gmail
 - **CORS** : URLs autorisées
 
-##  Fonctionnalités
+##  Fonctionnalites
 
 ### Public
--  Page d'accueil avec présentation
--  Liste et détail des projets
+-  Page d'accueil avec presentation
+-  Liste et detail des projets
 -  Articles de blog
 -  Formulaire de contact
--  CV téléchargeable
+-  CV telechargeable
+-  Photo de profil admin dynamique sur la Home
+-  Page Experience avec filtres + pagination
 
 ### Admin
 -  Authentification JWT
 -  Dashboard avec statistiques
 -  CRUD projets
--  Gestion expériences
--  Gestion compétences
--  Gestion articles blog
+-  Gestion experiences (form + tableau)
+-  Gestion competences (categories + skills)
+-  Gestion articles blog (articles + tags + categories)
+-  Archives projets (restauration + suppression definitive)
+-  Gestion messages contact (lecture, reponse email, archivage, suppression)
+-  Pagination + tri + recherche sur tous les tableaux admin
+-  Profil admin (edition infos + photo)
+-  Reset mot de passe par email
 
 ##  Auteur
 

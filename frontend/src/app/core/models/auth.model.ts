@@ -18,6 +18,8 @@ export interface User {
   is_superuser?: boolean;
   bio?: string;
   profile_picture?: string;
+  phone?: string;
+  location?: string;
   github_url?: string;
   linkedin_url?: string;
   twitter_url?: string;

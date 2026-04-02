@@ -85,6 +85,10 @@ export const routes: Routes = [
       {
         path: 'blog',
         loadComponent: () => import('./features/admin/blog-admin/blog-admin').then(m => m.BlogAdmin)
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./features/admin/profile-admin/profile-admin').then(m => m.ProfileAdmin)
       }
     ]
   },
