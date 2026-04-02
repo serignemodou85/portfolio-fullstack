@@ -1,6 +1,7 @@
 # projects/models.py
 from django.db import models
 from django.conf import settings
+from portfolio_backend.validators import validate_image_file
 
 class Project(models.Model):
     """
@@ -20,11 +21,12 @@ class Project(models.Model):
     # Images
     thumbnail = models.ImageField(
         upload_to='projects/thumbnails/', 
-        verbose_name="Image de couverture"
+        verbose_name="Image de couverture",
+        validators=[validate_image_file]
     )
-    image_1 = models.ImageField(upload_to='projects/', blank=True, null=True)
-    image_2 = models.ImageField(upload_to='projects/', blank=True, null=True)
-    image_3 = models.ImageField(upload_to='projects/', blank=True, null=True)
+    image_1 = models.ImageField(upload_to='projects/', blank=True, null=True, validators=[validate_image_file])
+    image_2 = models.ImageField(upload_to='projects/', blank=True, null=True, validators=[validate_image_file])
+    image_3 = models.ImageField(upload_to='projects/', blank=True, null=True, validators=[validate_image_file])
     
     # Technologies utilisées
     technologies = models.CharField(

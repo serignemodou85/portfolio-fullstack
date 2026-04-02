@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from portfolio_backend.validators import validate_image_file
 
 class User(AbstractUser):
     """
@@ -11,7 +12,8 @@ class User(AbstractUser):
         upload_to='profiles/', 
         blank=True, 
         null=True,
-        verbose_name="Photo de profil"
+        verbose_name="Photo de profil",
+        validators=[validate_image_file]
     )
     phone = models.CharField(max_length=20, blank=True, null=True, verbose_name="Téléphone")
     location = models.CharField(max_length=100, blank=True, null=True, verbose_name="Localisation")

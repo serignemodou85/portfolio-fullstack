@@ -1,6 +1,7 @@
 # experience/models.py
 from django.db import models
 from django.conf import settings
+from portfolio_backend.validators import validate_image_file, validate_doc_or_image
 
 class Experience(models.Model):
     """
@@ -31,14 +32,16 @@ class Experience(models.Model):
         upload_to='experience/logos/', 
         blank=True, 
         null=True,
-        verbose_name="Logo entreprise"
+        verbose_name="Logo entreprise",
+        validators=[validate_image_file]
     )
 
     certificate_file = models.FileField(
         upload_to='experience/certificates/',
         blank=True,
         null=True,
-        verbose_name="Certificat (PDF/image)"
+        verbose_name="Certificat (PDF/image)",
+        validators=[validate_doc_or_image]
     )
     
     order = models.IntegerField(

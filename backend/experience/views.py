@@ -1,5 +1,6 @@
 # experience/views.py
 from rest_framework import viewsets
+from rest_framework.permissions import SAFE_METHODS
 from django_filters.rest_framework import DjangoFilterBackend
 from portfolio_backend.permissions import IsAdminOrReadOnly
 from .models import Experience
@@ -19,6 +20,11 @@ class ExperienceViewSet(viewsets.ModelViewSet):
         if self.action in ['create', 'update', 'partial_update']:
             return ExperienceCreateUpdateSerializer
         return ExperienceSerializer
+
+    def get_authenticators(self):
+        if self.request.method in SAFE_METHODS:
+            return []
+        return super().get_authenticators()
     
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)

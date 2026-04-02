@@ -2,6 +2,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils.text import slugify
+from portfolio_backend.validators import validate_image_file
 
 class Category(models.Model):
     """
@@ -68,7 +69,8 @@ class Article(models.Model):
     
     featured_image = models.ImageField(
         upload_to='blog/featured/',
-        verbose_name="Image de couverture"
+        verbose_name="Image de couverture",
+        validators=[validate_image_file]
     )
     
     category = models.ForeignKey(
