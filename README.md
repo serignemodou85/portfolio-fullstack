@@ -22,7 +22,6 @@
 cd backend
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
-cp .env.example .env  # Configure tes variables d'environnement
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py runserver
@@ -51,7 +50,7 @@ portfolio-fullstack/
 
 ### Variables d'environnement (.env)
 
-Copie le fichier `.env.example` vers `.env` et configure :
+
 
 - **Base de données** : Identifiants MySQL
 - **Django** : SECRET_KEY, DEBUG, ALLOWED_HOSTS
