@@ -318,5 +318,3 @@ CONTACT_AUTO_REPLY_ENABLED = env_bool('CONTACT_AUTO_REPLY_ENABLED', True)
 
 # URL frontend utilisee dans les emails (liens reset password).
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:4200')
-
-ALLOWED_HOSTS = ['*']
