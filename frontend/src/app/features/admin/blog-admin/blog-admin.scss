@@ -10,30 +10,8 @@
   color: var(--text);
 }
 
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.eyebrow {
-  margin: 0 0 0.2rem;
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #64748b;
-  font-weight: 700;
-}
-
 .page-header h1 {
   margin: 0;
-}
-
-.subtitle {
-  margin: 0.25rem 0 0;
-  color: var(--muted);
 }
 
 .stats-strip {
@@ -64,6 +42,10 @@
   font-weight: 700;
 }
 
+.panel {
+  margin-top: 1rem;
+}
+
 .layout-small {
   margin-top: 1rem;
   display: grid;
@@ -71,35 +53,13 @@
   gap: 1rem;
 }
 
-.panel {
-  margin-top: 1rem;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.06);
-  padding: 1.05rem;
-}
-
 .layout-small .panel {
   margin-top: 0;
-}
-
-.panel-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.7rem;
-  margin-bottom: 0.8rem;
 }
 
 .panel-head h2 {
   margin: 0;
   font-size: 1.08rem;
-}
-
-.panel-meta {
-  color: var(--muted);
-  font-size: 0.82rem;
 }
 
 form {
@@ -118,42 +78,6 @@ form {
 
 .grid.three {
   grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.field {
-  display: grid;
-  gap: 0.35rem;
-}
-
-.field.inline {
-  gap: 0.25rem;
-}
-
-.field label {
-  font-size: 0.76rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #475569;
-  font-weight: 700;
-}
-
-input,
-select,
-textarea {
-  width: 100%;
-  border: 1px solid #cdd7e4;
-  border-radius: 10px;
-  padding: 0.65rem 0.8rem;
-  font-size: 0.92rem;
-  background: #fff;
-}
-
-input:focus,
-select:focus,
-textarea:focus {
-  outline: none;
-  border-color: #93c5fd;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
 textarea {
@@ -189,48 +113,13 @@ textarea {
   flex-wrap: wrap;
 }
 
-.table-wrap {
-  margin-top: 0.9rem;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  overflow: auto;
-}
-
-.table-tools {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-  margin-bottom: 0.8rem;
-  align-items: flex-end;
-}
-
-.table-tools .field {
-  min-width: 180px;
-}
-
 .data-table {
   width: 100%;
   min-width: 960px;
-  border-collapse: collapse;
 }
 
 .data-table.compact {
   min-width: 520px;
-}
-
-.data-table th,
-.data-table td {
-  padding: 0.78rem 0.82rem;
-  border-bottom: 1px solid var(--line);
-  vertical-align: middle;
-}
-
-.data-table th {
-  font-size: 0.73rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #334155;
-  background: #f7faff;
 }
 
 .cell-title {
@@ -245,86 +134,11 @@ textarea {
   max-width: 360px;
 }
 
-.badge {
-  display: inline-block;
-  padding: 0.24rem 0.56rem;
-  border-radius: 999px;
-  font-size: 0.71rem;
-  font-weight: 700;
-  border: 1px solid #cbd5e1;
-  background: #f8fafc;
-  color: #334155;
-}
-
-.badge.published {
-  background: #ecfdf5;
-  color: #047857;
-  border-color: #a7f3d0;
-}
-
-.badge.archived {
-  background: #fff1f2;
-  color: #be123c;
-  border-color: #fecdd3;
-}
-
-.row-actions {
-  display: flex;
-  gap: 0.45rem;
-  flex-wrap: wrap;
-}
-
-.btn {
-  border: 1px solid transparent;
-  border-radius: 10px;
-  padding: 0.45rem 0.78rem;
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.btn-icon {
-  width: 36px;
-  height: 36px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-primary {
-  background: var(--primary);
-  color: #fff;
-}
-
-.btn-outline,
-.btn-soft {
-  background: var(--primary-soft);
-  color: #1e3a8a;
-}
-
-.btn-danger {
-  background: #fff1f2;
-  color: var(--danger);
-  border-color: #fecdd3;
-}
 
 .table-footer {
   margin-top: 0.8rem;
   display: flex;
   justify-content: flex-end;
-}
-
-.pagination {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.page-count {
-  font-size: 0.82rem;
-  color: var(--muted);
 }
 
 .icon-rotate {
@@ -335,15 +149,6 @@ textarea {
 .error {
   color: #b91c1c;
   margin-top: 0.7rem;
-}
-
-.empty-state {
-  border: 1px dashed #cbd5e1;
-  border-radius: 12px;
-  padding: 0.9rem;
-  color: var(--muted);
-  text-align: center;
-  background: #fafcff;
 }
 
 @media (max-width: 1000px) {

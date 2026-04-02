@@ -334,7 +334,11 @@
               </td>
               <td>{{ article.category_name || '-' }}</td>
               <td>
-                <span class="badge" [class.published]="article.status === 'published'" [class.archived]="article.status === 'archived'">
+                <span
+                  class="badge"
+                  [class.badge-success]="article.status === 'published'"
+                  [class.badge-danger]="article.status === 'archived'"
+                >
                   {{ statusLabel(article.status) }}
                 </span>
               </td>

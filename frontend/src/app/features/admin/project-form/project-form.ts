@@ -2,14 +2,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectService } from '../../projects/services/project';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
 
 @Component({
   selector: 'app-project-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, AdminShell],
+  imports: [CommonModule, FormsModule, AdminShell],
   templateUrl: './project-form.html',
   styleUrl: './project-form.scss'
 })
