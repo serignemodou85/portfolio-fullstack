@@ -51,6 +51,10 @@ def api_root(request):
         }
     })
 
+
+def health_check(request):
+    return JsonResponse({'status': 'ok'})
+
 # Création du router DRF
 router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='user')
@@ -66,6 +70,7 @@ router.register(r'contact', ContactMessageViewSet, basename='contact')
 urlpatterns = [
     # Page d'accueil de l'API
     path('', api_root, name='api-root'),
+    path('health/', health_check, name='health-check'),
     
     # Admin Django
     path('admin/', admin.site.urls),
