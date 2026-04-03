@@ -12,15 +12,18 @@ django-cors-headers==4.6.0
 
 # Database
 mysqlclient==2.2.4
+psycopg2-binary==2.9.11
+dj-database-url==3.1.2
 
 # Filtering
 django-filter==24.3
 
-# Image Processing (si nécessaire pour Pillow)
+# Image Processing (si necessaire pour Pillow)
 Pillow==11.0.0
 
-# Environment Variables (recommandé pour production)
+# Environment Variables (recommande pour production)
 python-decouple==3.8
 
 # Production Server (optionnel)
 gunicorn==23.0.0
+whitenoise==6.12.0
