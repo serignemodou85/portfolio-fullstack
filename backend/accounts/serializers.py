@@ -22,6 +22,8 @@ class UserSerializer(serializers.ModelSerializer):
     """
     Serializer pour le modèle User - Version complète
     """
+    profile_picture = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = [
@@ -32,16 +34,16 @@ class UserSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'date_joined', 'is_staff', 'is_superuser']
 
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        data['profile_picture'] = _safe_file_url(self.context.get('request'), instance.profile_picture)
-        return data
+    def get_profile_picture(self, obj):
+        return _safe_file_url(self.context.get('request'), obj.profile_picture)
 
 
 class UserPublicSerializer(serializers.ModelSerializer):
     """
     Serializer public - Seulement les infos visibles par tous
     """
+    profile_picture = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = [
@@ -50,10 +52,8 @@ class UserPublicSerializer(serializers.ModelSerializer):
             'github_url', 'linkedin_url', 'twitter_url', 'website_url'
         ]
 
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        data['profile_picture'] = _safe_file_url(self.context.get('request'), instance.profile_picture)
-        return data
+    def get_profile_picture(self, obj):
+        return _safe_file_url(self.context.get('request'), obj.profile_picture)
 
 
 class RegisterSerializer(serializers.ModelSerializer):
