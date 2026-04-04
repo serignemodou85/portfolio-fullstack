@@ -7,6 +7,17 @@ from django.utils.http import urlsafe_base64_decode
 
 User = get_user_model()
 
+
+def _safe_file_url(request, file_field):
+    if not file_field:
+        return None
+    try:
+        url = file_field.url
+    except Exception:
+        return None
+    return request.build_absolute_uri(url) if request else url
+
+
 class UserSerializer(serializers.ModelSerializer):
     """
     Serializer pour le modèle User - Version complète
@@ -21,6 +32,11 @@ class UserSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'date_joined', 'is_staff', 'is_superuser']
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['profile_picture'] = _safe_file_url(self.context.get('request'), instance.profile_picture)
+        return data
+
 
 class UserPublicSerializer(serializers.ModelSerializer):
     """
@@ -34,6 +50,11 @@ class UserPublicSerializer(serializers.ModelSerializer):
             'github_url', 'linkedin_url', 'twitter_url', 'website_url'
         ]
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['profile_picture'] = _safe_file_url(self.context.get('request'), instance.profile_picture)
+        return data
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     """
@@ -41,11 +62,11 @@ class RegisterSerializer(serializers.ModelSerializer):
     """
     password = serializers.CharField(write_only=True, min_length=8)
     password2 = serializers.CharField(write_only=True, min_length=8)
-    
+
     class Meta:
         model = User
         fields = ['username', 'email', 'password', 'password2', 'first_name', 'last_name']
-    
+
     def validate(self, data):
         """
         Vérifie que les deux mots de passe sont identiques
@@ -53,7 +74,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         if data['password'] != data['password2']:
             raise serializers.ValidationError("Les mots de passe ne correspondent pas.")
         return data
-    
+
     def create(self, validated_data):
         """
         Crée un nouvel utilisateur avec mot de passe hashé
