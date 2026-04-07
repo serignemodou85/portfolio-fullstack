@@ -22,11 +22,12 @@ class Project(models.Model):
     thumbnail = models.ImageField(
         upload_to='projects/thumbnails/', 
         verbose_name="Image de couverture",
-        validators=[validate_image_file]
+        validators=[validate_image_file],
+        max_length=255
     )
-    image_1 = models.ImageField(upload_to='projects/', blank=True, null=True, validators=[validate_image_file])
-    image_2 = models.ImageField(upload_to='projects/', blank=True, null=True, validators=[validate_image_file])
-    image_3 = models.ImageField(upload_to='projects/', blank=True, null=True, validators=[validate_image_file])
+    image_1 = models.ImageField(upload_to='projects/', blank=True, null=True, validators=[validate_image_file], max_length=255)
+    image_2 = models.ImageField(upload_to='projects/', blank=True, null=True, validators=[validate_image_file], max_length=255)
+    image_3 = models.ImageField(upload_to='projects/', blank=True, null=True, validators=[validate_image_file], max_length=255)
     
     # Technologies utilisées
     technologies = models.CharField(

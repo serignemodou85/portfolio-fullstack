@@ -13,7 +13,8 @@ class User(AbstractUser):
         blank=True, 
         null=True,
         verbose_name="Photo de profil",
-        validators=[validate_image_file]
+        validators=[validate_image_file],
+        max_length=255
     )
     phone = models.CharField(max_length=20, blank=True, null=True, verbose_name="Téléphone")
     location = models.CharField(max_length=100, blank=True, null=True, verbose_name="Localisation")
