@@ -14,6 +14,10 @@
         <app-icon name="chart" [size]="16"></app-icon>
         <span>Dashboard</span>
       </a>
+      <a routerLink="/admin/profile" routerLinkActive="active" class="nav-link">
+        <app-icon name="user" [size]="16"></app-icon>
+        <span>Profil</span>
+      </a>
     </div>
 
     <div class="nav-section">
@@ -44,10 +48,10 @@
 
     <div class="nav-section">
       <p class="nav-label">Actions</p>
-      <a routerLink="/" class="nav-link">
+      <button class="nav-link" type="button" (click)="logout()">
         <app-icon name="arrow-right" [size]="16"></app-icon>
         <span>Deconnexion</span>
-      </a>
+      </button>
     </div>
   </aside>
 
