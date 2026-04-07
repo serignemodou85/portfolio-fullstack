@@ -57,6 +57,10 @@ export class ProjectService {
     return this.http.patch<ProjectDetail>(`${this.apiUrl}${slug}/`, project);
   }
 
+  restoreProject(slug: string): Observable<ProjectDetail> {
+    return this.http.post<ProjectDetail>(`${this.apiUrl}${slug}/restore/`, {});
+  }
+
   deleteProject(slug: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}${slug}/`);
   }

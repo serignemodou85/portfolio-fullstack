@@ -91,10 +91,7 @@ export class ProjectArchives implements OnInit {
       return;
     }
 
-    const payload = new FormData();
-    payload.append('status', 'in_progress');
-
-    this.projectService.partialUpdateProject(project.slug, payload).subscribe({
+    this.projectService.restoreProject(project.slug).subscribe({
       next: () => {
         this.archivedProjects = this.archivedProjects.filter((item) => item.slug !== project.slug);
       },
