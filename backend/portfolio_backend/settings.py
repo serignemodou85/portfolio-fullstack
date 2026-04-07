@@ -68,6 +68,7 @@ SECRET_KEY = ensure_strong_secret_key(env_required('SECRET_KEY'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env_bool('DEBUG', False)
+DJANGO_ADMIN_ENABLED = env_bool('DJANGO_ADMIN_ENABLED', DEBUG)
 
 ALLOWED_HOSTS = env_list('ALLOWED_HOSTS', 'localhost,127.0.0.1')
 RENDER_EXTERNAL_HOSTNAME = os.getenv('RENDER_EXTERNAL_HOSTNAME', '').strip()

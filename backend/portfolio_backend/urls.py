@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseNotFound
 from django.views.static import serve
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -55,6 +55,10 @@ def api_root(request):
 def health_check(request):
     return JsonResponse({'status': 'ok'})
 
+
+def admin_block(request):
+    return HttpResponseNotFound()
+
 # Création du router DRF
 router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='user')
@@ -72,8 +76,8 @@ urlpatterns = [
     path('', api_root, name='api-root'),
     path('health/', health_check, name='health-check'),
     
-    # Admin Django
-    path('admin/', admin.site.urls),
+    # Admin Django (optionnel en prod)
+    path('admin/', admin.site.urls) if settings.DJANGO_ADMIN_ENABLED else path('admin/', admin_block),
     
     # Authentification JWT
     path('api/auth/login/', ThrottledTokenObtainPairView.as_view(), name='token_obtain_pair'),
