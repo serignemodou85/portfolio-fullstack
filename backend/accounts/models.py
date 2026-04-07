@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from portfolio_backend.validators import validate_image_file
+from cloudinary.models import CloudinaryField 
 
 class User(AbstractUser):
     """
@@ -8,13 +8,11 @@ class User(AbstractUser):
     """
     email = models.EmailField(unique=True, verbose_name="Email")
     bio = models.TextField(blank=True, null=True, verbose_name="Biographie")
-    profile_picture = models.ImageField(
-        upload_to='profiles/', 
-        blank=True, 
+    profile_picture = CloudinaryField(
+        folder='media/profiles/',
+        blank=True,
         null=True,
         verbose_name="Photo de profil",
-        validators=[validate_image_file],
-        max_length=255
     )
     phone = models.CharField(max_length=20, blank=True, null=True, verbose_name="Téléphone")
     location = models.CharField(max_length=100, blank=True, null=True, verbose_name="Localisation")
