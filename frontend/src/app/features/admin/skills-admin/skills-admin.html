@@ -115,10 +115,10 @@
                 <td>{{ cat.order }}</td>
                 <td>
                   <div class="row-actions">
-                    <button class="btn btn-icon btn-soft" (click)="editCategory(cat)" title="Editer">
+                    <button type="button" class="btn btn-icon btn-soft" (click)="editCategory(cat)" title="Editer">
                       <app-icon name="edit" [size]="16"></app-icon>
                     </button>
-                    <button class="btn btn-icon btn-danger" (click)="cat.id && deleteCategory(cat.id)" title="Supprimer">
+                    <button type="button" class="btn btn-icon btn-danger" (click)="cat.id && deleteCategory(cat.id)" title="Supprimer">
                       <app-icon name="trash" [size]="16"></app-icon>
                     </button>
                   </div>
@@ -129,13 +129,13 @@
         </div>
         <div class="table-footer" *ngIf="categoryTotalPages > 1">
           <div class="pagination">
-            <button class="btn btn-icon btn-soft" (click)="setCategoryPage(categoryPage - 1)" [disabled]="categoryPage === 1">
+            <button type="button" class="btn btn-icon btn-soft" (click)="setCategoryPage(categoryPage - 1)" [disabled]="categoryPage === 1">
               <span class="icon-rotate">
                 <app-icon name="arrow-right" [size]="14"></app-icon>
               </span>
             </button>
             <span class="page-count">Page {{ categoryPage }} / {{ categoryTotalPages }}</span>
-            <button class="btn btn-icon btn-soft" (click)="setCategoryPage(categoryPage + 1)" [disabled]="categoryPage === categoryTotalPages">
+            <button type="button" class="btn btn-icon btn-soft" (click)="setCategoryPage(categoryPage + 1)" [disabled]="categoryPage === categoryTotalPages">
               <app-icon name="arrow-right" [size]="14"></app-icon>
             </button>
           </div>
@@ -257,10 +257,10 @@
                 <td>{{ skill.years_of_experience }} an(s)</td>
                 <td>
                   <div class="row-actions">
-                    <button class="btn btn-icon btn-soft" (click)="editSkill(skill)" title="Editer">
+                    <button type="button" class="btn btn-icon btn-soft" (click)="editSkill(skill)" title="Editer">
                       <app-icon name="edit" [size]="16"></app-icon>
                     </button>
-                    <button class="btn btn-icon btn-danger" (click)="deleteSkill(skill.id)" title="Supprimer">
+                    <button type="button" class="btn btn-icon btn-danger" (click)="deleteSkill(skill.id)" title="Supprimer">
                       <app-icon name="trash" [size]="16"></app-icon>
                     </button>
                   </div>
@@ -271,13 +271,13 @@
         </div>
         <div class="table-footer" *ngIf="skillTotalPages > 1">
           <div class="pagination">
-            <button class="btn btn-icon btn-soft" (click)="setSkillPage(skillPage - 1)" [disabled]="skillPage === 1">
+            <button type="button" class="btn btn-icon btn-soft" (click)="setSkillPage(skillPage - 1)" [disabled]="skillPage === 1">
               <span class="icon-rotate">
                 <app-icon name="arrow-right" [size]="14"></app-icon>
               </span>
             </button>
             <span class="page-count">Page {{ skillPage }} / {{ skillTotalPages }}</span>
-            <button class="btn btn-icon btn-soft" (click)="setSkillPage(skillPage + 1)" [disabled]="skillPage === skillTotalPages">
+            <button type="button" class="btn btn-icon btn-soft" (click)="setSkillPage(skillPage + 1)" [disabled]="skillPage === skillTotalPages">
               <app-icon name="arrow-right" [size]="14"></app-icon>
             </button>
           </div>

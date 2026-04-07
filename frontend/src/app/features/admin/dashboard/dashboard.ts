@@ -204,6 +204,7 @@ export class Dashboard implements OnInit {
         this.stats.completedProjects = this.activeProjects.filter((p) => p.status === 'completed').length;
         this.stats.inProgressProjects = this.activeProjects.filter((p) => p.status === 'in_progress').length;
         this.syncProjectPage();
+        this.loadStatsFromAPI();
       },
       error: (err) => {
         console.error('Erreur archivage projet:', err);
@@ -223,6 +224,8 @@ export class Dashboard implements OnInit {
         if (wasNew) {
           this.stats.unreadMessages = Math.max((this.stats.unreadMessages || 0) - 1, 0);
         }
+        this.loadRecentMessages();
+        this.loadStatsFromAPI();
       },
       error: (err) => {
         console.error('Erreur mark read:', err);
@@ -248,6 +251,8 @@ export class Dashboard implements OnInit {
           this.stats.unreadMessages = Math.max((this.stats.unreadMessages || 0) - 1, 0);
         }
         window.alert('Reponse envoyee par email.');
+        this.loadRecentMessages();
+        this.loadStatsFromAPI();
       },
       error: (err) => {
         console.error('Erreur reply:', err);
@@ -268,6 +273,8 @@ export class Dashboard implements OnInit {
         if (wasNew) {
           this.stats.unreadMessages = Math.max((this.stats.unreadMessages || 0) - 1, 0);
         }
+        this.loadRecentMessages();
+        this.loadStatsFromAPI();
       },
       error: (err) => {
         console.error('Erreur archive message:', err);
@@ -293,6 +300,8 @@ export class Dashboard implements OnInit {
         if (wasNew) {
           this.stats.unreadMessages = Math.max((this.stats.unreadMessages || 0) - 1, 0);
         }
+        this.loadRecentMessages();
+        this.loadStatsFromAPI();
       },
       error: (err) => {
         console.error('Erreur suppression message:', err);

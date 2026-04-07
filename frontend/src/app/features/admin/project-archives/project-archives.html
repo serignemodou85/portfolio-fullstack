@@ -77,11 +77,11 @@
               </td>
               <td>
                 <div class="row-actions">
-                  <button class="btn btn-soft" (click)="restoreProject(project)">
+                  <button type="button" class="btn btn-soft" (click)="restoreProject(project)">
                     <app-icon name="check" [size]="16"></app-icon>
                     
                   </button>
-                  <button class="btn btn-danger" (click)="deletePermanently(project)">
+                  <button type="button" class="btn btn-danger" (click)="deletePermanently(project)">
                     <app-icon name="trash" [size]="16"></app-icon>
                     
                   </button>
@@ -98,13 +98,13 @@
 
       <div class="table-footer" *ngIf="!loading && !error && totalPages > 1">
         <div class="pagination">
-          <button class="btn btn-icon btn-soft" (click)="setPage(page - 1)" [disabled]="page === 1">
+          <button type="button" class="btn btn-icon btn-soft" (click)="setPage(page - 1)" [disabled]="page === 1">
             <span class="icon-rotate">
               <app-icon name="arrow-right" [size]="14"></app-icon>
             </span>
           </button>
           <span class="page-count">Page {{ page }} / {{ totalPages }}</span>
-          <button class="btn btn-icon btn-soft" (click)="setPage(page + 1)" [disabled]="page === totalPages">
+          <button type="button" class="btn btn-icon btn-soft" (click)="setPage(page + 1)" [disabled]="page === totalPages">
             <app-icon name="arrow-right" [size]="14"></app-icon>
           </button>
         </div>

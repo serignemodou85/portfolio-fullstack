@@ -137,7 +137,7 @@
                   <app-icon name="edit" [size]="16"></app-icon>
                 </a>
 
-                <button class="btn btn-icon btn-danger" (click)="archiveProject(project)" title="Archiver">
+                <button type="button" class="btn btn-icon btn-danger" (click)="archiveProject(project)" title="Archiver">
                   <app-icon name="trash" [size]="16"></app-icon>
                 </button>
 
@@ -153,13 +153,13 @@
 
     <div class="table-footer" *ngIf="projectTotalPages > 1">
       <div class="pagination">
-        <button class="btn btn-icon btn-soft" (click)="setProjectPage(projectPage - 1)" [disabled]="projectPage === 1">
+        <button type="button" class="btn btn-icon btn-soft" (click)="setProjectPage(projectPage - 1)" [disabled]="projectPage === 1">
           <span class="icon-rotate">
             <app-icon name="arrow-right" [size]="14"></app-icon>
           </span>
         </button>
         <span class="page-count">Page {{ projectPage }} / {{ projectTotalPages }}</span>
-        <button class="btn btn-icon btn-soft" (click)="setProjectPage(projectPage + 1)" [disabled]="projectPage === projectTotalPages">
+        <button type="button" class="btn btn-icon btn-soft" (click)="setProjectPage(projectPage + 1)" [disabled]="projectPage === projectTotalPages">
           <app-icon name="arrow-right" [size]="14"></app-icon>
         </button>
       </div>
@@ -227,16 +227,16 @@
             <td>{{ message.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
             <td>
               <div class="row-actions">
-                <button class="btn btn-icon btn-soft" (click)="markMessageAsRead(message)" title="Marquer lu">
+                <button type="button" class="btn btn-icon btn-soft" (click)="markMessageAsRead(message)" title="Marquer lu">
                   <app-icon name="check" [size]="16"></app-icon>
                 </button>
-                <button class="btn btn-icon btn-outline" (click)="replyToMessage(message)" title="Repondre">
+                <button type="button" class="btn btn-icon btn-outline" (click)="replyToMessage(message)" title="Repondre">
                   <app-icon name="mail" [size]="16"></app-icon>
                 </button>
-                <button class="btn btn-icon btn-soft" (click)="archiveMessage(message)" title="Archiver message">
+                <button type="button" class="btn btn-icon btn-soft" (click)="archiveMessage(message)" title="Archiver message">
                   <app-icon name="archive" [size]="16"></app-icon>
                 </button>
-                <button class="btn btn-icon btn-danger" (click)="deleteMessage(message)" title="Supprimer message">
+                <button type="button" class="btn btn-icon btn-danger" (click)="deleteMessage(message)" title="Supprimer message">
                   <app-icon name="trash" [size]="16"></app-icon>
                 </button>
               </div>
@@ -248,13 +248,13 @@
 
     <div class="table-footer" *ngIf="!loadingMessages && !messagesError && messageTotalPages > 1">
       <div class="pagination">
-        <button class="btn btn-icon btn-soft" (click)="setMessagePage(messagePage - 1)" [disabled]="messagePage === 1">
+        <button type="button" class="btn btn-icon btn-soft" (click)="setMessagePage(messagePage - 1)" [disabled]="messagePage === 1">
           <span class="icon-rotate">
             <app-icon name="arrow-right" [size]="14"></app-icon>
           </span>
         </button>
         <span class="page-count">Page {{ messagePage }} / {{ messageTotalPages }}</span>
-        <button class="btn btn-icon btn-soft" (click)="setMessagePage(messagePage + 1)" [disabled]="messagePage === messageTotalPages">
+        <button type="button" class="btn btn-icon btn-soft" (click)="setMessagePage(messagePage + 1)" [disabled]="messagePage === messageTotalPages">
           <app-icon name="arrow-right" [size]="14"></app-icon>
         </button>
       </div>

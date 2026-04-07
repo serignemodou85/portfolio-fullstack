@@ -83,10 +83,10 @@
                 <td>{{ cat.slug }}</td>
                 <td>
                   <div class="row-actions">
-                    <button class="btn btn-icon btn-soft" (click)="editCategory(cat)" title="Editer">
+                    <button type="button" class="btn btn-icon btn-soft" (click)="editCategory(cat)" title="Editer">
                       <app-icon name="edit" [size]="16"></app-icon>
                     </button>
-                    <button class="btn btn-icon btn-danger" (click)="deleteCategory(cat)" title="Supprimer">
+                    <button type="button" class="btn btn-icon btn-danger" (click)="deleteCategory(cat)" title="Supprimer">
                       <app-icon name="trash" [size]="16"></app-icon>
                     </button>
                   </div>
@@ -97,13 +97,13 @@
         </div>
         <div class="table-footer" *ngIf="categoryTotalPages > 1">
           <div class="pagination">
-            <button class="btn btn-icon btn-soft" (click)="setCategoryPage(categoryPage - 1)" [disabled]="categoryPage === 1">
+            <button type="button" class="btn btn-icon btn-soft" (click)="setCategoryPage(categoryPage - 1)" [disabled]="categoryPage === 1">
               <span class="icon-rotate">
                 <app-icon name="arrow-right" [size]="14"></app-icon>
               </span>
             </button>
             <span class="page-count">Page {{ categoryPage }} / {{ categoryTotalPages }}</span>
-            <button class="btn btn-icon btn-soft" (click)="setCategoryPage(categoryPage + 1)" [disabled]="categoryPage === categoryTotalPages">
+            <button type="button" class="btn btn-icon btn-soft" (click)="setCategoryPage(categoryPage + 1)" [disabled]="categoryPage === categoryTotalPages">
               <app-icon name="arrow-right" [size]="14"></app-icon>
             </button>
           </div>
@@ -167,10 +167,10 @@
                 <td>{{ tag.slug }}</td>
                 <td>
                   <div class="row-actions">
-                    <button class="btn btn-icon btn-soft" (click)="editTag(tag)" title="Editer">
+                    <button type="button" class="btn btn-icon btn-soft" (click)="editTag(tag)" title="Editer">
                       <app-icon name="edit" [size]="16"></app-icon>
                     </button>
-                    <button class="btn btn-icon btn-danger" (click)="deleteTag(tag)" title="Supprimer">
+                    <button type="button" class="btn btn-icon btn-danger" (click)="deleteTag(tag)" title="Supprimer">
                       <app-icon name="trash" [size]="16"></app-icon>
                     </button>
                   </div>
@@ -181,13 +181,13 @@
         </div>
         <div class="table-footer" *ngIf="tagTotalPages > 1">
           <div class="pagination">
-            <button class="btn btn-icon btn-soft" (click)="setTagPage(tagPage - 1)" [disabled]="tagPage === 1">
+            <button type="button" class="btn btn-icon btn-soft" (click)="setTagPage(tagPage - 1)" [disabled]="tagPage === 1">
               <span class="icon-rotate">
                 <app-icon name="arrow-right" [size]="14"></app-icon>
               </span>
             </button>
             <span class="page-count">Page {{ tagPage }} / {{ tagTotalPages }}</span>
-            <button class="btn btn-icon btn-soft" (click)="setTagPage(tagPage + 1)" [disabled]="tagPage === tagTotalPages">
+            <button type="button" class="btn btn-icon btn-soft" (click)="setTagPage(tagPage + 1)" [disabled]="tagPage === tagTotalPages">
               <app-icon name="arrow-right" [size]="14"></app-icon>
             </button>
           </div>
@@ -346,10 +346,10 @@
               <td>{{ (article.published_at || article.created_at) | date:'dd/MM/yyyy' }}</td>
               <td>
                 <div class="row-actions">
-                  <button class="btn btn-icon btn-soft" (click)="editArticle(article)" title="Editer">
+                  <button type="button" class="btn btn-icon btn-soft" (click)="editArticle(article)" title="Editer">
                     <app-icon name="edit" [size]="16"></app-icon>
                   </button>
-                  <button class="btn btn-icon btn-danger" (click)="deleteArticle(article)" title="Supprimer">
+                  <button type="button" class="btn btn-icon btn-danger" (click)="deleteArticle(article)" title="Supprimer">
                     <app-icon name="trash" [size]="16"></app-icon>
                   </button>
                 </div>
@@ -361,13 +361,13 @@
 
       <div class="table-footer" *ngIf="articleTotalPages > 1">
         <div class="pagination">
-          <button class="btn btn-icon btn-soft" (click)="setArticlePage(articlePage - 1)" [disabled]="articlePage === 1">
+          <button type="button" class="btn btn-icon btn-soft" (click)="setArticlePage(articlePage - 1)" [disabled]="articlePage === 1">
             <span class="icon-rotate">
               <app-icon name="arrow-right" [size]="14"></app-icon>
             </span>
           </button>
           <span class="page-count">Page {{ articlePage }} / {{ articleTotalPages }}</span>
-          <button class="btn btn-icon btn-soft" (click)="setArticlePage(articlePage + 1)" [disabled]="articlePage === articleTotalPages">
+          <button type="button" class="btn btn-icon btn-soft" (click)="setArticlePage(articlePage + 1)" [disabled]="articlePage === articleTotalPages">
             <app-icon name="arrow-right" [size]="14"></app-icon>
           </button>
         </div>

@@ -320,6 +320,10 @@ a {
   flex-wrap: wrap;
 }
 
+.admin-page .status-badge {
+  position: static;
+}
+
 .admin-page .pagination {
   display: flex;
   align-items: center;

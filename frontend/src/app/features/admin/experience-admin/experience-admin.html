@@ -144,10 +144,10 @@
               </td>
               <td>
                 <div class="row-actions">
-                  <button class="btn btn-icon btn-soft" (click)="startEdit(exp)" title="Editer">
+                  <button type="button" class="btn btn-icon btn-soft" (click)="startEdit(exp)" title="Editer">
                     <app-icon name="edit" [size]="16"></app-icon>
                   </button>
-                  <button class="btn btn-icon btn-danger" (click)="deleteExperience(exp.id)" title="Supprimer">
+                  <button type="button" class="btn btn-icon btn-danger" (click)="deleteExperience(exp.id)" title="Supprimer">
                     <app-icon name="trash" [size]="16"></app-icon>
                   </button>
                 </div>
@@ -163,13 +163,13 @@
 
       <div class="table-footer" *ngIf="experienceTotalPages > 1">
         <div class="pagination">
-          <button class="btn btn-icon btn-soft" (click)="setExperiencePage(experiencePage - 1)" [disabled]="experiencePage === 1">
+          <button type="button" class="btn btn-icon btn-soft" (click)="setExperiencePage(experiencePage - 1)" [disabled]="experiencePage === 1">
             <span class="icon-rotate">
               <app-icon name="arrow-right" [size]="14"></app-icon>
             </span>
           </button>
           <span class="page-count">Page {{ experiencePage }} / {{ experienceTotalPages }}</span>
-          <button class="btn btn-icon btn-soft" (click)="setExperiencePage(experiencePage + 1)" [disabled]="experiencePage === experienceTotalPages">
+          <button type="button" class="btn btn-icon btn-soft" (click)="setExperiencePage(experiencePage + 1)" [disabled]="experiencePage === experienceTotalPages">
             <app-icon name="arrow-right" [size]="14"></app-icon>
           </button>
         </div>
