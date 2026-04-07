@@ -21,6 +21,10 @@ django-filter==24.3
 # Image Processing (si necessaire pour Pillow)
 Pillow==11.0.0
 
+# Cloudinary (stockage media)
+cloudinary==1.40.0
+django-cloudinary-storage==0.3.0
+
 # Environment Variables (recommande pour production)
 python-decouple==3.8
 
