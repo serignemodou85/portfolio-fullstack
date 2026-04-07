@@ -52,6 +52,17 @@
   padding: 1rem 1.1rem;
 }
 
+.kpi-duo-values {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-top: 0.35rem;
+}
+
+.kpi-duo-values .kpi-value {
+  margin-top: 0.25rem;
+}
+
 .kpi-head {
   display: flex;
   align-items: center;
@@ -212,8 +223,19 @@
 }
 
 .row-actions {
-  display: flex;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
   gap: 0.5rem;
+  width: 100%;
+}
+
+.row-actions .btn {
+  min-width: 40px;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .table-footer {
