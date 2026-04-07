@@ -15,6 +15,9 @@ def _safe_file_url(request, file_field):
         url = file_field.url
     except Exception:
         return None
+    if url.startswith('http://') or url.startswith('https://'):
+        return url.replace('http://', 'https://')  # force https
+    # Sinon on construit l'URL absolue avec le domaine du backend
     return request.build_absolute_uri(url) if request else url
 
 
