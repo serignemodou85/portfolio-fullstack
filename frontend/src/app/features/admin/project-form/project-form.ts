@@ -75,7 +75,7 @@ export class ProjectForm implements OnInit {
           order: project.order ?? 0,
           views: project.views ?? 0
         };
-        this.thumbnailPreview = project.thumbnail;
+        this.thumbnailPreview = project.thumbnail ?? null;
         this.loading = false;
       },
       error: (err) => {
