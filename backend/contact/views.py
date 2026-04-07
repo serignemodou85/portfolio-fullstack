@@ -114,6 +114,19 @@ class ContactMessageViewSet(viewsets.ModelViewSet):
         return Response({'status': contact_message.status}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
+    def restore(self, request, pk=None):
+        contact_message = self.get_object()
+        contact_message.status = 'read'
+
+        if not contact_message.read_at:
+            contact_message.read_at = timezone.now()
+            contact_message.save(update_fields=['status', 'read_at'])
+        else:
+            contact_message.save(update_fields=['status'])
+
+        return Response({'status': contact_message.status}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
     def reply(self, request, pk=None):
         contact_message = self.get_object()
         reply_message = (request.data.get('reply_message') or '').strip()

@@ -1,0 +1,103 @@
+<app-admin-shell>
+  <div class="archives-page">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Admin messages</p>
+        <h1>Archives messages</h1>
+        <p class="subtitle">Restaurer un message ou le supprimer definitivement.</p>
+      </div>
+      <div class="header-actions">
+        <a routerLink="/admin/dashboard" class="btn btn-outline btn-back">
+          <app-icon name="arrow-right" [size]="16"></app-icon>
+        </a>
+      </div>
+    </header>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Liste des messages archives</h2>
+        <span class="panel-meta">{{ processedMessages.length }} message(s)</span>
+      </div>
+
+      <div *ngIf="loading" class="loading-state">Chargement...</div>
+      <div *ngIf="error" class="error-state">{{ error }}</div>
+
+      <div class="table-wrap" *ngIf="!loading && !error && processedMessages.length; else emptyState">
+        <div class="table-tools">
+          <div class="field inline">
+            <label for="archive_message_search">Recherche</label>
+            <input id="archive_message_search" type="search" [(ngModel)]="searchTerm" name="archive_message_search" placeholder="Nom, email..." />
+          </div>
+          <div class="field inline">
+            <label for="archive_message_sort">Tri</label>
+            <select id="archive_message_sort" [(ngModel)]="sortKey" name="archive_message_sort">
+              <option value="date_desc">Date recente</option>
+              <option value="date_asc">Date ancienne</option>
+              <option value="name_asc">Nom A-Z</option>
+              <option value="name_desc">Nom Z-A</option>
+            </select>
+          </div>
+          <div class="field inline">
+            <label for="archive_message_page_size">Par page</label>
+            <select id="archive_message_page_size" [(ngModel)]="pageSize" name="archive_message_page_size" (ngModelChange)="setPageSize($event)">
+              <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+            </select>
+          </div>
+        </div>
+
+        <table class="archive-table">
+          <thead>
+            <tr>
+              <th>Contact</th>
+              <th>Sujet</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let message of pagedMessages; trackBy: trackByMessage">
+              <td>
+                <div class="contact-cell">
+                  <p class="project-name">{{ message.name }}</p>
+                  <p class="project-desc">{{ message.email }}</p>
+                </div>
+              </td>
+              <td>
+                <p class="project-desc">{{ message.subject }}</p>
+              </td>
+              <td>{{ message.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>
+                <div class="row-actions">
+                  <button type="button" class="btn btn-soft" (click)="restoreMessage(message)" title="Restaurer">
+                    <app-icon name="check" [size]="16"></app-icon>
+                  </button>
+                  <button type="button" class="btn btn-danger" (click)="deleteMessage(message)" title="Supprimer definitivement">
+                    <app-icon name="trash" [size]="16"></app-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #emptyState>
+        <div class="empty-state" *ngIf="!loading && !error">Aucun message archive.</div>
+      </ng-template>
+
+      <div class="table-footer" *ngIf="!loading && !error && totalPages > 1">
+        <div class="pagination">
+          <button type="button" class="btn btn-icon btn-soft" (click)="setPage(page - 1)" [disabled]="page === 1">
+            <span class="icon-rotate">
+              <app-icon name="arrow-right" [size]="14"></app-icon>
+            </span>
+          </button>
+          <span class="page-count">Page {{ page }} / {{ totalPages }}</span>
+          <button type="button" class="btn btn-icon btn-soft" (click)="setPage(page + 1)" [disabled]="page === totalPages">
+            <app-icon name="arrow-right" [size]="14"></app-icon>
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+</app-admin-shell>

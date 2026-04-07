@@ -75,6 +75,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/project-archives/project-archives').then(m => m.ProjectArchives)
       },
       {
+        path: 'messages/archives',
+        loadComponent: () => import('./features/admin/message-archives/message-archives').then(m => m.MessageArchives)
+      },
+      {
         path: 'experiences',
         loadComponent: () => import('./features/admin/experience-admin/experience-admin').then(m => m.ExperienceAdmin)
       },

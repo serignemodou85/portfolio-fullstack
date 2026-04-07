@@ -117,7 +117,7 @@
           <tr *ngFor="let project of pagedProjects; trackBy: trackByProject">
             <td>
               <div class="project-cell">
-                <img [src]="project.thumbnail" alt="thumbnail" />
+                <img [src]="getImageUrl(project.thumbnail)" alt="thumbnail" (error)="onImageError($event)" />
                 <div>
                   <p class="project-name">{{ project.title }}</p>
                   <p class="project-stack">{{ project.technologies }}</p>
@@ -137,13 +137,9 @@
                   <app-icon name="edit" [size]="16"></app-icon>
                 </a>
 
-                <button type="button" class="btn btn-icon btn-danger" (click)="archiveProject(project)" title="Archiver">
+                <button type="button" class="btn btn-icon btn-danger" (click)="archiveProject(project)" title="Supprimer (archiver)">
                   <app-icon name="trash" [size]="16"></app-icon>
                 </button>
-
-                <a routerLink="/admin/projects/archives" class="btn btn-icon btn-outline" title="Ouvrir les archives">
-                  <app-icon name="archive" [size]="16"></app-icon>
-                </a>
               </div>
             </td>
           </tr>
@@ -173,7 +169,13 @@
   <section class="panel">
     <div class="panel-head">
       <h2>Messages recents</h2>
-      <span class="panel-meta">{{ processedMessages.length }} affiches</span>
+      <div class="panel-head-actions">
+        <span class="panel-meta">{{ processedMessages.length }} affiches</span>
+        <a routerLink="/admin/messages/archives" class="btn btn-outline">
+          <app-icon name="archive" [size]="16"></app-icon>
+          <span>Voir archives</span>
+        </a>
+      </div>
     </div>
 
     <div class="table-wrap" *ngIf="!loadingMessages && !messagesError && processedMessages.length; else messageState">

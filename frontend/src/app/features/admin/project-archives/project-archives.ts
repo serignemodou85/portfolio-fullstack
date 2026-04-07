@@ -6,6 +6,7 @@ import { ProjectService } from '../../projects/services/project';
 import { ProjectList } from '../../../core/models/project.model';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-project-archives',
@@ -23,6 +24,8 @@ export class ProjectArchives implements OnInit {
   page = 1;
   searchTerm = '';
   sortKey: 'updated_desc' | 'updated_asc' | 'title_asc' | 'title_desc' = 'updated_desc';
+  readonly placeholderImage = 'assets/placeholders/project.svg';
+  private readonly mediaBase = environment.apiUrl.replace(/\/api\/?$/, '');
 
   constructor(private projectService: ProjectService) {}
 
@@ -158,5 +161,25 @@ export class ProjectArchives implements OnInit {
 
   trackByProject(index: number, item: ProjectList): string {
     return item.slug || `${index}`;
+  }
+
+  getImageUrl(url?: string | null): string {
+    if (!url) {
+      return this.placeholderImage;
+    }
+    if (url.startsWith('http')) {
+      return url;
+    }
+    if (url.startsWith('/')) {
+      return `${this.mediaBase}${url}`;
+    }
+    return url;
+  }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img && img.src !== this.placeholderImage) {
+      img.src = this.placeholderImage;
+    }
   }
 }

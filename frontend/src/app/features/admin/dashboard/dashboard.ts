@@ -13,6 +13,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
 import { ContactService } from '../../../core/services/contact.service';
+import { environment } from '../../../../environments/environment';
 
 
 @Component({
@@ -49,6 +50,8 @@ export class Dashboard implements OnInit {
   messageSearch = '';
   projectSort: 'updated_desc' | 'updated_asc' | 'title_asc' | 'title_desc' = 'updated_desc';
   messageSort: 'date_desc' | 'date_asc' | 'name_asc' | 'name_desc' = 'date_desc';
+  readonly placeholderImage = 'assets/placeholders/project.svg';
+  private readonly mediaBase = environment.apiUrl.replace(/\/api\/?$/, '');
 
   constructor(
     private authService: AuthService,
@@ -367,5 +370,25 @@ export class Dashboard implements OnInit {
 
   trackByMessage(index: number, item: ContactMessage): number {
     return item.id ?? index;
+  }
+
+  getImageUrl(url?: string | null): string {
+    if (!url) {
+      return this.placeholderImage;
+    }
+    if (url.startsWith('http')) {
+      return url;
+    }
+    if (url.startsWith('/')) {
+      return `${this.mediaBase}${url}`;
+    }
+    return url;
+  }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img && img.src !== this.placeholderImage) {
+      img.src = this.placeholderImage;
+    }
   }
 }

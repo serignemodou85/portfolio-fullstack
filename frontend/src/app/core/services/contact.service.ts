@@ -41,6 +41,10 @@ export class ContactService {
     return this.http.post<{ status: string }>(`${this.apiUrl}/${id}/archive/`, {});
   }
 
+  restore(id: number): Observable<{ status: string }> {
+    return this.http.post<{ status: string }>(`${this.apiUrl}/${id}/restore/`, {});
+  }
+
   reply(id: number, replyMessage: string): Observable<{ status: string; detail: string }> {
     return this.http.post<{ status: string; detail: string }>(`${this.apiUrl}/${id}/reply/`, {
       reply_message: replyMessage

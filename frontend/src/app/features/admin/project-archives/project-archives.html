@@ -62,7 +62,7 @@
             <tr *ngFor="let project of pagedArchives; trackBy: trackByProject">
               <td>
                 <div class="project-cell">
-                  <img [src]="project.thumbnail" alt="thumbnail" />
+                  <img [src]="getImageUrl(project.thumbnail)" alt="thumbnail" (error)="onImageError($event)" />
                   <div>
                     <p class="project-name">{{ project.title }}</p>
                     <p class="project-desc">{{ project.description }}</p>
