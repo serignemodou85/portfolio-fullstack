@@ -116,7 +116,13 @@
           <tr *ngFor="let project of pagedProjects; trackBy: trackByProject">
             <td>
               <div class="project-cell">
-                <img [src]="getImageUrl(project.thumbnail)" alt="thumbnail" (error)="onImageError($event)" />
+                <img
+                  [src]="getImageUrl(project.thumbnail)"
+                  alt="thumbnail"
+                  loading="lazy"
+                  decoding="async"
+                  (error)="onImageError($event)"
+                />
                 <div>
                   <p class="project-name">{{ project.title }}</p>
                   <p class="project-stack">{{ project.technologies }}</p>

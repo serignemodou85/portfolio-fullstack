@@ -69,6 +69,8 @@
           <img
             [src]="getImageUrl(project.thumbnail)"
             [alt]="project.title"
+            loading="lazy"
+            decoding="async"
             (error)="onImageError($event)"
           />
           <span

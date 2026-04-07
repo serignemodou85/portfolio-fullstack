@@ -24,6 +24,7 @@ import { environment } from '../../../../environments/environment';
   styleUrls: ['./dashboard.scss']
 })
 export class Dashboard implements OnInit {
+  private readonly maxDashboardItems = 200;
   currentUser: User | null = null;
   recentProjects: ProjectList[] = [];
   archivedProjects: ProjectList[] = [];
@@ -75,7 +76,7 @@ export class Dashboard implements OnInit {
   }
 
   loadDashboardData(): void {
-    this.projectService.getProjects({ page_size: 1000 }).subscribe({
+    this.projectService.getProjects({ page_size: this.maxDashboardItems }).subscribe({
       next: (projects) => {
         this.activeProjects = projects.filter(p => p.status !== 'archived');
         this.archivedProjects = projects.filter(p => p.status === 'archived');
@@ -109,7 +110,7 @@ export class Dashboard implements OnInit {
     this.loadingMessages = true;
     this.messagesError = null;
 
-    this.contactService.getMessages({ page_size: 1000 }).subscribe({
+    this.contactService.getMessages({ page_size: this.maxDashboardItems }).subscribe({
       next: (messages) => {
         this.recentMessages = messages;
         this.syncMessagePage();
