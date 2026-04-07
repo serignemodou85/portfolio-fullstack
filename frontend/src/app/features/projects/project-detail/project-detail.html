@@ -32,7 +32,11 @@
 
   <section class="cover">
     <div class="container">
-      <img [src]="project.thumbnail" [alt]="project.title" />
+      <img
+        [src]="getImageUrl(project.thumbnail)"
+        [alt]="project.title"
+        (error)="onImageError($event)"
+      />
     </div>
   </section>
 

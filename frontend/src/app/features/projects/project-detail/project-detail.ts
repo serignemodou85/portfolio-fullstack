@@ -16,6 +16,7 @@ export class ProjectDetail implements OnInit {
   project: ProjectDetailModel | null = null;
   loading = true;
   error: string | null = null;
+  readonly placeholderImage = 'assets/placeholders/project.svg';
 
   constructor(
     private route: ActivatedRoute,
@@ -56,5 +57,19 @@ export class ProjectDetail implements OnInit {
       return 'En cours';
     }
     return 'Archive';
+  }
+
+  getImageUrl(url?: string | null): string {
+    if (!url) {
+      return this.placeholderImage;
+    }
+    return url;
+  }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img && img.src !== this.placeholderImage) {
+      img.src = this.placeholderImage;
+    }
   }
 }

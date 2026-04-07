@@ -26,7 +26,11 @@
     <div class="grid" *ngIf="!loading && !error">
       <article class="project-card fade-up" *ngFor="let project of filteredProjects">
         <div class="media">
-          <img [src]="project.thumbnail" [alt]="project.title" />
+          <img
+            [src]="getImageUrl(project.thumbnail)"
+            [alt]="project.title"
+            (error)="onImageError($event)"
+          />
           <span
             class="status-badge"
             [class.completed]="project.status === 'completed'"

@@ -21,6 +21,7 @@ export class Home implements OnInit {
   featuredArticles: ArticleList[] = [];
   profile: User | null = null;
   loading = true;
+  readonly placeholderImage = 'assets/placeholders/project.svg';
 
   constructor(
     private projectService: ProjectService,
@@ -70,5 +71,19 @@ export class Home implements OnInit {
         this.profile = null;
       }
     });
+  }
+
+  getImageUrl(url?: string | null): string {
+    if (!url) {
+      return this.placeholderImage;
+    }
+    return url;
+  }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img && img.src !== this.placeholderImage) {
+      img.src = this.placeholderImage;
+    }
   }
 }

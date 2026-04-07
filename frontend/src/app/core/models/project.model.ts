@@ -18,7 +18,7 @@ export interface ProjectBase {
   title: string;
   slug: string;
   description: string;
-  thumbnail: string;
+  thumbnail?: string | null;
   technologies: string;
   status: 'in_progress' | 'completed' | 'archived';
   is_featured?: boolean;

@@ -19,7 +19,6 @@
 
     <div class="nav-cta desktop">
       <a routerLink="/contact" class="btn btn-ghost">Discuter</a>
-      <a *ngIf="isAuthenticated()" routerLink="/admin/dashboard" class="btn btn-primary">Admin</a>
     </div>
 
     <button class="mobile-menu-btn" (click)="toggleMobileMenu()" aria-label="Menu principal">
@@ -35,7 +34,6 @@
       <a routerLink="/skills" (click)="toggleMobileMenu()" routerLinkActive="active">Skills</a>
       <a routerLink="/blog" (click)="toggleMobileMenu()" routerLinkActive="active">Blog</a>
       <a routerLink="/contact" (click)="toggleMobileMenu()" routerLinkActive="active">Contact</a>
-      <a *ngIf="isAuthenticated()" routerLink="/admin/dashboard" (click)="toggleMobileMenu()" class="btn btn-primary">Admin</a>
     </div>
   </div>
 </nav>

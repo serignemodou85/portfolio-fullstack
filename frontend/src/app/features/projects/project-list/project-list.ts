@@ -18,6 +18,7 @@ export class ProjectList implements OnInit {
   loading = true;
   error: string | null = null;
   selectedStatus: string = 'all';
+  readonly placeholderImage = 'assets/placeholders/project.svg';
 
   constructor(private projectService: ProjectService) {}
 
@@ -48,6 +49,20 @@ export class ProjectList implements OnInit {
       this.filteredProjects = this.projects;
     } else {
       this.filteredProjects = this.projects.filter(p => p.status === status);
+    }
+  }
+
+  getImageUrl(url?: string | null): string {
+    if (!url) {
+      return this.placeholderImage;
+    }
+    return url;
+  }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img && img.src !== this.placeholderImage) {
+      img.src = this.placeholderImage;
     }
   }
 
