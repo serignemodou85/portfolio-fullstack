@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import F
 
 from portfolio_backend.permissions import IsAdminOrReadOnly
 from .models import Project
@@ -40,6 +41,17 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Assigne automatiquement l'utilisateur connecte lors de la creation."""
         serializer.save(created_by=self.request.user)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        Incremente les vues quand un visiteur consulte le detail public d'un projet.
+        """
+        instance = self.get_object()
+        if not (request.user and request.user.is_authenticated and request.user.is_staff):
+            Project.objects.filter(pk=instance.pk).update(views=F('views') + 1)
+            instance.refresh_from_db(fields=['views'])
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
     @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
     def restore(self, request, slug=None):

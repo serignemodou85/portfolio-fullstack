@@ -73,7 +73,6 @@
     <div class="panel-head">
       <h2>Projets actifs</h2>
       <div class="panel-head-actions">
-        <span class="panel-meta">{{ processedProjects.length }} affiches</span>
         <a routerLink="/admin/projects/archives" class="btn btn-outline">
           <app-icon name="archive" [size]="16"></app-icon>
           <span>Voir archives</span>
@@ -170,7 +169,6 @@
     <div class="panel-head">
       <h2>Messages recents</h2>
       <div class="panel-head-actions">
-        <span class="panel-meta">{{ processedMessages.length }} affiches</span>
         <a routerLink="/admin/messages/archives" class="btn btn-outline">
           <app-icon name="archive" [size]="16"></app-icon>
           <span>Voir archives</span>
@@ -235,10 +233,7 @@
                 <button type="button" class="btn btn-icon btn-outline" (click)="replyToMessage(message)" title="Repondre">
                   <app-icon name="mail" [size]="16"></app-icon>
                 </button>
-                <button type="button" class="btn btn-icon btn-soft" (click)="archiveMessage(message)" title="Archiver message">
-                  <app-icon name="archive" [size]="16"></app-icon>
-                </button>
-                <button type="button" class="btn btn-icon btn-danger" (click)="deleteMessage(message)" title="Supprimer message">
+                <button type="button" class="btn btn-icon btn-danger" (click)="archiveMessage(message)" title="Archiver message">
                   <app-icon name="trash" [size]="16"></app-icon>
                 </button>
               </div>
