@@ -22,7 +22,6 @@
       <div class="meta">
         <span>{{ project.start_date | date:'MMMM yyyy' }}</span>
         <span *ngIf="project.end_date">{{ project.end_date | date:'MMMM yyyy' }}</span>
-        <span>{{ project.views || 0 }} vues</span>
       </div>
       <div class="actions">
         <a *ngIf="project.github_url" [href]="project.github_url" target="_blank" class="btn btn-soft">GitHub</a>
