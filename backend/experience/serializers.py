@@ -3,11 +3,23 @@ from rest_framework import serializers
 from .models import Experience
 from accounts.serializers import UserPublicSerializer
 
+
+def _safe_file_url(request, file_field):
+    if not file_field:
+        return None
+    try:
+        url = file_field.url
+    except Exception:
+        return None
+    return request.build_absolute_uri(url) if request else url
+
 class ExperienceSerializer(serializers.ModelSerializer):
     """
     Serializer pour les expériences professionnelles
     """
     created_by = UserPublicSerializer(read_only=True)
+    company_logo = serializers.SerializerMethodField()
+    certificate_file = serializers.SerializerMethodField()
     
     # Champ calculé : durée en mois
     duration_months = serializers.SerializerMethodField()
@@ -28,6 +40,12 @@ class ExperienceSerializer(serializers.ModelSerializer):
         
         months = (end.year - start.year) * 12 + (end.month - start.month)
         return months
+
+    def get_company_logo(self, obj):
+        return _safe_file_url(self.context.get('request'), obj.company_logo)
+
+    def get_certificate_file(self, obj):
+        return _safe_file_url(self.context.get('request'), obj.certificate_file)
 
 
 class ExperienceCreateUpdateSerializer(serializers.ModelSerializer):

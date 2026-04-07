@@ -5,6 +5,8 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import F
+from django.views.decorators.cache import cache_page
+from django.conf import settings
 
 from portfolio_backend.permissions import IsAdminOrReadOnly
 from .models import Project
@@ -52,6 +54,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
             instance.refresh_from_db(fields=['views'])
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+
+    def list(self, request, *args, **kwargs):
+        if request.user and request.user.is_authenticated:
+            return super().list(request, *args, **kwargs)
+        return cache_page(settings.CACHE_TTL)(super().list)(request, *args, **kwargs)
 
     @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
     def restore(self, request, slug=None):

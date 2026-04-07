@@ -19,10 +19,20 @@ interface PaginatedResponse<T> {
 })
 export class ProjectService {
   private apiUrl = `${environment.apiUrl}/projects/`;
+  private cache = new Map<string, { ts: number; data: ProjectList[] }>();
+  private cacheTtlMs = 60_000;
 
   constructor(private http: HttpClient) {}
 
   getProjects(filters?: { status?: string; is_featured?: boolean; page?: number; page_size?: number }): Observable<ProjectList[]> {
+    const cacheKey = JSON.stringify(filters || {});
+    const cached = this.cache.get(cacheKey);
+    if (cached && Date.now() - cached.ts < this.cacheTtlMs) {
+      return new Observable<ProjectList[]>((observer) => {
+        observer.next(cached.data);
+        observer.complete();
+      });
+    }
     let params = new HttpParams();
     if (filters?.status) {
       params = params.set('status', filters.status);
@@ -37,7 +47,11 @@ export class ProjectService {
       params = params.set('page_size', String(filters.page_size));
     }
     return this.http.get<ProjectList[] | PaginatedResponse<ProjectList>>(this.apiUrl, { params }).pipe(
-      map((res) => Array.isArray(res) ? res : (res.results ?? []))
+      map((res) => Array.isArray(res) ? res : (res.results ?? [])),
+      map((items) => {
+        this.cache.set(cacheKey, { ts: Date.now(), data: items });
+        return items;
+      })
     );
   }
 

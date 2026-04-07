@@ -301,6 +301,16 @@ CORS_ALLOW_HEADERS = [
 
 AUTH_USER_MODEL = 'accounts.User'
 
+# Cache (API)
+CACHE_TTL = int(os.getenv('CACHE_TTL', '60'))
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'portfolio-cache',
+        'TIMEOUT': CACHE_TTL,
+    }
+}
+
 CSRF_TRUSTED_ORIGINS = env_list(
     'CSRF_TRUSTED_ORIGINS',
     'http://localhost:4200,http://127.0.0.1:4200'
