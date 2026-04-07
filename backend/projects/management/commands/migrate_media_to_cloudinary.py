@@ -48,11 +48,14 @@ class Command(BaseCommand):
                     if not field:
                         skipped += 1
                         continue
+                    local_path = None
                     try:
                         local_path = Path(field.path)
                     except Exception:
-                        skipped += 1
-                        continue
+                        local_path = None
+                    if not local_path:
+                        if field.name:
+                            local_path = Path(settings.MEDIA_ROOT) / field.name
                     if not local_path.exists():
                         skipped += 1
                         continue
