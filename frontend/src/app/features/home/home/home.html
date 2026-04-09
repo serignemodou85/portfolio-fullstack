@@ -41,7 +41,13 @@
 
     <div class="hero-visual fade-up stagger-2">
       <div class="visual-card">
-        <img [src]="profile?.profile_picture || 'assets/images/cv.jpg'" alt="Modou Fall" />
+        <img
+          [src]="getProfileImageUrl(profile?.profile_picture)"
+          alt="Modou Fall"
+          loading="lazy"
+          decoding="async"
+          (error)="onProfileError($event)"
+        />
       </div>
       <div class="visual-float one">Data Pipeline</div>
       <div class="visual-float two">API + Dashboard</div>

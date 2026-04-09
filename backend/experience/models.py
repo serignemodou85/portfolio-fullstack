@@ -33,7 +33,8 @@ class Experience(models.Model):
         blank=True, 
         null=True,
         verbose_name="Logo entreprise",
-        validators=[validate_image_file]
+        validators=[validate_image_file],
+        max_length=255
     )
 
     certificate_file = models.FileField(
@@ -41,7 +42,8 @@ class Experience(models.Model):
         blank=True,
         null=True,
         verbose_name="Certificat (PDF/image)",
-        validators=[validate_doc_or_image]
+        validators=[validate_doc_or_image],
+        max_length=255
     )
     
     order = models.IntegerField(

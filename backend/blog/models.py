@@ -70,7 +70,8 @@ class Article(models.Model):
     featured_image = models.ImageField(
         upload_to='blog/featured/',
         verbose_name="Image de couverture",
-        validators=[validate_image_file]
+        validators=[validate_image_file],
+        max_length=255
     )
     
     category = models.ForeignKey(

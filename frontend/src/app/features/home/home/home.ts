@@ -8,6 +8,7 @@ import { ProjectList } from '../../../core/models/project.model';
 import { ArticleList } from '../../../core/models/article.model';
 import { UserService } from '../../../core/services/user.service';
 import { User } from '../../../core/models/auth.model';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -22,6 +23,7 @@ export class Home implements OnInit {
   profile: User | null = null;
   loading = true;
   readonly placeholderImage = 'assets/placeholders/project.svg';
+  readonly profileFallback = 'assets/images/cv.jpg';
 
   constructor(
     private projectService: ProjectService,
@@ -80,10 +82,38 @@ export class Home implements OnInit {
     return url;
   }
 
+  getProfileImageUrl(url?: string | null): string {
+    if (!url) {
+      return this.profileFallback;
+    }
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    if (url.startsWith('assets/')) {
+      return url;
+    }
+    if (url.startsWith('/')) {
+      return url;
+    }
+    if (!url.includes('/')) {
+      return this.profileFallback;
+    }
+    const base = environment.apiUrl.replace(/\/api\/?$/, '');
+    const cleanPath = url.startsWith('media/') ? url : `media/${url}`;
+    return `${base}/${cleanPath}`;
+  }
+
   onImageError(event: Event): void {
     const img = event.target as HTMLImageElement;
     if (img && img.src !== this.placeholderImage) {
       img.src = this.placeholderImage;
+    }
+  }
+
+  onProfileError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img && img.src !== this.profileFallback) {
+      img.src = this.profileFallback;
     }
   }
 }
