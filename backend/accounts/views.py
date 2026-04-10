@@ -6,6 +6,8 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django.db.models import Sum, Count, Q
 from django.contrib.auth import get_user_model
+from django.views.decorators.cache import cache_page
+from django.conf import settings
 from projects.models import Project
 from blog.models import Article
 from contact.models import ContactMessage
@@ -58,6 +60,11 @@ class UserViewSet(viewsets.ModelViewSet):
         Endpoint public : /api/users/public_profile/
         Retourne le profil public de l'admin principal.
         """
+        if not (request.user and request.user.is_authenticated):
+            return cache_page(settings.CACHE_TTL)(self._public_profile_impl)(request)
+        return self._public_profile_impl(request)
+
+    def _public_profile_impl(self, request):
         user = User.objects.filter(is_superuser=True).first() or User.objects.filter(is_staff=True).first() or User.objects.first()
         if not user:
             return Response({'detail': 'Profil introuvable.'}, status=status.HTTP_404_NOT_FOUND)

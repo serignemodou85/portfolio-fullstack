@@ -13,7 +13,7 @@ class ExperienceViewSet(viewsets.ModelViewSet):
     """
     ViewSet pour gérer les expériences
     """
-    queryset = Experience.objects.select_related('created_by').all().order_by('-start_date')
+    queryset = Experience.objects.all().order_by('-start_date')
     permission_classes = [IsAdminOrReadOnly]
     
     filter_backends = [DjangoFilterBackend]

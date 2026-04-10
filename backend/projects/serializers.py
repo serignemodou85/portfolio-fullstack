@@ -18,7 +18,6 @@ class ProjectListSerializer(serializers.ModelSerializer):
     """
     Serializer pour la liste des projets (version courte)
     """
-    created_by = UserPublicSerializer(read_only=True)
     thumbnail = serializers.SerializerMethodField()
 
     class Meta:
@@ -26,7 +25,7 @@ class ProjectListSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'slug', 'description', 'thumbnail',
             'technologies', 'status', 'is_featured', 'start_date',
-            'created_by', 'created_at', 'updated_at', 'views'
+            'created_at', 'updated_at', 'views'
         ]
 
     def get_thumbnail(self, obj):

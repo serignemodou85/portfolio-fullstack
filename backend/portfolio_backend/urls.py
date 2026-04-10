@@ -23,9 +23,7 @@ from contact.views import ContactMessageViewSet
 
 # Vue pour la racine
 def api_root(request):
-    """
-    Point d'entrée de l'API - Documentation
-    """
+    
     return JsonResponse({
         'message': 'Bienvenue sur l\'API Portfolio',
         'version': '1.0.0',

@@ -1,43 +1,53 @@
 # experience/serializers.py
 from rest_framework import serializers
+
 from .models import Experience
-from accounts.serializers import UserPublicSerializer
 
 
-def _safe_file_url(request, file_field):
+def _safe_file_url(request, file_field, force_cloudinary_raw=False):
     if not file_field:
         return None
     try:
         url = file_field.url
     except Exception:
         return None
+
+    if isinstance(url, str) and force_cloudinary_raw:
+        if 'res.cloudinary.com' in url and '/image/upload/' in url:
+            # certificate_file can be stored as Cloudinary raw resources.
+            url = url.replace('/image/upload/', '/raw/upload/')
+
+    if isinstance(url, str) and url.startswith('http://'):
+        url = url.replace('http://', 'https://')
+    if isinstance(url, str) and (url.startswith('https://') or url.startswith('http://')):
+        return url
+
     return request.build_absolute_uri(url) if request else url
+
 
 class ExperienceSerializer(serializers.ModelSerializer):
     """
-    Serializer pour les expériences professionnelles
+    Serializer pour les experiences professionnelles
     """
-    created_by = UserPublicSerializer(read_only=True)
     company_logo = serializers.SerializerMethodField()
     certificate_file = serializers.SerializerMethodField()
-    
-    # Champ calculé : durée en mois
     duration_months = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = Experience
-        fields = '__all__'
+        fields = [
+            'id', 'duration_months', 'type', 'title', 'company', 'location',
+            'description', 'start_date', 'end_date', 'is_current', 'company_logo',
+            'certificate_file', 'order', 'created_at', 'updated_at'
+        ]
         read_only_fields = ['id', 'created_at', 'updated_at', 'created_by']
-    
+
     def get_duration_months(self, obj):
-        """
-        Calcule la durée en mois entre start_date et end_date
-        """
         from datetime import date
-        
+
         start = obj.start_date
         end = obj.end_date if obj.end_date else date.today()
-        
+
         months = (end.year - start.year) * 12 + (end.month - start.month)
         return months
 
@@ -45,24 +55,22 @@ class ExperienceSerializer(serializers.ModelSerializer):
         return _safe_file_url(self.context.get('request'), obj.company_logo)
 
     def get_certificate_file(self, obj):
-        return _safe_file_url(self.context.get('request'), obj.certificate_file)
+        return _safe_file_url(self.context.get('request'), obj.certificate_file, force_cloudinary_raw=True)
 
 
 class ExperienceCreateUpdateSerializer(serializers.ModelSerializer):
     """
-    Serializer pour créer/modifier une expérience
+    Serializer pour creer/modifier une experience
     """
+
     class Meta:
         model = Experience
         exclude = ['created_by', 'created_at', 'updated_at']
-    
+
     def validate(self, data):
-        """
-        Vérifie que end_date est après start_date
-        """
         if data.get('end_date') and data.get('start_date'):
             if data['end_date'] < data['start_date']:
                 raise serializers.ValidationError(
-                    "La date de fin doit être après la date de début."
+                    'La date de fin doit etre apres la date de debut.'
                 )
         return data

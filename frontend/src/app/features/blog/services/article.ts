@@ -1,7 +1,7 @@
 // src/app/features/blog/services/article.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { ArticleList, ArticleDetail } from '../../../core/models/article.model';
@@ -19,6 +19,8 @@ interface PaginatedResponse<T> {
 })
 export class ArticleService {
   private apiUrl = `${environment.apiUrl}/blog/articles`;
+  private featuredCache: { ts: number; data: ArticleList[] } | null = null;
+  private cacheTtlMs = 60_000;
 
   constructor(private http: HttpClient) {}
 
@@ -33,8 +35,15 @@ export class ArticleService {
   }
 
   getFeaturedArticles(): Observable<ArticleList[]> {
+    if (this.featuredCache && Date.now() - this.featuredCache.ts < this.cacheTtlMs) {
+      return of(this.featuredCache.data);
+    }
     return this.http.get<ArticleList[] | PaginatedResponse<ArticleList>>(`${this.apiUrl}/featured/`).pipe(
-      map((res) => this.toArray(res))
+      map((res) => this.toArray(res)),
+      map((items) => {
+        this.featuredCache = { ts: Date.now(), data: items };
+        return items;
+      })
     );
   }
 
