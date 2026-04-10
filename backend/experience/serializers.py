@@ -3,8 +3,13 @@ from rest_framework import serializers
 
 from .models import Experience
 
+try:
+    import cloudinary.utils
+except Exception:  # pragma: no cover
+    cloudinary = None
 
-def _safe_file_url(request, file_field, force_cloudinary_raw=False):
+
+def _safe_file_url(request, file_field):
     if not file_field:
         return None
     try:
@@ -12,10 +17,18 @@ def _safe_file_url(request, file_field, force_cloudinary_raw=False):
     except Exception:
         return None
 
-    if isinstance(url, str) and force_cloudinary_raw:
-        if 'res.cloudinary.com' in url and '/image/upload/' in url:
-            # certificate_file can be stored as Cloudinary raw resources.
-            url = url.replace('/image/upload/', '/raw/upload/')
+    if isinstance(url, str) and 'res.cloudinary.com' in url and cloudinary:
+        public_id = getattr(file_field, 'name', None)
+        if public_id:
+            # Signed URL avoids 401 when Cloudinary delivery restrictions are active.
+            signed_url, _ = cloudinary.utils.cloudinary_url(
+                public_id,
+                resource_type='image',
+                type='upload',
+                secure=True,
+                sign_url=True
+            )
+            url = signed_url
 
     if isinstance(url, str) and url.startswith('http://'):
         url = url.replace('http://', 'https://')
@@ -55,7 +68,7 @@ class ExperienceSerializer(serializers.ModelSerializer):
         return _safe_file_url(self.context.get('request'), obj.company_logo)
 
     def get_certificate_file(self, obj):
-        return _safe_file_url(self.context.get('request'), obj.certificate_file, force_cloudinary_raw=True)
+        return _safe_file_url(self.context.get('request'), obj.certificate_file)
 
 
 class ExperienceCreateUpdateSerializer(serializers.ModelSerializer):
