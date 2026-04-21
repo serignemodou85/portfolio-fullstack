@@ -9,7 +9,6 @@ import { DashboardService, DashboardStats } from '../../../core/services/dashboa
 import { User } from '../../../core/models/auth.model';
 import { ProjectList } from '../../../core/models/project.model';
 import { ContactMessage } from '../../../core/models/contact.model';
-import { HttpClientModule } from '@angular/common/http';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
 import { ContactService } from '../../../core/services/contact.service';
@@ -19,12 +18,12 @@ import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, HttpClientModule, IconComponent, AdminShell],
+  imports: [CommonModule, FormsModule, RouterLink, IconComponent, AdminShell],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss']
 })
 export class Dashboard implements OnInit {
-  private readonly maxDashboardItems = 200;
+  private readonly maxDashboardItems = 50;
   currentUser: User | null = null;
   recentProjects: ProjectList[] = [];
   archivedProjects: ProjectList[] = [];

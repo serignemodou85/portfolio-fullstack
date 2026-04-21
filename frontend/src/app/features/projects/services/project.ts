@@ -20,7 +20,7 @@ interface PaginatedResponse<T> {
 export class ProjectService {
   private apiUrl = `${environment.apiUrl}/projects/`;
   private cache = new Map<string, { ts: number; data: ProjectList[] }>();
-  private cacheTtlMs = 60_000;
+  private cacheTtlMs = 600_000; // 10 min
 
   constructor(private http: HttpClient) {}
 

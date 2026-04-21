@@ -7,15 +7,11 @@ class SkillCategorySerializer(serializers.ModelSerializer):
     """
     Serializer pour les catégories de compétences
     """
-    # Compte le nombre de compétences dans cette catégorie
-    skills_count = serializers.SerializerMethodField()
-    
+    skills_count = serializers.IntegerField(read_only=True, default=0)
+
     class Meta:
         model = SkillCategory
         fields = ['id', 'name', 'icon', 'order', 'skills_count']
-    
-    def get_skills_count(self, obj):
-        return obj.skills.count()
 
 
 class SkillSerializer(serializers.ModelSerializer):

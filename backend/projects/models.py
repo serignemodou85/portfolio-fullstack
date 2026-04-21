@@ -42,22 +42,25 @@ class Project(models.Model):
     
     # Métadonnées
     status = models.CharField(
-        max_length=20, 
-        choices=STATUS_CHOICES, 
+        max_length=20,
+        choices=STATUS_CHOICES,
         default='completed',
-        verbose_name="Statut"
+        verbose_name="Statut",
+        db_index=True
     )
     start_date = models.DateField(verbose_name="Date de début")
     end_date = models.DateField(blank=True, null=True, verbose_name="Date de fin")
-    
+
     is_featured = models.BooleanField(
-        default=False, 
-        verbose_name="Projet mis en avant"
+        default=False,
+        verbose_name="Projet mis en avant",
+        db_index=True
     )
     order = models.IntegerField(
-        default=0, 
+        default=0,
         verbose_name="Ordre d'affichage",
-        help_text="Plus le nombre est petit, plus le projet apparaît en premier"
+        help_text="Plus le nombre est petit, plus le projet apparaît en premier",
+        db_index=True
     )
 
     views = models.PositiveIntegerField(
@@ -65,7 +68,7 @@ class Project(models.Model):
         verbose_name="Vues"
     )
     
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, 

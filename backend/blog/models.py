@@ -92,7 +92,8 @@ class Article(models.Model):
         max_length=20,
         choices=STATUS_CHOICES,
         default='draft',
-        verbose_name="Statut"
+        verbose_name="Statut",
+        db_index=True
     )
     
     views_count = models.IntegerField(default=0, verbose_name="Nombre de vues")
@@ -103,16 +104,18 @@ class Article(models.Model):
     
     is_featured = models.BooleanField(
         default=False,
-        verbose_name="Article mis en avant"
+        verbose_name="Article mis en avant",
+        db_index=True
     )
-    
+
     published_at = models.DateTimeField(
         blank=True,
         null=True,
-        verbose_name="Date de publication"
+        verbose_name="Date de publication",
+        db_index=True
     )
-    
-    created_at = models.DateTimeField(auto_now_add=True)
+
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,

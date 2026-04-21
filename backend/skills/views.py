@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.views.decorators.cache import cache_page
 from django.conf import settings
+from django.db.models import Count
 
 from portfolio_backend.permissions import IsAdminOrReadOnly
 from .models import SkillCategory, Skill
@@ -19,7 +20,7 @@ class SkillCategoryViewSet(viewsets.ModelViewSet):
     """
     ViewSet pour les categories de competences
     """
-    queryset = SkillCategory.objects.prefetch_related('skills').all().order_by('order')
+    queryset = SkillCategory.objects.prefetch_related('skills').annotate(skills_count=Count('skills')).order_by('order')
     serializer_class = SkillCategorySerializer
     permission_classes = [IsAdminOrReadOnly]
 

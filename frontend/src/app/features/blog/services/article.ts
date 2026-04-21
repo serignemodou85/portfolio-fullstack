@@ -20,7 +20,8 @@ interface PaginatedResponse<T> {
 export class ArticleService {
   private apiUrl = `${environment.apiUrl}/blog/articles`;
   private featuredCache: { ts: number; data: ArticleList[] } | null = null;
-  private cacheTtlMs = 60_000;
+  private listCache: { ts: number; data: ArticleList[] } | null = null;
+  private cacheTtlMs = 600_000; // 10 min
 
   constructor(private http: HttpClient) {}
 
@@ -29,8 +30,15 @@ export class ArticleService {
   }
 
   getArticles(): Observable<ArticleList[]> {
+    if (this.listCache && Date.now() - this.listCache.ts < this.cacheTtlMs) {
+      return of(this.listCache.data);
+    }
     return this.http.get<ArticleList[] | PaginatedResponse<ArticleList>>(this.apiUrl).pipe(
-      map((res) => this.toArray(res))
+      map((res) => this.toArray(res)),
+      map((items) => {
+        this.listCache = { ts: Date.now(), data: items };
+        return items;
+      })
     );
   }
 

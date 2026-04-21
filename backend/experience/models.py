@@ -14,9 +14,10 @@ class Experience(models.Model):
     ]
     
     type = models.CharField(
-        max_length=20, 
+        max_length=20,
         choices=EXPERIENCE_TYPE,
-        verbose_name="Type"
+        verbose_name="Type",
+        db_index=True
     )
     title = models.CharField(max_length=200, verbose_name="Poste/Diplôme")
     company = models.CharField(max_length=200, verbose_name="Entreprise/École")
@@ -24,7 +25,7 @@ class Experience(models.Model):
     
     description = models.TextField(verbose_name="Description")
     
-    start_date = models.DateField(verbose_name="Date de début")
+    start_date = models.DateField(verbose_name="Date de début", db_index=True)
     end_date = models.DateField(blank=True, null=True, verbose_name="Date de fin")
     is_current = models.BooleanField(default=False, verbose_name="En cours")
     

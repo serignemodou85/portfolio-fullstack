@@ -7,14 +7,11 @@ class CategorySerializer(serializers.ModelSerializer):
     """
     Serializer pour les catégories d'articles
     """
-    articles_count = serializers.SerializerMethodField()
-    
+    articles_count = serializers.IntegerField(read_only=True, default=0)
+
     class Meta:
         model = Category
         fields = ['id', 'name', 'slug', 'description', 'articles_count']
-    
-    def get_articles_count(self, obj):
-        return obj.articles.filter(status='published').count()
 
 
 class TagSerializer(serializers.ModelSerializer):

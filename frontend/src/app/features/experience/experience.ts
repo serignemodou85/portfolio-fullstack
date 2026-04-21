@@ -23,7 +23,7 @@ export class Experience implements OnInit {
   constructor(private experienceService: ExperienceService) {}
 
   ngOnInit(): void {
-    this.experienceService.getExperiences({ page_size: 100 }).subscribe({
+    this.experienceService.getExperiences().subscribe({
       next: (items) => {
         this.experiences = items;
         this.syncPage();

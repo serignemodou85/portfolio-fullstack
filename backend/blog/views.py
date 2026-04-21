@@ -6,6 +6,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from django.views.decorators.cache import cache_page
 from django.conf import settings
+from django.db.models import Count, Q
 from portfolio_backend.permissions import IsAdminOrReadOnly
 from .models import Category, Tag, Article
 from .serializers import (
@@ -21,7 +22,9 @@ class CategoryViewSet(viewsets.ModelViewSet):
     """
     ViewSet pour les categories d'articles
     """
-    queryset = Category.objects.all()
+    queryset = Category.objects.annotate(
+        articles_count=Count('articles', filter=Q(articles__status='published'))
+    )
     serializer_class = CategorySerializer
     permission_classes = [IsAdminOrReadOnly]
     lookup_field = 'slug'

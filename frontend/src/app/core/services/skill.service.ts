@@ -1,8 +1,8 @@
 // src/app/core/services/skill.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { SkillCategory, SkillCategoryWithSkills, SkillItem } from '../models/skill.model';
 
@@ -19,6 +19,8 @@ interface PaginatedResponse<T> {
 export class SkillService {
   private categoriesUrl = `${environment.apiUrl}/skill-categories`;
   private skillsUrl = `${environment.apiUrl}/skills`;
+  private withSkillsCache: { ts: number; data: SkillCategoryWithSkills[] } | null = null;
+  private readonly cacheTtlMs = 600_000; // 10 min
 
   constructor(private http: HttpClient) {}
 
@@ -36,7 +38,12 @@ export class SkillService {
   }
 
   getCategoriesWithSkills(): Observable<SkillCategoryWithSkills[]> {
-    return this.http.get<SkillCategoryWithSkills[]>(`${this.categoriesUrl}/with_skills/`);
+    if (this.withSkillsCache && Date.now() - this.withSkillsCache.ts < this.cacheTtlMs) {
+      return of(this.withSkillsCache.data);
+    }
+    return this.http.get<SkillCategoryWithSkills[]>(`${this.categoriesUrl}/with_skills/`).pipe(
+      tap((data) => { this.withSkillsCache = { ts: Date.now(), data }; })
+    );
   }
 
   createCategory(payload: Partial<SkillCategory>): Observable<SkillCategory> {

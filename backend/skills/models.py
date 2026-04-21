@@ -72,8 +72,8 @@ class Skill(models.Model):
         verbose_name="Années d'expérience"
     )
     
-    order = models.IntegerField(default=0, verbose_name="Ordre d'affichage")
-    
+    order = models.IntegerField(default=0, verbose_name="Ordre d'affichage", db_index=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(

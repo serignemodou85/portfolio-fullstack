@@ -19,7 +19,7 @@ interface PaginatedResponse<T> {
 export class ExperienceService {
   private apiUrl = `${environment.apiUrl}/experiences`;
   private cache = new Map<string, { ts: number; data: ExperienceItem[] }>();
-  private cacheTtlMs = 60_000;
+  private cacheTtlMs = 600_000; // 10 min
 
   constructor(private http: HttpClient) {}
 

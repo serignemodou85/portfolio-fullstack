@@ -27,7 +27,8 @@ class ContactMessage(models.Model):
         max_length=20,
         choices=STATUS_CHOICES,
         default='new',
-        verbose_name="Statut"
+        verbose_name="Statut",
+        db_index=True
     )
     
     ip_address = models.GenericIPAddressField(
@@ -36,7 +37,7 @@ class ContactMessage(models.Model):
         verbose_name="Adresse IP"
     )
     
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Date d'envoi")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Date d'envoi", db_index=True)
     read_at = models.DateTimeField(
         blank=True,
         null=True,
