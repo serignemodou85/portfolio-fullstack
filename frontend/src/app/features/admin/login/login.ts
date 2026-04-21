@@ -28,8 +28,12 @@ export class Login {
     private router: Router,
     private route: ActivatedRoute
   ) {
-    // Récupère l'URL de retour si elle existe
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/admin/dashboard';
+    const raw = this.route.snapshot.queryParams['returnUrl'] || '';
+    this.returnUrl = this.isSafeReturnUrl(raw) ? raw : '/admin/dashboard';
+  }
+
+  private isSafeReturnUrl(url: string): boolean {
+    return url.startsWith('/') && !url.startsWith('//');
   }
 
   onSubmit(): void {

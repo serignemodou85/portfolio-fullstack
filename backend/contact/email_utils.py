@@ -17,14 +17,14 @@ def send_client_acknowledgement(contact_message):
     if not contact_message.email:
         return
 
-    subject = "Message recu - Portfolio"
+    subject = "Message reçu - Portfolio"
     body = (
         f"Bonjour {contact_message.name},\n\n"
-        "Votre message a bien ete recu.\n"
-        "Je vous repondrai des que possible.\n\n"
-        "Resume de votre message:\n"
-        f"Sujet: {contact_message.subject}\n"
-        f"Message: {contact_message.message}\n\n"
+        "Votre message a bien été reçu.\n"
+        "Je vous répondrai dès que possible.\n\n"
+        "Résumé de votre message :\n"
+        f"Sujet : {contact_message.subject}\n"
+        f"Message : {contact_message.message}\n\n"
         "Merci."
     )
 
@@ -42,14 +42,14 @@ def send_admin_notification(contact_message):
     if not recipients:
         return
 
-    subject = f"Nouveau message contact: {contact_message.subject}"
+    subject = f"Nouveau message contact : {contact_message.subject}"
     body = (
-        "Nouveau message recu depuis le formulaire contact.\n\n"
-        f"Nom: {contact_message.name}\n"
-        f"Email: {contact_message.email}\n"
-        f"Telephone: {contact_message.phone or '-'}\n"
-        f"Sujet: {contact_message.subject}\n"
-        f"Message:\n{contact_message.message}\n"
+        "Nouveau message reçu depuis le formulaire contact.\n\n"
+        f"Nom : {contact_message.name}\n"
+        f"Email : {contact_message.email}\n"
+        f"Téléphone : {contact_message.phone or '-'}\n"
+        f"Sujet : {contact_message.subject}\n"
+        f"Message :\n{contact_message.message}\n"
     )
 
     send_mail(
@@ -66,17 +66,17 @@ def send_manual_reply(contact_message, reply_message):
         return
 
     clean_reply = (reply_message or '').strip()
-    subject = f"Reponse a votre message - {contact_message.subject}"
+    subject = f"Réponse à votre message - {contact_message.subject}"
     body = (
         f"Bonjour {contact_message.name},\n\n"
         f"Merci pour votre message concernant : \"{contact_message.subject}\".\n"
-        "Je confirme avoir bien recu votre demande.\n\n"
-        "Ma reponse :\n"
+        "Je confirme avoir bien reçu votre demande.\n\n"
+        "Ma réponse :\n"
         f"{clean_reply}\n\n"
-        "Si vous le souhaitez, nous pouvons poursuivre l'echange par email ou appel telephonique.\n\n"
+        "Si vous le souhaitez, nous pouvons poursuivre l'échange par email ou appel téléphonique.\n\n"
         "Cordialement,\n"
         "Modou FALL\n"
-        "Data Scientist & Data Enginner | Developpeur Full Stack"
+        "Data Scientist & Data Engineer | Développeur Full Stack"
     )
 
     send_mail(

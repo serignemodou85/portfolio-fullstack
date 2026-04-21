@@ -59,22 +59,22 @@ class PasswordResetRequestView(APIView):
             token = default_token_generator.make_token(user)
             reset_link = f"{frontend_url}/admin/reset-password/confirm?uid={uid}&token={token}"
             send_mail(
-                subject="Reinitialisation de votre mot de passe",
+                subject="Réinitialisation de votre mot de passe",
                 message=(
                     f"Bonjour {user.username},\n\n"
-                    "Vous avez demande la reinitialisation du mot de passe admin.\n"
-                    "Cliquez sur le lien ci-dessous pour definir un nouveau mot de passe:\n\n"
+                    "Vous avez demandé la réinitialisation du mot de passe admin.\n"
+                    "Cliquez sur le lien ci-dessous pour définir un nouveau mot de passe :\n\n"
                     f"{reset_link}\n\n"
-                    "Si vous n'etes pas a l'origine de cette demande, ignorez cet email."
+                    "Si vous n'êtes pas à l'origine de cette demande, ignorez cet email."
                 ),
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[user.email],
                 fail_silently=False,
             )
 
-        # Message volontairement generique pour eviter la divulgation des comptes existants.
+        # Message volontairement générique pour éviter la divulgation des comptes existants.
         return Response(
-            {"detail": "Si ce compte existe, un email de reinitialisation a ete envoye."},
+            {"detail": "Si ce compte existe, un email de réinitialisation a été envoyé."},
             status=status.HTTP_200_OK,
         )
 
@@ -93,6 +93,6 @@ class PasswordResetConfirmView(APIView):
         user.save(update_fields=['password'])
 
         return Response(
-            {"detail": "Votre mot de passe a ete reinitialise avec succes."},
+            {"detail": "Votre mot de passe a été réinitialisé avec succès."},
             status=status.HTTP_200_OK,
         )

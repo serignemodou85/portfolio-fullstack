@@ -30,11 +30,11 @@ export class PasswordResetRequest {
 
     this.authService.requestPasswordReset({ email: this.email }).subscribe({
       next: (res) => {
-        this.successMessage = res?.detail || 'Si ce compte existe, un email a ete envoye.';
+        this.successMessage = res?.detail || 'Si ce compte existe, un email a été envoyé.';
         this.loading = false;
       },
       error: (err) => {
-        this.error = err?.error?.detail || 'Impossible d envoyer la demande pour le moment.';
+        this.error = err?.error?.detail || "Impossible d'envoyer la demande pour le moment.";
         this.loading = false;
       }
     });

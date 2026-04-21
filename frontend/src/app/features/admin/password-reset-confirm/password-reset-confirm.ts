@@ -76,6 +76,6 @@ export class PasswordResetConfirm implements OnInit {
     if (typeof err?.error?.new_password2?.[0] === 'string') {
       return err.error.new_password2[0];
     }
-    return 'Reinitialisation impossible. Veuillez redemander un nouveau lien.';
+    return 'Réinitialisation impossible. Veuillez redemander un nouveau lien.';
   }
 }

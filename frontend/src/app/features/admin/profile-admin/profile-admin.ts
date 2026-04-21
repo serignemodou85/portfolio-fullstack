@@ -112,12 +112,12 @@ export class ProfileAdmin implements OnInit {
       next: (user) => {
         this.currentUser = user;
         this.previewUrl = user.profile_picture || this.previewUrl;
-        this.success = 'Profil mis a jour.';
+        this.success = 'Profil mis à jour.';
         this.saving = false;
         this.authService.fetchCurrentUser().subscribe();
       },
       error: (err) => {
-        this.error = this.getErrorMessage(err, 'Erreur lors de la mise a jour du profil.');
+        this.error = this.getErrorMessage(err, 'Erreur lors de la mise à jour du profil.');
         this.saving = false;
       }
     });

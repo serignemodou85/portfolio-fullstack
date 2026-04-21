@@ -164,7 +164,7 @@ export class ProjectForm implements OnInit {
           const backendError = typeof err?.error === 'string'
             ? err.error
             : JSON.stringify(err?.error || {});
-          this.error = `Erreur lors de la mise a jour: ${backendError}`;
+          this.error = `Erreur lors de la mise à jour : ${backendError}`;
           this.loading = false;
           console.error(err);
         }
