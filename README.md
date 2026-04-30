@@ -68,25 +68,14 @@ portfolio-fullstack/
 -  Photo de profil admin dynamique sur la Home
 -  Page Experience avec filtres + pagination
 
-### Admin
--  Authentification JWT
--  Dashboard avec statistiques
--  CRUD projets
--  Gestion experiences (form + tableau)
--  Gestion competences (categories + skills)
--  Gestion articles blog (articles + tags + categories)
--  Archives projets (restauration + suppression definitive)
--  Gestion messages contact (lecture, reponse email, archivage, suppression)
--  Pagination + tri + recherche sur tous les tableaux admin
--  Profil admin (edition infos + photo)
--  Reset mot de passe par email
+
 
 ##  Auteur
 
 **Modou Fall**
 - **Profil** : Data Scientist | Data Engineer | Full-Stack Developer
 - **Email** : modou2000f@gmail.com
-- **LinkedIn** : 
+- **LinkedIn** : www.linkedin.com/in/modou-fall-a81a27260
 - **GitHub** : 
 
 ## 📝 Licence
