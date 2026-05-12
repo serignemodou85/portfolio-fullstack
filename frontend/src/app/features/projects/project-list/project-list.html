@@ -2,21 +2,21 @@
   <div class="container">
     <header class="page-head fade-up">
       <div>
-        <p class="eyebrow">Portfolio</p>
-        <h1>Tous les projets</h1>
+        <p class="eyebrow">{{ t('projects.eyebrow') }}</p>
+        <h1>{{ t('projects.title') }}</h1>
       </div>
-      <a routerLink="/contact" class="btn btn-outline">Parler d'un projet</a>
+      <a routerLink="/contact" class="btn btn-outline">{{ t('projects.cta') }}</a>
     </header>
 
     <section class="filters fade-up stagger-1">
-      <button class="filter-btn" [class.active]="selectedStatus === 'all'" (click)="filterByStatus('all')">Tous</button>
-      <button class="filter-btn" [class.active]="selectedStatus === 'completed'" (click)="filterByStatus('completed')">Termines</button>
-      <button class="filter-btn" [class.active]="selectedStatus === 'in_progress'" (click)="filterByStatus('in_progress')">En cours</button>
+      <button class="filter-btn" [class.active]="selectedStatus === 'all'" (click)="filterByStatus('all')">{{ t('projects.filter.all') }}</button>
+      <button class="filter-btn" [class.active]="selectedStatus === 'completed'" (click)="filterByStatus('completed')">{{ t('projects.filter.done') }}</button>
+      <button class="filter-btn" [class.active]="selectedStatus === 'in_progress'" (click)="filterByStatus('in_progress')">{{ t('projects.filter.progress') }}</button>
     </section>
 
     <div *ngIf="loading" class="loading">
       <div class="spinner"></div>
-      <p>Chargement des projets...</p>
+      <p>{{ t('projects.loading') }}</p>
     </div>
 
     <div *ngIf="error" class="error-card">
@@ -53,14 +53,14 @@
 
           <div class="footer">
             <span class="meta">{{ project.start_date | date:'yyyy' }}</span>
-            <a [routerLink]="['/projects', project.slug]" class="btn btn-soft">Voir le projet</a>
+            <a [routerLink]="['/projects', project.slug]" class="btn btn-soft">{{ t('projects.view') }}</a>
           </div>
         </div>
       </article>
     </div>
 
     <div *ngIf="!loading && !error && filteredProjects.length === 0" class="empty-state">
-      Aucun projet ne correspond au filtre actuel.
+      {{ t('projects.empty') }}
     </div>
   </div>
 </section>

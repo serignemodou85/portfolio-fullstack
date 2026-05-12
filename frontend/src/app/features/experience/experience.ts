@@ -1,9 +1,12 @@
 // src/app/features/experience/experience.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { ExperienceService } from '../../core/services/experience.service';
 import { ExperienceItem } from '../../core/models/experience.model';
+import { LanguageService, Lang } from '../../core/services/language.service';
 
 @Component({
   selector: 'app-experience',
@@ -12,18 +15,29 @@ import { ExperienceItem } from '../../core/models/experience.model';
   templateUrl: './experience.html',
   styleUrl: './experience.scss'
 })
-export class Experience implements OnInit {
+export class Experience implements OnInit, OnDestroy {
   experiences: ExperienceItem[] = [];
   selectedType: 'all' | 'work' | 'education' | 'certification' = 'all';
   loading = true;
   error: string | null = null;
   pageSize = 6;
   page = 1;
+  lang: Lang = 'fr';
+  private destroy$ = new Subject<void>();
 
-  constructor(private experienceService: ExperienceService) {}
+  constructor(
+    private experienceService: ExperienceService,
+    private langService: LanguageService
+  ) {
+    this.langService.lang$.pipe(takeUntil(this.destroy$)).subscribe(l => this.lang = l);
+  }
+
+  t(key: string): string {
+    return this.langService.t(key);
+  }
 
   ngOnInit(): void {
-    this.experienceService.getExperiences().subscribe({
+    this.experienceService.getExperiences().pipe(takeUntil(this.destroy$)).subscribe({
       next: (items) => {
         this.experiences = items;
         this.syncPage();
@@ -34,6 +48,11 @@ export class Experience implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   get pagedExperiences(): ExperienceItem[] {
@@ -70,12 +89,12 @@ export class Experience implements OnInit {
 
   getTypeLabel(type: string): string {
     if (type === 'work') {
-      return 'Experience';
+      return this.t('exp.type.work');
     }
     if (type === 'education') {
-      return 'Formation';
+      return this.t('exp.type.education');
     }
-    return 'Certification';
+    return this.t('exp.type.certification');
   }
 
   getTypeClass(type: ExperienceItem['type']): string {

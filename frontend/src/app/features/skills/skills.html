@@ -2,16 +2,16 @@
   <div class="container">
     <header class="page-head fade-up">
       <div>
-        <p class="eyebrow">Competences</p>
-        <h1>Stack technique</h1>
-        <p>Vue par categories avec niveau, progression et annees d'experience.</p>
+        <p class="eyebrow">{{ t('skills.eyebrow') }}</p>
+        <h1>{{ t('skills.title') }}</h1>
+        <p>{{ t('skills.subtitle') }}</p>
       </div>
-      <a routerLink="/contact" class="btn btn-outline">Demander une mission</a>
+      <a routerLink="/contact" class="btn btn-outline">{{ t('skills.cta') }}</a>
     </header>
 
     <div *ngIf="loading" class="loading">
       <div class="spinner"></div>
-      <p>Chargement des competences...</p>
+      <p>{{ t('skills.loading') }}</p>
     </div>
 
     <div *ngIf="error" class="error-card">{{ error }}</div>
@@ -28,7 +28,7 @@
             </p>
             <h2>{{ category.name }}</h2>
           </div>
-          <span class="count">{{ category.skills.length }} skills</span>
+          <span class="count">{{ category.skills.length }} {{ t('skills.count') }}</span>
         </div>
 
         <div class="skill-list">
@@ -42,7 +42,7 @@
             </div>
             <div class="row-meta">
               <span>{{ skill.percentage }}%</span>
-              <span>{{ skill.years_of_experience }} an(s)</span>
+              <span>{{ skill.years_of_experience }} {{ t('skills.years') }}</span>
             </div>
           </div>
         </div>
@@ -50,13 +50,9 @@
     </div>
 
     <section class="cta-box fade-up">
-      <h2>Transformons vos données en solutions intelligentes</h2>
-        <p>
-          Je conçois et déploie des solutions data-driven : data engineering,
-          machine learning, APIs backend et interfaces interactives pour exploiter
-          pleinement le potentiel de vos données.
-        </p>
-      <a routerLink="/contact" class="btn btn-primary">Discutons de votre projet</a>
+      <h2>{{ t('skills.cta2.title') }}</h2>
+      <p>{{ t('skills.cta2.text') }}</p>
+      <a routerLink="/contact" class="btn btn-primary">{{ t('skills.cta2.btn') }}</a>
     </section>
   </div>
 </section>
