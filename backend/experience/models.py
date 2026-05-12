@@ -1,6 +1,7 @@
 # experience/models.py
 from django.db import models
 from django.conf import settings
+from cloudinary.models import CloudinaryField
 from portfolio_backend.validators import validate_image_file, validate_doc_or_image
 
 class Experience(models.Model):
@@ -38,13 +39,12 @@ class Experience(models.Model):
         max_length=255
     )
 
-    certificate_file = models.FileField(
-        upload_to='experience/certificates/',
+    certificate_file = CloudinaryField(
+        folder='media/experience/certificates/',
+        resource_type='raw',
         blank=True,
         null=True,
         verbose_name="Certificat (PDF/image)",
-        validators=[validate_doc_or_image],
-        max_length=255
     )
     
     order = models.IntegerField(
