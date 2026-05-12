@@ -5,14 +5,7 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { ArticleList, ArticleDetail } from '../../../core/models/article.model';
-
-/** Réponse paginée renvoyée par l'API Django REST */
-interface PaginatedResponse<T> {
-  count?: number;
-  next?: string | null;
-  previous?: string | null;
-  results: T[];
-}
+import { PaginatedResponse } from '../../../core/models/paginated-response.model';
 
 @Injectable({
   providedIn: 'root'

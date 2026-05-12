@@ -1,5 +1,9 @@
 # contact/views.py
+import logging
+
 from django.conf import settings
+
+logger = logging.getLogger(__name__)
 from django.utils import timezone
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
@@ -72,11 +76,13 @@ class ContactMessageViewSet(viewsets.ModelViewSet):
             try:
                 send_client_acknowledgement(contact_message)
             except Exception:
+                logger.error('auto_reply failed for contact #%s', contact_message.pk, exc_info=True)
                 notification_errors.append('auto_reply_failed')
 
             try:
                 send_admin_notification(contact_message)
             except Exception:
+                logger.error('admin_notification failed for contact #%s', contact_message.pk, exc_info=True)
                 notification_errors.append('admin_notification_failed')
 
         response_data = serializer.data
@@ -147,6 +153,6 @@ class ContactMessageViewSet(viewsets.ModelViewSet):
             contact_message.save(update_fields=['status'])
 
         return Response(
-            {'status': contact_message.status, 'detail': 'Reponse envoyee.'},
+            {'status': contact_message.status, 'detail': 'Réponse envoyée.'},
             status=status.HTTP_200_OK,
         )

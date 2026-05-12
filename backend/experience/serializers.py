@@ -11,10 +11,10 @@ except ImportError:  # pragma: no cover
 
 
 @lru_cache(maxsize=256)
-def _signed_cloudinary_url(public_id: str) -> str:
+def _signed_cloudinary_url(public_id: str, resource_type: str) -> str:
     signed_url, _ = cloudinary.utils.cloudinary_url(
         public_id,
-        resource_type='image',
+        resource_type=resource_type,
         type='upload',
         secure=True,
         sign_url=True,
@@ -33,8 +33,8 @@ def _safe_file_url(request, file_field):
     if isinstance(url, str) and 'res.cloudinary.com' in url and cloudinary:
         public_id = getattr(file_field, 'name', None)
         if public_id:
-            # Signed URL avoids 401 when Cloudinary delivery restrictions are active.
-            url = _signed_cloudinary_url(public_id)
+            resource_type = 'raw' if '/raw/upload/' in url else 'image'
+            url = _signed_cloudinary_url(public_id, resource_type)
 
     if isinstance(url, str) and url.startswith('http://'):
         url = url.replace('http://', 'https://')

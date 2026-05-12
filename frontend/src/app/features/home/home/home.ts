@@ -1,7 +1,9 @@
 // src/app/features/home/home/home.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { ProjectService } from '../../projects/services/project';
 import { ArticleService } from '../../blog/services/article';
 import { ProjectList } from '../../../core/models/project.model';
@@ -17,13 +19,14 @@ import { environment } from '../../../../environments/environment';
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
-export class Home implements OnInit {
+export class Home implements OnInit, OnDestroy {
   featuredProjects: ProjectList[] = [];
   featuredArticles: ArticleList[] = [];
   profile: User | null = null;
   loading = true;
   readonly placeholderImage = 'assets/placeholders/project.svg';
   readonly profileFallback = 'assets/images/cv.jpg';
+  private destroy$ = new Subject<void>();
 
   constructor(
     private projectService: ProjectService,
@@ -43,8 +46,7 @@ export class Home implements OnInit {
       if (done >= 2) this.loading = false;
     };
 
-    // Charge les projets mis en avant
-    this.projectService.getProjects({ is_featured: true }).subscribe({
+    this.projectService.getProjects({ is_featured: true }).pipe(takeUntil(this.destroy$)).subscribe({
       next: (projects) => {
         this.featuredProjects = Array.isArray(projects)
           ? projects.filter((project) => project.status !== 'archived').slice(0, 3)
@@ -54,8 +56,7 @@ export class Home implements OnInit {
       complete: checkDone
     });
 
-    // Charge les articles mis en avant
-    this.articleService.getFeaturedArticles().subscribe({
+    this.articleService.getFeaturedArticles().pipe(takeUntil(this.destroy$)).subscribe({
       next: (articles) => {
         this.featuredArticles = Array.isArray(articles) ? articles : [];
       },
@@ -64,8 +65,13 @@ export class Home implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   loadProfile(): void {
-    this.userService.getPublicProfile().subscribe({
+    this.userService.getPublicProfile().pipe(takeUntil(this.destroy$)).subscribe({
       next: (profile) => {
         this.profile = profile;
       },

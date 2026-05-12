@@ -1,8 +1,10 @@
 // src/app/features/contact/contact-form/contact-form.ts
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 
 interface ContactData {
@@ -26,7 +28,7 @@ interface ContactCreateResponse {
   templateUrl: './contact-form.html',
   styleUrl: './contact-form.scss'
 })
-export class ContactForm {
+export class ContactForm implements OnDestroy {
   formData: ContactData = {
     name: '',
     email: '',
@@ -39,8 +41,14 @@ export class ContactForm {
   success = false;
   error: string | null = null;
   warning: string | null = null;
+  private destroy$ = new Subject<void>();
 
   constructor(private http: HttpClient) {}
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   onSubmit(form: NgForm): void {
     // Empêche l'envoi si le formulaire est invalide et marque tous les champs comme \"touchés\"
@@ -54,7 +62,7 @@ export class ContactForm {
     this.error = null;
     this.warning = null;
 
-    this.http.post<ContactCreateResponse>(`${environment.apiUrl}/contact/`, this.formData).subscribe({
+    this.http.post<ContactCreateResponse>(`${environment.apiUrl}/contact/`, this.formData).pipe(takeUntil(this.destroy$)).subscribe({
       next: (response) => {
         this.success = true;
         if (response?.email_warning) {

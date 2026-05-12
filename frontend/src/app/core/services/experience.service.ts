@@ -5,13 +5,7 @@ import { Observable, EMPTY, of } from 'rxjs';
 import { expand, map, reduce, switchMap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { ExperienceItem } from '../models/experience.model';
-
-interface PaginatedResponse<T> {
-  count?: number;
-  next?: string | null;
-  previous?: string | null;
-  results: T[];
-}
+import { PaginatedResponse } from '../models/paginated-response.model';
 
 @Injectable({
   providedIn: 'root'
