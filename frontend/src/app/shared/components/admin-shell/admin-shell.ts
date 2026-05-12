@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { IconComponent } from '../icon/icon.component';
 import { AuthService } from '../../../core/services/auth';
+import { ThemeService } from '../../../core/services/theme.service';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-admin-shell',
@@ -13,7 +15,12 @@ import { AuthService } from '../../../core/services/auth';
   styleUrl: './admin-shell.scss'
 })
 export class AdminShell {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    public theme: ThemeService,
+    public langService: LanguageService
+  ) {}
 
   logout(): void {
     this.authService.logout();
