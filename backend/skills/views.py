@@ -20,7 +20,7 @@ class SkillCategoryViewSet(viewsets.ModelViewSet):
     """
     ViewSet pour les categories de competences
     """
-    queryset = SkillCategory.objects.prefetch_related('skills').annotate(skills_count=Count('skills')).order_by('order')
+    queryset = SkillCategory.objects.annotate(skills_count=Count('skills')).order_by('order')
     serializer_class = SkillCategorySerializer
     permission_classes = [IsAdminOrReadOnly]
 
@@ -31,14 +31,14 @@ class SkillCategoryViewSet(viewsets.ModelViewSet):
         Retourne toutes les categories avec leurs competences
         """
         if request.user and request.user.is_authenticated:
-            categories = self.get_queryset()
+            categories = self.get_queryset().prefetch_related('skills')
             serializer = SkillCategoryWithSkillsSerializer(categories, many=True)
             return Response(serializer.data)
 
         return cache_page(settings.CACHE_TTL)(self._with_skills_public)(request)
 
     def _with_skills_public(self, request):
-        categories = self.get_queryset()
+        categories = self.get_queryset().prefetch_related('skills')
         serializer = SkillCategoryWithSkillsSerializer(categories, many=True)
         return Response(serializer.data)
 

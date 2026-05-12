@@ -33,7 +33,7 @@ export class Login {
   }
 
   private isSafeReturnUrl(url: string): boolean {
-    return url.startsWith('/') && !url.startsWith('//');
+    return url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/\\');
   }
 
   onSubmit(): void {
