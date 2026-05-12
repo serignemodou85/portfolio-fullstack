@@ -34,8 +34,8 @@ export class ArticleService {
       return of(this.listCache.data);
     }
     return this.http.get<ArticleList[] | PaginatedResponse<ArticleList>>(this.apiUrl).pipe(
-      map((res) => this.toArray(res)),
-      map((items) => {
+      map((res) => {
+        const items = this.toArray(res);
         this.listCache = { ts: Date.now(), data: items };
         return items;
       })
@@ -47,8 +47,8 @@ export class ArticleService {
       return of(this.featuredCache.data);
     }
     return this.http.get<ArticleList[] | PaginatedResponse<ArticleList>>(`${this.apiUrl}/featured/`).pipe(
-      map((res) => this.toArray(res)),
-      map((items) => {
+      map((res) => {
+        const items = this.toArray(res);
         this.featuredCache = { ts: Date.now(), data: items };
         return items;
       })

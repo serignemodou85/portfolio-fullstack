@@ -1,12 +1,25 @@
 # experience/serializers.py
+from functools import lru_cache
 from rest_framework import serializers
 
 from .models import Experience
 
 try:
     import cloudinary.utils
-except Exception:  # pragma: no cover
+except ImportError:  # pragma: no cover
     cloudinary = None
+
+
+@lru_cache(maxsize=256)
+def _signed_cloudinary_url(public_id: str) -> str:
+    signed_url, _ = cloudinary.utils.cloudinary_url(
+        public_id,
+        resource_type='image',
+        type='upload',
+        secure=True,
+        sign_url=True,
+    )
+    return signed_url
 
 
 def _safe_file_url(request, file_field):
@@ -14,21 +27,14 @@ def _safe_file_url(request, file_field):
         return None
     try:
         url = file_field.url
-    except Exception:
+    except (ValueError, AttributeError):
         return None
 
     if isinstance(url, str) and 'res.cloudinary.com' in url and cloudinary:
         public_id = getattr(file_field, 'name', None)
         if public_id:
             # Signed URL avoids 401 when Cloudinary delivery restrictions are active.
-            signed_url, _ = cloudinary.utils.cloudinary_url(
-                public_id,
-                resource_type='image',
-                type='upload',
-                secure=True,
-                sign_url=True
-            )
-            url = signed_url
+            url = _signed_cloudinary_url(public_id)
 
     if isinstance(url, str) and url.startswith('http://'):
         url = url.replace('http://', 'https://')
