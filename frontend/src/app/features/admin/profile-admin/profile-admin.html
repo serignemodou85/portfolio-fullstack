@@ -85,6 +85,20 @@
               </div>
             </div>
 
+            <div class="cv-section">
+              <p class="field-label">CV téléchargeable (PDF)</p>
+              <div class="cv-row">
+                <label class="btn btn-soft" for="cv_file">
+                  {{ cvName ? cvName : 'Choisir un PDF' }}
+                </label>
+                <input id="cv_file" type="file" accept=".pdf,application/pdf" (change)="onCvSelected($event)" />
+                <a *ngIf="currentCvUrl" [href]="currentCvUrl" target="_blank" rel="noopener" class="btn btn-outline">
+                  Voir CV actuel
+                </a>
+                <span *ngIf="!currentCvUrl && !cvName" class="hint">Aucun CV enregistré</span>
+              </div>
+            </div>
+
             <div class="actions">
               <button class="btn btn-primary" type="submit" [disabled]="saving">Enregistrer</button>
               <button class="btn btn-soft" type="button" (click)="loadProfile()">Recharger</button>

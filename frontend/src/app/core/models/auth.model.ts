@@ -18,6 +18,7 @@ export interface User {
   is_superuser?: boolean;
   bio?: string;
   profile_picture?: string;
+  cv_file?: string | null;
   phone?: string;
   location?: string;
   github_url?: string;

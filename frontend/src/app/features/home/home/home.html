@@ -19,8 +19,13 @@
 
       <div class="hero-actions">
         <a routerLink="/projects" class="btn btn-primary">Voir mes projets</a>
-        <a routerLink="/contact" class="btn btn-outline">Demarrer une discussion</a>
-        <a href="assets/documents/cvModouFall.pdf" target="_blank" class="btn btn-soft">CV PDF</a>
+        <a routerLink="/contact" class="btn btn-outline">Démarrer une discussion</a>
+        <a *ngIf="profile?.cv_file; else staticCv"
+           [href]="profile!.cv_file" target="_blank" rel="noopener"
+           class="btn btn-soft">Télécharger CV</a>
+        <ng-template #staticCv>
+          <a href="assets/documents/cvModouFall.pdf" target="_blank" class="btn btn-soft">Télécharger CV</a>
+        </ng-template>
       </div>
 
       <div class="hero-metrics">

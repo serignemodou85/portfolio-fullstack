@@ -48,6 +48,9 @@ export class ProfileAdmin implements OnInit {
 
   profileImage: File | null = null;
   previewUrl: string | null = null;
+  cvFile: File | null = null;
+  cvName: string | null = null;
+  currentCvUrl: string | null = null;
 
   constructor(private userService: UserService, private authService: AuthService) {}
 
@@ -74,6 +77,7 @@ export class ProfileAdmin implements OnInit {
           website_url: user.website_url || ''
         };
         this.previewUrl = user.profile_picture || null;
+        this.currentCvUrl = user.cv_file || null;
         this.loading = false;
       },
       error: () => {
@@ -85,11 +89,16 @@ export class ProfileAdmin implements OnInit {
 
   onImageSelected(event: any): void {
     const file = event.target.files?.[0];
-    if (!file) {
-      return;
-    }
+    if (!file) return;
     this.profileImage = file;
     this.previewUrl = URL.createObjectURL(file);
+  }
+
+  onCvSelected(event: any): void {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    this.cvFile = file;
+    this.cvName = file.name;
   }
 
   submit(): void {
@@ -107,11 +116,17 @@ export class ProfileAdmin implements OnInit {
     if (this.profileImage) {
       payload.append('profile_picture', this.profileImage);
     }
+    if (this.cvFile) {
+      payload.append('cv_file', this.cvFile);
+    }
 
     this.userService.updateMe(payload).subscribe({
       next: (user) => {
         this.currentUser = user;
         this.previewUrl = user.profile_picture || this.previewUrl;
+        this.currentCvUrl = user.cv_file || this.currentCvUrl;
+        this.cvFile = null;
+        this.cvName = null;
         this.success = 'Profil mis à jour.';
         this.saving = false;
         this.authService.fetchCurrentUser().subscribe();

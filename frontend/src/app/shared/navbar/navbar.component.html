@@ -9,12 +9,29 @@
     </a>
 
     <div class="nav-links desktop">
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Accueil</a>
-      <a routerLink="/projects" routerLinkActive="active">Projets</a>
-      <a routerLink="/experience" routerLinkActive="active">Experience</a>
-      <a routerLink="/skills" routerLinkActive="active">Skills</a>
-      <a routerLink="/blog" routerLinkActive="active">Blog</a>
-      <a routerLink="/contact" routerLinkActive="active">Contact</a>
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ t('nav.home') }}</a>
+      <a routerLink="/projects" routerLinkActive="active">{{ t('nav.projects') }}</a>
+      <a routerLink="/experience" routerLinkActive="active">{{ t('nav.experience') }}</a>
+      <a routerLink="/skills" routerLinkActive="active">{{ t('nav.skills') }}</a>
+      <a routerLink="/blog" routerLinkActive="active">{{ t('nav.blog') }}</a>
+      <a routerLink="/contact" routerLinkActive="active">{{ t('nav.contact') }}</a>
+    </div>
+
+    <div class="nav-controls">
+      <button class="ctrl-btn" (click)="langService.toggle()" [attr.aria-label]="lang === 'fr' ? 'Switch to English' : 'Passer en français'">
+        {{ lang === 'fr' ? 'EN' : 'FR' }}
+      </button>
+      <button class="ctrl-btn" (click)="theme.toggle()" [attr.aria-label]="theme.isDark ? 'Mode clair' : 'Mode sombre'">
+        <svg *ngIf="theme.isDark" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+        <svg *ngIf="!theme.isDark" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
     </div>
 
     <button class="mobile-menu-btn" (click)="toggleMobileMenu()" aria-label="Menu principal">
@@ -24,12 +41,12 @@
 
   <div class="mobile-menu" [class.open]="mobileMenuOpen">
     <div class="container mobile-menu-inner">
-      <a routerLink="/" (click)="toggleMobileMenu()" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Accueil</a>
-      <a routerLink="/projects" (click)="toggleMobileMenu()" routerLinkActive="active">Projets</a>
-      <a routerLink="/experience" (click)="toggleMobileMenu()" routerLinkActive="active">Experience</a>
-      <a routerLink="/skills" (click)="toggleMobileMenu()" routerLinkActive="active">Skills</a>
-      <a routerLink="/blog" (click)="toggleMobileMenu()" routerLinkActive="active">Blog</a>
-      <a routerLink="/contact" (click)="toggleMobileMenu()" routerLinkActive="active">Contact</a>
+      <a routerLink="/" (click)="toggleMobileMenu()" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ t('nav.home') }}</a>
+      <a routerLink="/projects" (click)="toggleMobileMenu()" routerLinkActive="active">{{ t('nav.projects') }}</a>
+      <a routerLink="/experience" (click)="toggleMobileMenu()" routerLinkActive="active">{{ t('nav.experience') }}</a>
+      <a routerLink="/skills" (click)="toggleMobileMenu()" routerLinkActive="active">{{ t('nav.skills') }}</a>
+      <a routerLink="/blog" (click)="toggleMobileMenu()" routerLinkActive="active">{{ t('nav.blog') }}</a>
+      <a routerLink="/contact" (click)="toggleMobileMenu()" routerLinkActive="active">{{ t('nav.contact') }}</a>
     </div>
   </div>
 </nav>

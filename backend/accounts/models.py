@@ -14,6 +14,13 @@ class User(AbstractUser):
         null=True,
         verbose_name="Photo de profil",
     )
+    cv_file = CloudinaryField(
+        folder='media/cv/',
+        resource_type='raw',
+        blank=True,
+        null=True,
+        verbose_name="CV (PDF)",
+    )
     phone = models.CharField(max_length=20, blank=True, null=True, verbose_name="Téléphone")
     location = models.CharField(max_length=100, blank=True, null=True, verbose_name="Localisation")
     

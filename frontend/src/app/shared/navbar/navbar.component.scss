@@ -111,6 +111,41 @@
   }
 }
 
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ctrl-btn {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d0dce9;
+  border-radius: 9px;
+  background: #fff;
+  color: #334155;
+  cursor: pointer;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0;
+  transition: background 0.22s ease, color 0.22s ease, border-color 0.22s ease;
+
+  &:hover {
+    background: #e6f1ff;
+    color: #0f3d63;
+    border-color: #93c5fd;
+  }
+
+  svg {
+    display: block;
+    flex-shrink: 0;
+  }
+}
+
 .mobile-menu-btn {
   display: none;
   width: 38px;
