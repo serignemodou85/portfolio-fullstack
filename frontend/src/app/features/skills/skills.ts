@@ -8,6 +8,7 @@ import { SkillService } from '../../core/services/skill.service';
 import { SkillCategoryWithSkills } from '../../core/models/skill.model';
 import { IconComponent } from '../../shared/components/icon/icon.component';
 import { resolveIconFromKeyword } from '../../shared/utils/icon-keyword';
+import { LanguageService, Lang } from '../../core/services/language.service';
 
 @Component({
   selector: 'app-skills',
@@ -20,9 +21,19 @@ export class Skills implements OnInit, OnDestroy {
   categories: SkillCategoryWithSkills[] = [];
   loading = true;
   error: string | null = null;
+  lang: Lang = 'fr';
   private destroy$ = new Subject<void>();
 
-  constructor(private skillService: SkillService) {}
+  constructor(
+    private skillService: SkillService,
+    private langService: LanguageService
+  ) {
+    this.langService.lang$.pipe(takeUntil(this.destroy$)).subscribe(l => this.lang = l);
+  }
+
+  t(key: string): string {
+    return this.langService.t(key);
+  }
 
   ngOnInit(): void {
     this.skillService.getCategoriesWithSkills().pipe(takeUntil(this.destroy$)).subscribe({

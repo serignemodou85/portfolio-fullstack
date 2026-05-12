@@ -2,19 +2,19 @@
   <div class="container">
     <header class="page-head fade-up">
       <div>
-        <p class="eyebrow">Contact</p>
-        <h1>Parlons de votre besoin</h1>
-        <p>Decrivez votre contexte et je vous reviens avec une proposition claire.</p>
+        <p class="eyebrow">{{ t('contact.eyebrow') }}</p>
+        <h1>{{ t('contact.title') }}</h1>
+        <p>{{ t('contact.subtitle') }}</p>
       </div>
     </header>
 
     <div class="layout">
       <section class="contact-form-card fade-up stagger-1" aria-labelledby="contact-form-title">
-        <h2 id="contact-form-title">Envoyer un message</h2>
+        <h2 id="contact-form-title">{{ t('contact.form.title') }}</h2>
 
         <form (ngSubmit)="onSubmit(contactFormRef)" #contactFormRef="ngForm" novalidate>
           <div *ngIf="success" class="alert alert-success">
-            Votre message a ete envoye. Merci.
+            {{ t('contact.form.success') }}
           </div>
 
           <div *ngIf="warning" class="alert alert-warning">
@@ -27,7 +27,7 @@
 
           <div class="grid two">
             <div class="form-group">
-              <label for="name">Nom complet *</label>
+              <label for="name">{{ t('contact.form.name') }}</label>
               <input
                 type="text"
                 id="name"
@@ -39,12 +39,12 @@
                 placeholder="Prénom Nom"
               />
               <div class="field-error" *ngIf="nameCtrl.invalid && (nameCtrl.dirty || nameCtrl.touched)">
-                Votre nom est requis.
+                {{ t('contact.form.name.error') }}
               </div>
             </div>
 
             <div class="form-group">
-              <label for="email">Email *</label>
+              <label for="email">{{ t('contact.form.email') }}</label>
               <input
                 type="email"
                 id="email"
@@ -57,15 +57,15 @@
                 placeholder="....@email.com"
               />
               <div class="field-error" *ngIf="emailCtrl.invalid && (emailCtrl.dirty || emailCtrl.touched)">
-                <span *ngIf="emailCtrl.errors?.['required']">L'adresse email est requise.</span>
-                <span *ngIf="emailCtrl.errors?.['email']">Email invalide.</span>
+                <span *ngIf="emailCtrl.errors?.['required']">{{ t('contact.form.email.req') }}</span>
+                <span *ngIf="emailCtrl.errors?.['email']">{{ t('contact.form.email.invalid') }}</span>
               </div>
             </div>
           </div>
 
           <div class="grid two">
             <div class="form-group">
-              <label for="phone">Telephone</label>
+              <label for="phone">{{ t('contact.form.phone') }}</label>
               <input
                 type="tel"
                 id="phone"
@@ -77,7 +77,7 @@
             </div>
 
             <div class="form-group">
-              <label for="subject">Sujet *</label>
+              <label for="subject">{{ t('contact.form.subject') }}</label>
               <input
                 type="text"
                 id="subject"
@@ -89,13 +89,13 @@
                 placeholder="Demande de collaboration"
               />
               <div class="field-error" *ngIf="subjectCtrl.invalid && (subjectCtrl.dirty || subjectCtrl.touched)">
-                Ce champ est obligatoire.
+                {{ t('contact.form.subject.error') }}
               </div>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="message">Message *</label>
+            <label for="message">{{ t('contact.form.message') }}</label>
             <textarea
               id="message"
               name="message"
@@ -107,42 +107,51 @@
               placeholder="Contexte, objectifs, delai, budget approximatif..."
             ></textarea>
             <div class="field-error" *ngIf="messageCtrl.invalid && (messageCtrl.dirty || messageCtrl.touched)">
-              Merci de detailler votre demande.
+              {{ t('contact.form.message.error') }}
             </div>
           </div>
 
           <button type="submit" class="btn btn-primary submit" [disabled]="!contactFormRef.valid || loading">
-            {{ loading ? 'Envoi en cours...' : 'Envoyer' }}
+            {{ loading ? t('contact.form.sending') : t('contact.form.submit') }}
           </button>
 
           <p class="privacy-note">
-            Vos informations sont utilisees uniquement pour traiter votre message.
+            {{ t('contact.form.privacy') }}
           </p>
         </form>
       </section>
 
       <aside class="contact-info fade-up stagger-2">
+        <article class="info-card info-card--available">
+          <h3>{{ t('contact.available.title') }}</h3>
+          <p class="available-text">{{ t('contact.available.text') }}</p>
+        </article>
+
         <article class="info-card">
-          <h3>Email</h3>
+          <h3>{{ t('contact.info.email') }}</h3>
           <p>modou2000f@gmail.com</p>
         </article>
 
         <article class="info-card">
-          <h3>Telephone</h3>
+          <h3>{{ t('contact.info.phone') }}</h3>
           <p>+33 7 58 36 59 70</p>
           <p>+221 77 688 30 73</p>
         </article>
 
         <article class="info-card">
-          <h3>Localisation</h3>
+          <h3>{{ t('contact.info.location') }}</h3>
           <p>France</p>
         </article>
 
         <article class="info-card">
-          <h3>Reseaux</h3>
+          <h3>{{ t('contact.info.social') }}</h3>
           <div class="social-links">
-            <a href="https://github.com/serignemodou85" target="_blank" class="btn btn-soft">GitHub</a>
-            <a href="https://www.linkedin.com/in/modou-fall-a81a27260" target="_blank" class="btn btn-soft">LinkedIn</a>
+            <a href="https://github.com/serignemodou85" target="_blank" rel="noopener" class="btn btn-soft social-btn">
+              <span class="social-icon">&#xf09b;</span> GitHub
+            </a>
+            <a href="https://www.linkedin.com/in/modou-fall-a81a27260" target="_blank" rel="noopener" class="btn btn-soft social-btn">
+              <span class="social-icon">&#xf0e1;</span> LinkedIn
+            </a>
           </div>
         </article>
       </aside>

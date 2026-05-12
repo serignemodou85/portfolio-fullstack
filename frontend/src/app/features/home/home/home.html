@@ -1,12 +1,9 @@
 <section class="home-hero">
   <div class="container hero-grid">
     <div class="hero-copy fade-up stagger-1">
-      <p class="eyebrow">Mon parcours - Portfolio</p>
-      <h1>Data Scientist, Data Engineer et Full-Stack Developer</h1>
-      <p class="lead">
-        Je construis des produits data et web de bout en bout: collecte, modele, API et interface.
-        Objectif: des solutions lisibles, robustes et utiles au metier.
-      </p>
+      <p class="eyebrow">{{ t('home.eyebrow') }}</p>
+      <h1>{{ t('home.h1') }}</h1>
+      <p class="lead">{{ t('home.lead') }}</p>
 
       <div class="quick-badges">
         <span class="badge-pill">Python</span>
@@ -18,28 +15,28 @@
       </div>
 
       <div class="hero-actions">
-        <a routerLink="/projects" class="btn btn-primary">Voir mes projets</a>
-        <a routerLink="/contact" class="btn btn-outline">Démarrer une discussion</a>
+        <a routerLink="/projects" class="btn btn-primary">{{ t('home.cta.work') }}</a>
+        <a routerLink="/contact" class="btn btn-outline">{{ t('home.cta.discuss') }}</a>
         <a *ngIf="profile?.cv_file; else staticCv"
            [href]="profile!.cv_file" target="_blank" rel="noopener"
-           class="btn btn-soft">Télécharger CV</a>
+           class="btn btn-soft">{{ t('home.cta.cv') }}</a>
         <ng-template #staticCv>
-          <a href="assets/documents/cvModouFall.pdf" target="_blank" class="btn btn-soft">Télécharger CV</a>
+          <a href="assets/documents/cvModouFall.pdf" target="_blank" class="btn btn-soft">{{ t('home.cta.cv') }}</a>
         </ng-template>
       </div>
 
       <div class="hero-metrics">
         <article>
           <p class="metric-value">{{ featuredProjects.length }}+</p>
-          <p class="metric-label">projets mis en avant</p>
+          <p class="metric-label">{{ t('home.metric.projects') }}</p>
         </article>
         <article>
           <p class="metric-value">{{ featuredArticles.length }}+</p>
-          <p class="metric-label">articles techniques</p>
+          <p class="metric-label">{{ t('home.metric.articles') }}</p>
         </article>
         <article>
           <p class="metric-value">End-to-End</p>
-          <p class="metric-label">approche delivery</p>
+          <p class="metric-label">{{ t('home.metric.e2e') }}</p>
         </article>
       </div>
     </div>
@@ -60,14 +57,48 @@
   </div>
 </section>
 
+<section class="section section-what">
+  <div class="container">
+    <div class="section-head fade-up">
+      <div>
+        <p class="eyebrow">{{ t('home.what.eyebrow') }}</p>
+        <h2>{{ t('home.what.title') }}</h2>
+      </div>
+    </div>
+
+    <div class="what-grid">
+      <div class="what-card fade-up stagger-1">
+        <div class="what-icon">&#128202;</div>
+        <h3>{{ t('home.what.de.title') }}</h3>
+        <p>{{ t('home.what.de.text') }}</p>
+      </div>
+      <div class="what-card fade-up stagger-2">
+        <div class="what-icon">&#129302;</div>
+        <h3>{{ t('home.what.ml.title') }}</h3>
+        <p>{{ t('home.what.ml.text') }}</p>
+      </div>
+      <div class="what-card fade-up stagger-3">
+        <div class="what-icon">&#128268;</div>
+        <h3>{{ t('home.what.backend.title') }}</h3>
+        <p>{{ t('home.what.backend.text') }}</p>
+      </div>
+      <div class="what-card fade-up stagger-4">
+        <div class="what-icon">&#128187;</div>
+        <h3>{{ t('home.what.frontend.title') }}</h3>
+        <p>{{ t('home.what.frontend.text') }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="section section-projects">
   <div class="container">
     <div class="section-head fade-up">
       <div>
-        <p class="eyebrow">Selection</p>
-        <h2>Projets recents</h2>
+        <p class="eyebrow">{{ t('home.projects.eyebrow') }}</p>
+        <h2>{{ t('home.projects.title') }}</h2>
       </div>
-      <a routerLink="/projects" class="btn btn-outline">Tous les projets</a>
+      <a routerLink="/projects" class="btn btn-outline">{{ t('home.projects.all') }}</a>
     </div>
 
     <div *ngIf="loading" class="loading">
@@ -90,7 +121,7 @@
             [class.progress]="project.status === 'in_progress'"
             [class.archived]="project.status === 'archived'"
           >
-            {{ project.status === 'completed' ? 'Termine' : (project.status === 'in_progress' ? 'En cours' : 'Archive') }}
+            {{ project.status === 'completed' ? t('status.completed') : (project.status === 'in_progress' ? t('status.in_progress') : t('status.archived')) }}
           </span>
         </div>
         <div class="card-body">
@@ -100,7 +131,7 @@
             <span *ngFor="let tech of project.technologies.split(',') | slice:0:4">{{ tech.trim() }}</span>
           </div>
           <div class="card-actions">
-            <a [routerLink]="['/projects', project.slug]" class="btn btn-soft">Voir le detail</a>
+            <a [routerLink]="['/projects', project.slug]" class="btn btn-soft">{{ t('home.project.detail') }}</a>
           </div>
         </div>
       </article>
@@ -112,26 +143,26 @@
   <div class="container">
     <div class="section-head fade-up">
       <div>
-        <p class="eyebrow">Publication</p>
-        <h2>Articles en avant</h2>
+        <p class="eyebrow">{{ t('home.articles.eyebrow') }}</p>
+        <h2>{{ t('home.articles.title') }}</h2>
       </div>
-      <a routerLink="/blog" class="btn btn-outline">Voir le blog</a>
+      <a routerLink="/blog" class="btn btn-outline">{{ t('home.articles.blog') }}</a>
     </div>
 
     <div class="article-grid" *ngIf="featuredArticles.length; else noArticles">
       <article class="article-card fade-up" *ngFor="let article of featuredArticles">
         <img [src]="article.featured_image" [alt]="article.title" />
         <div class="article-body">
-          <span class="article-meta">{{ article.reading_time }} min</span>
+          <span class="article-meta">{{ article.reading_time }} {{ t('home.articles.min') }}</span>
           <h3>{{ article.title }}</h3>
           <p>{{ article.excerpt }}</p>
-          <a [routerLink]="['/blog', article.slug]" class="read-link">Lire l'article</a>
+          <a [routerLink]="['/blog', article.slug]" class="read-link">{{ t('home.articles.read') }}</a>
         </div>
       </article>
     </div>
 
     <ng-template #noArticles>
-      <div class="empty-state">Aucun article mis en avant pour le moment.</div>
+      <div class="empty-state">{{ t('home.articles.empty') }}</div>
     </ng-template>
   </div>
 </section>
@@ -139,9 +170,9 @@
 <section class="section section-cta">
   <div class="container">
     <div class="cta-box fade-up">
-      <h2>Vous avez un projet data ou applicatif ?</h2>
-      <p>Je peux intervenir sur l'architecture, le dev backend/frontend et la mise en production.</p>
-      <a routerLink="/contact" class="btn btn-primary">Planifier un echange</a>
+      <h2>{{ t('home.cta2.title') }}</h2>
+      <p>{{ t('home.cta2.text') }}</p>
+      <a routerLink="/contact" class="btn btn-primary">{{ t('home.cta2.btn') }}</a>
     </div>
   </div>
 </section>

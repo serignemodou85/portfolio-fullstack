@@ -2,39 +2,40 @@
   <div class="container">
     <header class="page-head fade-up">
       <div>
-        <p class="eyebrow">Parcours</p>
-        <h1>Experience professionnelle & formations</h1>
-        <p>Un parcours construit entre production logicielle, data et apprentissage continu.</p>
+        <p class="eyebrow">{{ t('exp.eyebrow') }}</p>
+        <h1>{{ t('exp.title') }}</h1>
+        <p>{{ t('exp.subtitle') }}</p>
       </div>
-      <a routerLink="/contact" class="btn btn-outline">Proposer une mission</a>
+      <a routerLink="/contact" class="btn btn-outline">{{ t('exp.cta') }}</a>
     </header>
+
     <section class="stats-row fade-up" *ngIf="!loading && !error">
       <article class="stat-box">
-        <p class="label">Total</p>
+        <p class="label">{{ t('exp.stat.total') }}</p>
         <p class="value">{{ experiences.length }}</p>
       </article>
       <article class="stat-box">
-        <p class="label">En cours</p>
+        <p class="label">{{ t('exp.stat.current') }}</p>
         <p class="value">{{ currentCount }}</p>
       </article>
       <article class="stat-box">
-        <p class="label">Certifications</p>
+        <p class="label">{{ t('exp.stat.certs') }}</p>
         <p class="value">{{ certificationCount }}</p>
       </article>
     </section>
 
     <div *ngIf="loading" class="loading">
       <div class="spinner"></div>
-      <p>Chargement des experiences...</p>
+      <p>{{ t('exp.loading') }}</p>
     </div>
 
     <div *ngIf="error" class="error-card">{{ error }}</div>
 
     <section class="filters fade-up" *ngIf="!loading && !error">
-      <button class="filter-btn" [class.active]="selectedType === 'all'" (click)="setFilter('all')">Tout</button>
-      <button class="filter-btn" [class.active]="selectedType === 'work'" (click)="setFilter('work')">Experiences</button>
-      <button class="filter-btn" [class.active]="selectedType === 'education'" (click)="setFilter('education')">Formations</button>
-      <button class="filter-btn" [class.active]="selectedType === 'certification'" (click)="setFilter('certification')">Certifications</button>
+      <button class="filter-btn" [class.active]="selectedType === 'all'" (click)="setFilter('all')">{{ t('exp.filter.all') }}</button>
+      <button class="filter-btn" [class.active]="selectedType === 'work'" (click)="setFilter('work')">{{ t('exp.filter.work') }}</button>
+      <button class="filter-btn" [class.active]="selectedType === 'education'" (click)="setFilter('education')">{{ t('exp.filter.edu') }}</button>
+      <button class="filter-btn" [class.active]="selectedType === 'certification'" (click)="setFilter('certification')">{{ t('exp.filter.cert') }}</button>
     </section>
 
     <div class="timeline" *ngIf="!loading && !error">
@@ -50,13 +51,13 @@
               <p class="company">{{ exp.company }} <span *ngIf="exp.location">· {{ exp.location }}</span></p>
             </div>
             <span class="badge" [class.badge-success]="exp.is_current" [class.badge-soft]="!exp.is_current">
-              {{ exp.is_current ? 'En cours' : 'Termine' }}
+              {{ exp.is_current ? t('exp.badge.current') : t('exp.badge.done') }}
             </span>
           </div>
 
           <div class="meta-row">
             <p class="dates">
-              {{ exp.start_date | date:'MM/yyyy' }} - {{ exp.end_date ? (exp.end_date | date:'MM/yyyy') : 'Present' }}
+              {{ exp.start_date | date:'MM/yyyy' }} - {{ exp.end_date ? (exp.end_date | date:'MM/yyyy') : t('exp.present') }}
             </p>
             <a
               *ngIf="exp.certificate_file"
@@ -65,7 +66,7 @@
               target="_blank"
               rel="noopener"
             >
-              Voir certificat
+              {{ t('exp.cert.view') }}
             </a>
           </div>
 
@@ -75,22 +76,19 @@
     </div>
 
     <div class="pagination" *ngIf="!loading && !error && totalPages > 1">
-      <button class="page-btn" (click)="setPage(page - 1)" [disabled]="page === 1">Precedent</button>
-      <span class="page-count">Page {{ page }} / {{ totalPages }}</span>
-      <button class="page-btn" (click)="setPage(page + 1)" [disabled]="page === totalPages">Suivant</button>
+      <button class="page-btn" (click)="setPage(page - 1)" [disabled]="page === 1">{{ t('exp.prev') }}</button>
+      <span class="page-count">{{ t('exp.page') }} {{ page }} {{ t('exp.of') }} {{ totalPages }}</span>
+      <button class="page-btn" (click)="setPage(page + 1)" [disabled]="page === totalPages">{{ t('exp.next') }}</button>
     </div>
 
     <div class="empty-state" *ngIf="!loading && !error && !filteredExperiences.length">
-      Aucun element pour ce filtre.
+      {{ t('exp.empty') }}
     </div>
 
     <section class="cta-box fade-up">
-      <h2>Construisons votre prochaine solution data ou web</h2>
-      <p>
-        Je developpe des solutions robustes: backend, frontend et integration data
-        pour transformer des besoins metier en produits utiles.
-      </p>
-      <a routerLink="/contact" class="btn btn-primary">Me contacter</a>
+      <h2>{{ t('exp.cta2.title') }}</h2>
+      <p>{{ t('exp.cta2.text') }}</p>
+      <a routerLink="/contact" class="btn btn-primary">{{ t('exp.cta2.btn') }}</a>
     </section>
   </div>
 </section>

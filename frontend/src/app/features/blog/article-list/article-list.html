@@ -2,16 +2,16 @@
   <div class="container">
     <header class="page-head fade-up">
       <div>
-        <p class="eyebrow">Blog</p>
-        <h1>Notes techniques</h1>
-        <p>Articles sur le developpement, la data et les choix d'architecture.</p>
+        <p class="eyebrow">{{ t('blog.eyebrow') }}</p>
+        <h1>{{ t('blog.title') }}</h1>
+        <p>{{ t('blog.subtitle') }}</p>
       </div>
-      <a routerLink="/contact" class="btn btn-outline">Proposer un sujet</a>
+      <a routerLink="/contact" class="btn btn-outline">{{ t('blog.cta') }}</a>
     </header>
 
     <div *ngIf="loading" class="loading">
       <div class="spinner"></div>
-      <p>Chargement des articles...</p>
+      <p>{{ t('blog.loading') }}</p>
     </div>
 
     <div *ngIf="error" class="error-card">{{ error }}</div>
@@ -20,14 +20,14 @@
       <article class="article-card fade-up" *ngFor="let article of articles">
         <div class="media">
           <img [src]="article.featured_image" [alt]="article.title" />
-          <span class="category">{{ article.category_name || 'General' }}</span>
+          <span class="category">{{ article.category_name || t('blog.general') }}</span>
         </div>
 
         <div class="body">
           <div class="meta-row">
             <span>{{ article.published_at | date:'dd/MM/yyyy' }}</span>
-            <span>{{ article.reading_time }} min</span>
-            <span>{{ article.views_count }} vues</span>
+            <span>{{ article.reading_time }} {{ t('blog.min') }}</span>
+            <span>{{ article.views_count }} {{ t('blog.views') }}</span>
           </div>
 
           <h2>
@@ -44,14 +44,14 @@
             <span class="status-badge" [class.published]="article.status === 'published'" [class.archived]="article.status === 'archived'">
               {{ getStatusLabel(article.status) }}
             </span>
-            <a [routerLink]="['/blog', article.slug]" class="btn btn-soft">Lire</a>
+            <a [routerLink]="['/blog', article.slug]" class="btn btn-soft">{{ t('blog.read') }}</a>
           </div>
         </div>
       </article>
     </div>
 
     <div *ngIf="!loading && !error && articles.length === 0" class="empty-state">
-      Aucun article publie pour le moment.
+      {{ t('blog.empty') }}
     </div>
   </div>
 </section>

@@ -1,9 +1,12 @@
 // src/app/features/projects/project-list/project-list.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { ProjectService } from '../services/project';
 import { ProjectList as ProjectListModel } from '../../../core/models/project.model';
+import { LanguageService, Lang } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-project-list',
@@ -12,18 +15,34 @@ import { ProjectList as ProjectListModel } from '../../../core/models/project.mo
   templateUrl: './project-list.html',
   styleUrl: './project-list.scss'
 })
-export class ProjectList implements OnInit {
+export class ProjectList implements OnInit, OnDestroy {
   projects: ProjectListModel[] = [];
   filteredProjects: ProjectListModel[] = [];
   loading = true;
   error: string | null = null;
   selectedStatus: string = 'all';
+  lang: Lang = 'fr';
   readonly placeholderImage = 'assets/placeholders/project.svg';
+  private destroy$ = new Subject<void>();
 
-  constructor(private projectService: ProjectService) {}
+  constructor(
+    private projectService: ProjectService,
+    private langService: LanguageService
+  ) {
+    this.langService.lang$.pipe(takeUntil(this.destroy$)).subscribe(l => this.lang = l);
+  }
+
+  t(key: string): string {
+    return this.langService.t(key);
+  }
 
   ngOnInit(): void {
     this.loadProjects();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadProjects(): void {
@@ -68,11 +87,11 @@ export class ProjectList implements OnInit {
 
   getStatusLabel(status: string): string {
     if (status === 'completed') {
-      return 'Termine';
+      return this.t('status.completed');
     }
     if (status === 'in_progress') {
-      return 'En cours';
+      return this.t('status.in_progress');
     }
-    return 'Archive';
+    return this.t('status.archived');
   }
 }

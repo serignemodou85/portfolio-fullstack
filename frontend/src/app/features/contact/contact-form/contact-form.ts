@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
+import { LanguageService, Lang } from '../../../core/services/language.service';
 
 interface ContactData {
   name: string;
@@ -41,9 +42,19 @@ export class ContactForm implements OnDestroy {
   success = false;
   error: string | null = null;
   warning: string | null = null;
+  lang: Lang = 'fr';
   private destroy$ = new Subject<void>();
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private langService: LanguageService
+  ) {
+    this.langService.lang$.pipe(takeUntil(this.destroy$)).subscribe(l => this.lang = l);
+  }
+
+  t(key: string): string {
+    return this.langService.t(key);
+  }
 
   ngOnDestroy(): void {
     this.destroy$.next();

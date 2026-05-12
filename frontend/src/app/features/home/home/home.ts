@@ -11,6 +11,7 @@ import { ArticleList } from '../../../core/models/article.model';
 import { UserService } from '../../../core/services/user.service';
 import { User } from '../../../core/models/auth.model';
 import { environment } from '../../../../environments/environment';
+import { LanguageService, Lang } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-home',
@@ -24,6 +25,7 @@ export class Home implements OnInit, OnDestroy {
   featuredArticles: ArticleList[] = [];
   profile: User | null = null;
   loading = true;
+  lang: Lang = 'fr';
   readonly placeholderImage = 'assets/placeholders/project.svg';
   readonly profileFallback = 'assets/images/cv.jpg';
   private destroy$ = new Subject<void>();
@@ -31,8 +33,15 @@ export class Home implements OnInit, OnDestroy {
   constructor(
     private projectService: ProjectService,
     private articleService: ArticleService,
-    private userService: UserService
-  ) {}
+    private userService: UserService,
+    private langService: LanguageService
+  ) {
+    this.langService.lang$.pipe(takeUntil(this.destroy$)).subscribe(l => this.lang = l);
+  }
+
+  t(key: string): string {
+    return this.langService.t(key);
+  }
 
   ngOnInit(): void {
     this.loadFeaturedContent();

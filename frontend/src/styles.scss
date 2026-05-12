@@ -685,6 +685,52 @@ a {
   font-size: clamp(1.45rem, 2.8vw, 2.2rem);
 }
 
+.section-what {
+  background: var(--surface-alt, #f7f9fc);
+  padding: 4rem 0;
+}
+
+.what-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.what-card {
+  background: #fff;
+  border: 1px solid #dbe4ef;
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+  }
+
+  .what-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    line-height: 1;
+  }
+
+  h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary, #0f172a);
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: var(--text-muted, #64748b);
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
 .section-projects {
   background: linear-gradient(180deg, rgba(231, 241, 255, 0.4), rgba(255, 255, 255, 0));
 }
@@ -1040,6 +1086,21 @@ a {
 }
 
 /* ── Sections ── */
+[data-theme="dark"] .section-what {
+  background: #0d1117;
+}
+
+[data-theme="dark"] .what-card {
+  background: #161b22;
+  border-color: #21262d;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+
+  h3 { color: #e6edf3; }
+  p  { color: #8b949e; }
+
+  &:hover { border-color: #388bfd; box-shadow: 0 4px 16px rgba(56, 139, 253, 0.12); }
+}
+
 [data-theme="dark"] .section-projects {
   background: linear-gradient(180deg, rgba(22, 27, 34, 0.6), transparent);
 }
@@ -1162,22 +1223,64 @@ a {
 }
 [data-theme="dark"] .experience-page .page-count { color: #8b949e; }
 
-/* ── Admin pages (forms + tables) ── */
+/* ── Admin shell + all admin pages ── */
+[data-theme="dark"] .admin-shell {
+  --bg: #0d1117;
+  --panel: #161b22;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --line: #30363d;
+  background: #0d1117;
+}
+
 [data-theme="dark"] .admin-content {
   background: #0d1117;
 }
 
-[data-theme="dark"] .admin-page {
+[data-theme="dark"] .admin-page,
+[data-theme="dark"] .form-page {
+  --bg: #0d1117;
+  --panel: #161b22;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --line: #30363d;
+  --primary-soft: rgba(56, 139, 253, 0.12);
   color: #e6edf3;
 }
 
-[data-theme="dark"] .admin-page h1, [data-theme="dark"] .admin-page h2 {
+[data-theme="dark"] .admin-page h1, [data-theme="dark"] .admin-page h2,
+[data-theme="dark"] .form-page h1, [data-theme="dark"] .form-page h2 {
   color: #e6edf3;
 }
 
+/* form-card (project-form, experience-admin, blog-admin…) */
+[data-theme="dark"] .form-card {
+  background: #161b22;
+  border-color: #21262d;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* stat cards (skills-admin, etc.) */
+[data-theme="dark"] .stat-card {
+  background: #161b22;
+  border-color: #21262d;
+}
+[data-theme="dark"] .stat-label { color: #6e7681; }
+[data-theme="dark"] .stat-value { color: #e6edf3; }
+
+/* section headers inside form-page */
+[data-theme="dark"] .form-page .eyebrow { color: #58a6ff; }
+[data-theme="dark"] .form-page .page-header h1 { color: #e6edf3; }
+[data-theme="dark"] .form-page .section-title { color: #e6edf3; }
+[data-theme="dark"] .form-page .section-meta { color: #6e7681; }
+
+/* inputs in BOTH admin-page and form-page */
 [data-theme="dark"] .admin-page input,
 [data-theme="dark"] .admin-page select,
-[data-theme="dark"] .admin-page textarea {
+[data-theme="dark"] .admin-page textarea,
+[data-theme="dark"] .form-page input,
+[data-theme="dark"] .form-page select,
+[data-theme="dark"] .form-page textarea {
   background: #0d1117;
   border-color: #30363d;
   color: #e6edf3;
@@ -1189,7 +1292,8 @@ a {
   }
 }
 
-[data-theme="dark"] .admin-page label { color: #8b949e; }
+[data-theme="dark"] .admin-page label,
+[data-theme="dark"] .form-page label { color: #8b949e; }
 
 [data-theme="dark"] .admin-page .panel {
   background: #161b22;
@@ -1308,11 +1412,39 @@ a {
 [data-theme="dark"] .page-header h1 { color: #e6edf3; }
 
 /* ── Data table admin ── */
-[data-theme="dark"] .admin-page .data-table th {
+[data-theme="dark"] .admin-page .data-table th,
+[data-theme="dark"] .form-page .data-table th {
   background: #0d1117;
   color: #8b949e;
 }
 [data-theme="dark"] .admin-page .data-table th,
-[data-theme="dark"] .admin-page .data-table td {
+[data-theme="dark"] .admin-page .data-table td,
+[data-theme="dark"] .form-page .data-table th,
+[data-theme="dark"] .form-page .data-table td {
   border-bottom-color: #21262d;
 }
+[data-theme="dark"] .admin-page .data-table td,
+[data-theme="dark"] .form-page .data-table td { color: #c9d1d9; }
+
+/* ── Alert boxes (form-page) ── */
+[data-theme="dark"] .form-page .alert-success { background: rgba(63,185,80,0.1); color: #3fb950; border-color: rgba(63,185,80,0.2); }
+[data-theme="dark"] .form-page .alert-error { background: rgba(248,81,73,0.1); color: #f85149; border-color: rgba(248,81,73,0.2); }
+
+/* ── Form sections inside form-card ── */
+[data-theme="dark"] .form-section {
+  background: #0d1117;
+  border-color: #21262d;
+}
+[data-theme="dark"] .form-section-title { color: #e6edf3; }
+
+/* ── Panel head (inside admin-page panels used by skills/experience etc.) ── */
+[data-theme="dark"] .admin-page .panel-head,
+[data-theme="dark"] .form-page .panel-head {
+  background: #0d1117;
+  border-bottom-color: #21262d;
+}
+
+/* ── Icon preview chip in skills-admin ── */
+[data-theme="dark"] .icon-preview { background: #21262d; border-color: #30363d; }
+[data-theme="dark"] .chip { background: #161b22; border-color: #30363d; color: #c9d1d9; }
+[data-theme="dark"] .chip:hover { background: #21262d; color: #58a6ff; border-color: #388bfd; }
