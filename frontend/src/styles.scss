@@ -1008,6 +1008,10 @@ a {
   }
 }
 
+[data-theme="dark"] .nav-ctrl-group {
+  border-left-color: #1e3553;
+}
+
 /* Cards & sections */
 [data-theme="dark"] .project-card,
 [data-theme="dark"] .article-card {
