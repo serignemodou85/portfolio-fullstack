@@ -138,6 +138,33 @@ textarea {
   resize: vertical;
 }
 
+.cv-section {
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  background: #fafafa;
+}
+
+.field-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #475569;
+  font-weight: 700;
+  margin: 0 0 0.55rem;
+}
+
+.cv-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.cv-section input[type='file'] {
+  display: none;
+}
+
 .actions {
   display: flex;
   gap: 0.6rem;
