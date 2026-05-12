@@ -5,13 +5,7 @@ import { Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { SkillCategory, SkillCategoryWithSkills, SkillItem } from '../models/skill.model';
-
-interface PaginatedResponse<T> {
-  count?: number;
-  next?: string | null;
-  previous?: string | null;
-  results: T[];
-}
+import { PaginatedResponse } from '../models/paginated-response.model';
 
 @Injectable({
   providedIn: 'root'

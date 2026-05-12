@@ -1,7 +1,9 @@
 // src/app/features/skills/skills.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { SkillService } from '../../core/services/skill.service';
 import { SkillCategoryWithSkills } from '../../core/models/skill.model';
 import { IconComponent } from '../../shared/components/icon/icon.component';
@@ -14,15 +16,16 @@ import { resolveIconFromKeyword } from '../../shared/utils/icon-keyword';
   templateUrl: './skills.html',
   styleUrl: './skills.scss'
 })
-export class Skills implements OnInit {
+export class Skills implements OnInit, OnDestroy {
   categories: SkillCategoryWithSkills[] = [];
   loading = true;
   error: string | null = null;
+  private destroy$ = new Subject<void>();
 
   constructor(private skillService: SkillService) {}
 
   ngOnInit(): void {
-    this.skillService.getCategoriesWithSkills().subscribe({
+    this.skillService.getCategoriesWithSkills().pipe(takeUntil(this.destroy$)).subscribe({
       next: (categories) => {
         this.categories = categories;
         this.loading = false;
@@ -32,6 +35,11 @@ export class Skills implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   proficiencyClass(level: number): string {

@@ -6,7 +6,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from django.views.decorators.cache import cache_page
 from django.conf import settings
-from django.db.models import Count, Q
+from django.db.models import Count, F, Q
 from portfolio_backend.permissions import IsAdminOrReadOnly
 from .models import Category, Tag, Article
 from .serializers import (
@@ -76,8 +76,8 @@ class ArticleViewSet(viewsets.ModelViewSet):
         Incremente le compteur de vues a chaque lecture
         """
         instance = self.get_object()
-        instance.views_count += 1
-        instance.save(update_fields=['views_count'])
+        Article.objects.filter(pk=instance.pk).update(views_count=F('views_count') + 1)
+        instance.refresh_from_db(fields=['views_count'])
 
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
