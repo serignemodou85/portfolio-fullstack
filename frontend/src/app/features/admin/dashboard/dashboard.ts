@@ -364,6 +364,23 @@ export class Dashboard implements OnInit {
     });
   }
 
+  get today(): string {
+    return new Date().toLocaleDateString('fr-FR', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    });
+  }
+
+  getInitials(name: string): string {
+    return name.split(' ').slice(0, 2).map(p => p.charAt(0).toUpperCase()).join('');
+  }
+
+  getInitialsColor(name: string): string {
+    const palette = ['#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6', '#f59e0b', '#10b981', '#6366f1'];
+    let h = 0;
+    for (const c of name) { h = (h * 31 + c.charCodeAt(0)) % palette.length; }
+    return palette[Math.abs(h) % palette.length];
+  }
+
   trackByProject(index: number, item: ProjectList): string {
     return item.slug || `${index}`;
   }

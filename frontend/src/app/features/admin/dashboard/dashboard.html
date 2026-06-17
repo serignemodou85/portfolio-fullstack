@@ -1,275 +1,324 @@
 <app-admin-shell>
   <main class="dashboard admin-page">
-    <header class="topbar">
-      <div>
-        <p class="eyebrow">Bienvenue Serigne Modou Dans ton espace administrateur</p>
-        <h1>Tableau de bord</h1>
-        <p class="subtitle" *ngIf="currentUser">
-          {{ currentUser.first_name || currentUser.username }}
-        </p>
-      </div>
 
+    <!-- Header naturel -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <p class="greeting-date">{{ today }}</p>
+        <h1 class="greeting-title">Bonjour, {{ currentUser?.first_name || 'Modou' }}</h1>
+      </div>
+      <div class="topbar-actions">
+        <a routerLink="/admin/projects/new" class="btn btn-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          <span>Nouveau projet</span>
+        </a>
+      </div>
     </header>
 
-  <section class="kpi-grid">
-    <article class="kpi-card">
-      <div class="kpi-head">
-        <p class="kpi-title">Projets</p>
-        <app-icon name="file" [size]="16"></app-icon>
-      </div>
-      <p class="kpi-value">{{ stats.totalProjects }}</p>
-      <p class="kpi-meta">{{ stats.activeProjects || 0 }} actifs</p>
-    </article>
-
-    <article class="kpi-card">
-      <div class="kpi-head">
-        <p class="kpi-title">Articles</p>
-        <app-icon name="settings" [size]="16"></app-icon>
-      </div>
-      <p class="kpi-value">{{ stats.totalArticles }}</p>
-      <p class="kpi-meta">Blog et contenus</p>
-    </article>
-
-    <article class="kpi-card kpi-duo">
-      <div class="kpi-head">
-        <p class="kpi-title">Messages a traiter</p>
-        <app-icon name="mail" [size]="16"></app-icon>
-      </div>
-      <div class="kpi-duo-values">
-        <div>
-          <p class="kpi-value">{{ stats.unreadMessages || 0 }}</p>
-          <p class="kpi-meta warning">messages non lus</p>
+    <!-- KPI cards Tabler-style -->
+    <section class="kpi-grid">
+      <article class="kpi-card">
+        <div class="kpi-icon-box kpi-blue">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          </svg>
         </div>
-        <div>
-          <p class="kpi-value">{{ stats.totalViews || 0 }}</p>
-          <p class="kpi-meta positive">vues totales</p>
-        </div>
-      </div>
-    </article>
-  </section>
+        <p class="kpi-value">{{ stats.totalProjects }}</p>
+        <p class="kpi-label">Projets</p>
+        <p class="kpi-meta"><span class="kpi-tag kpi-tag-blue">{{ stats.activeProjects || 0 }} actifs</span></p>
+      </article>
 
-  <section class="panel">
-    <div class="panel-head">
-      <h2>Resume rapide</h2>
-      <span class="panel-meta">Vue globale de l'activite</span>
-    </div>
-    <div class="summary-grid">
-      <div class="summary-card">
-        <p class="summary-title">Projets actifs</p>
-        <p class="summary-value">{{ stats.activeProjects || 0 }}</p>
-      </div>
-      <div class="summary-card">
-        <p class="summary-title">Articles publies</p>
-        <p class="summary-value">{{ stats.totalArticles }}</p>
-      </div>
-      <div class="summary-card">
-        <p class="summary-title">Messages non lus</p>
-        <p class="summary-value">{{ stats.unreadMessages || 0 }}</p>
-      </div>
-    </div>
-  </section>
+      <article class="kpi-card">
+        <div class="kpi-icon-box kpi-purple">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </div>
+        <p class="kpi-value">{{ stats.totalArticles }}</p>
+        <p class="kpi-label">Articles</p>
+        <p class="kpi-meta"><span class="kpi-tag kpi-tag-purple">Blog</span></p>
+      </article>
 
-  <section class="panel">
-    <div class="panel-head">
-      <h2>Projets actifs</h2>
-      <div class="panel-head-actions">
-        <a routerLink="/admin/projects/archives" class="btn btn-outline">
-          <app-icon name="archive" [size]="16"></app-icon>
-          <span>Voir archives</span>
-        </a>
-      </div>
-    </div>
+      <article class="kpi-card">
+        <div class="kpi-icon-box kpi-amber">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+        <p class="kpi-value">{{ stats.unreadMessages || 0 }}</p>
+        <p class="kpi-label">Non lus</p>
+        <p class="kpi-meta"><span class="kpi-tag kpi-tag-amber">Messages</span></p>
+      </article>
 
-    <div class="table-wrap" *ngIf="processedProjects.length; else emptyActive">
-      <div class="table-tools">
-        <div class="field inline">
-          <label for="project_search">Recherche</label>
-          <input id="project_search" type="search" [(ngModel)]="projectSearch" name="project_search" placeholder="Titre, techno..." />
+      <article class="kpi-card">
+        <div class="kpi-icon-box kpi-teal">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
         </div>
-        <div class="field inline">
-          <label for="project_sort">Tri</label>
-          <select id="project_sort" [(ngModel)]="projectSort" name="project_sort">
-            <option value="updated_desc">Maj recente</option>
-            <option value="updated_asc">Maj ancienne</option>
-            <option value="title_asc">Titre A-Z</option>
-            <option value="title_desc">Titre Z-A</option>
-          </select>
+        <p class="kpi-value">{{ stats.totalViews || 0 }}</p>
+        <p class="kpi-label">Vues</p>
+        <p class="kpi-meta"><span class="kpi-tag kpi-tag-teal">Totales</span></p>
+      </article>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions">
+      <a routerLink="/admin/projects/new" class="qa-card">
+        <div class="qa-icon qa-blue">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+            <line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/>
+          </svg>
         </div>
-        <div class="field inline">
-          <label for="project_page_size">Par page</label>
-          <select id="project_page_size" [(ngModel)]="pageSize" name="project_page_size" (ngModelChange)="setPageSize($event)">
-            <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
-          </select>
+        <p class="qa-label">Nouveau projet</p>
+        <p class="qa-sub">Ajouter un projet</p>
+      </a>
+
+      <a routerLink="/admin/blog" class="qa-card">
+        <div class="qa-icon qa-purple">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </div>
+        <p class="qa-label">Nouveau blog</p>
+        <p class="qa-sub">Rédiger un article</p>
+      </a>
+
+      <a routerLink="/admin/messages/archives" class="qa-card">
+        <div class="qa-icon qa-amber">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+        <p class="qa-label">Messages</p>
+        <p class="qa-sub">{{ stats.unreadMessages || 0 }} non lu{{ (stats.unreadMessages || 0) > 1 ? 's' : '' }}</p>
+      </a>
+
+      <a routerLink="/admin/profile" class="qa-card">
+        <div class="qa-icon qa-slate">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <p class="qa-label">Mon profil</p>
+        <p class="qa-sub">Paramètres</p>
+      </a>
+    </section>
+
+    <!-- Table Projets actifs -->
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Projets actifs</h2>
+        <div class="panel-head-actions">
+          <a routerLink="/admin/projects/archives" class="btn btn-outline">
+            <app-icon name="archive" [size]="16"></app-icon>
+            <span>Voir archives</span>
+          </a>
         </div>
       </div>
-      <table class="project-table">
-        <thead>
-          <tr>
-            <th>Projet</th>
-            <th>Description</th>
-            <th>Statut</th>
-            <th>Vues</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let project of pagedProjects; trackBy: trackByProject">
-            <td>
-              <div class="project-cell">
-                <img
-                  [src]="getImageUrl(project.thumbnail)"
-                  alt="thumbnail"
-                  loading="lazy"
-                  decoding="async"
-                  (error)="onImageError($event)"
-                />
-                <div>
-                  <p class="project-name">{{ project.title }}</p>
-                  <p class="project-stack">{{ project.technologies }}</p>
+
+      <div class="table-wrap" *ngIf="processedProjects.length; else emptyActive">
+        <div class="table-tools">
+          <div class="field inline">
+            <label for="project_search">Recherche</label>
+            <input id="project_search" type="search" [(ngModel)]="projectSearch" name="project_search" placeholder="Titre, techno..." />
+          </div>
+          <div class="field inline">
+            <label for="project_sort">Tri</label>
+            <select id="project_sort" [(ngModel)]="projectSort" name="project_sort">
+              <option value="updated_desc">Maj recente</option>
+              <option value="updated_asc">Maj ancienne</option>
+              <option value="title_asc">Titre A-Z</option>
+              <option value="title_desc">Titre Z-A</option>
+            </select>
+          </div>
+          <div class="field inline">
+            <label for="project_page_size">Par page</label>
+            <select id="project_page_size" [(ngModel)]="pageSize" name="project_page_size" (ngModelChange)="setPageSize($event)">
+              <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+            </select>
+          </div>
+        </div>
+        <table class="project-table">
+          <thead>
+            <tr>
+              <th>Projet</th>
+              <th>Description</th>
+              <th>Statut</th>
+              <th>Vues</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let project of pagedProjects; trackBy: trackByProject">
+              <td>
+                <div class="project-cell">
+                  <img
+                    [src]="getImageUrl(project.thumbnail)"
+                    alt="thumbnail"
+                    loading="lazy"
+                    decoding="async"
+                    (error)="onImageError($event)"
+                  />
+                  <div>
+                    <p class="project-name">{{ project.title }}</p>
+                    <p class="project-stack">{{ project.technologies }}</p>
+                  </div>
                 </div>
-              </div>
-            </td>
-            <td>
-              <p class="project-desc">{{ project.description }}</p>
-            </td>
-            <td>
-              <span class="status-badge" [class]="project.status">{{ project.status }}</span>
-            </td>
-            <td>{{ project.views || 0 }}</td>
-            <td>
-              <div class="row-actions">
-                <a [routerLink]="['/admin/projects/edit', project.slug]" class="btn btn-icon btn-soft" title="Modifier">
-                  <app-icon name="edit" [size]="16"></app-icon>
-                </a>
+              </td>
+              <td>
+                <p class="project-desc">{{ project.description }}</p>
+              </td>
+              <td>
+                <span class="status-badge" [class]="project.status">{{ project.status }}</span>
+              </td>
+              <td>{{ project.views || 0 }}</td>
+              <td>
+                <div class="row-actions">
+                  <a [routerLink]="['/admin/projects/edit', project.slug]" class="btn btn-icon btn-soft" title="Modifier">
+                    <app-icon name="edit" [size]="16"></app-icon>
+                  </a>
+                  <button type="button" class="btn btn-icon btn-danger" (click)="archiveProject(project)" title="Archiver">
+                    <app-icon name="trash" [size]="16"></app-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-                <button type="button" class="btn btn-icon btn-danger" (click)="archiveProject(project)" title="Supprimer (archiver)">
-                  <app-icon name="trash" [size]="16"></app-icon>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="table-footer" *ngIf="projectTotalPages > 1">
-      <div class="pagination">
-        <button type="button" class="btn btn-icon btn-soft" (click)="setProjectPage(projectPage - 1)" [disabled]="projectPage === 1">
-          <span class="icon-rotate">
+      <div class="table-footer" *ngIf="projectTotalPages > 1">
+        <div class="pagination">
+          <button type="button" class="btn btn-icon btn-soft" (click)="setProjectPage(projectPage - 1)" [disabled]="projectPage === 1">
+            <span class="icon-rotate"><app-icon name="arrow-right" [size]="14"></app-icon></span>
+          </button>
+          <span class="page-count">Page {{ projectPage }} / {{ projectTotalPages }}</span>
+          <button type="button" class="btn btn-icon btn-soft" (click)="setProjectPage(projectPage + 1)" [disabled]="projectPage === projectTotalPages">
             <app-icon name="arrow-right" [size]="14"></app-icon>
-          </span>
-        </button>
-        <span class="page-count">Page {{ projectPage }} / {{ projectTotalPages }}</span>
-        <button type="button" class="btn btn-icon btn-soft" (click)="setProjectPage(projectPage + 1)" [disabled]="projectPage === projectTotalPages">
-          <app-icon name="arrow-right" [size]="14"></app-icon>
-        </button>
-      </div>
-    </div>
-
-    <ng-template #emptyActive>
-      <div class="empty-state">Aucun projet actif.</div>
-    </ng-template>
-  </section>
-
-  <section class="panel">
-    <div class="panel-head">
-      <h2>Messages recents</h2>
-      <div class="panel-head-actions">
-        <a routerLink="/admin/messages/archives" class="btn btn-outline">
-          <app-icon name="archive" [size]="16"></app-icon>
-          <span>Voir archives</span>
-        </a>
-      </div>
-    </div>
-
-    <div class="table-wrap" *ngIf="!loadingMessages && !messagesError && processedMessages.length; else messageState">
-      <div class="table-tools">
-        <div class="field inline">
-          <label for="message_search">Recherche</label>
-          <input id="message_search" type="search" [(ngModel)]="messageSearch" name="message_search" placeholder="Nom, email..." />
-        </div>
-        <div class="field inline">
-          <label for="message_sort">Tri</label>
-          <select id="message_sort" [(ngModel)]="messageSort" name="message_sort">
-            <option value="date_desc">Date recente</option>
-            <option value="date_asc">Date ancienne</option>
-            <option value="name_asc">Nom A-Z</option>
-            <option value="name_desc">Nom Z-A</option>
-          </select>
-        </div>
-        <div class="field inline">
-          <label for="message_page_size">Par page</label>
-          <select id="message_page_size" [(ngModel)]="pageSize" name="message_page_size" (ngModelChange)="setPageSize($event)">
-            <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
-          </select>
+          </button>
         </div>
       </div>
-      <table class="project-table messages-table">
-        <thead>
-          <tr>
-            <th>Contact</th>
-            <th>Sujet</th>
-            <th>Statut</th>
-            <th>Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let message of pagedMessages; trackBy: trackByMessage">
-            <td>
-              <div class="contact-cell">
-                <p class="project-name">{{ message.name }}</p>
-                <p class="project-stack">{{ message.email }}</p>
-              </div>
-            </td>
-            <td>
-              <p class="project-desc">{{ message.subject }}</p>
-            </td>
-            <td>
-              <span class="status-badge message-status" [class]="message.status">
-                {{ message.status === 'new' ? 'Nouveau' : (message.status === 'read' ? 'Lu' : (message.status === 'replied' ? 'Repondu' : 'Archive')) }}
-              </span>
-            </td>
-            <td>{{ message.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
-            <td>
-              <div class="row-actions">
-                <button type="button" class="btn btn-icon btn-soft" (click)="markMessageAsRead(message)" title="Marquer lu">
-                  <app-icon name="check" [size]="16"></app-icon>
-                </button>
-                <button type="button" class="btn btn-icon btn-outline" (click)="replyToMessage(message)" title="Repondre">
-                  <app-icon name="mail" [size]="16"></app-icon>
-                </button>
-                <button type="button" class="btn btn-icon btn-danger" (click)="archiveMessage(message)" title="Archiver message">
-                  <app-icon name="trash" [size]="16"></app-icon>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
 
-    <div class="table-footer" *ngIf="!loadingMessages && !messagesError && messageTotalPages > 1">
-      <div class="pagination">
-        <button type="button" class="btn btn-icon btn-soft" (click)="setMessagePage(messagePage - 1)" [disabled]="messagePage === 1">
-          <span class="icon-rotate">
+      <ng-template #emptyActive>
+        <div class="empty-state">Aucun projet actif.</div>
+      </ng-template>
+    </section>
+
+    <!-- Table Messages -->
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Messages récents</h2>
+        <div class="panel-head-actions">
+          <a routerLink="/admin/messages/archives" class="btn btn-outline">
+            <app-icon name="archive" [size]="16"></app-icon>
+            <span>Voir archives</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="table-wrap" *ngIf="!loadingMessages && !messagesError && processedMessages.length; else messageState">
+        <div class="table-tools">
+          <div class="field inline">
+            <label for="message_search">Recherche</label>
+            <input id="message_search" type="search" [(ngModel)]="messageSearch" name="message_search" placeholder="Nom, email..." />
+          </div>
+          <div class="field inline">
+            <label for="message_sort">Tri</label>
+            <select id="message_sort" [(ngModel)]="messageSort" name="message_sort">
+              <option value="date_desc">Date recente</option>
+              <option value="date_asc">Date ancienne</option>
+              <option value="name_asc">Nom A-Z</option>
+              <option value="name_desc">Nom Z-A</option>
+            </select>
+          </div>
+          <div class="field inline">
+            <label for="message_page_size">Par page</label>
+            <select id="message_page_size" [(ngModel)]="pageSize" name="message_page_size" (ngModelChange)="setPageSize($event)">
+              <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+            </select>
+          </div>
+        </div>
+        <table class="project-table messages-table">
+          <thead>
+            <tr>
+              <th>Contact</th>
+              <th>Sujet</th>
+              <th>Statut</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let message of pagedMessages; trackBy: trackByMessage">
+              <td>
+                <div class="contact-cell">
+                  <span
+                    class="contact-avatar"
+                    [style.background]="getInitialsColor(message.name)"
+                  >{{ getInitials(message.name) }}</span>
+                  <div>
+                    <p class="project-name">{{ message.name }}</p>
+                    <p class="project-stack">{{ message.email }}</p>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <p class="project-desc">{{ message.subject }}</p>
+              </td>
+              <td>
+                <span class="status-badge message-status" [class]="message.status">
+                  {{ message.status === 'new' ? 'Nouveau' : (message.status === 'read' ? 'Lu' : (message.status === 'replied' ? 'Repondu' : 'Archive')) }}
+                </span>
+              </td>
+              <td>{{ message.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>
+                <div class="row-actions">
+                  <button type="button" class="btn btn-icon btn-soft" (click)="markMessageAsRead(message)" title="Marquer lu">
+                    <app-icon name="check" [size]="16"></app-icon>
+                  </button>
+                  <button type="button" class="btn btn-icon btn-outline" (click)="replyToMessage(message)" title="Repondre">
+                    <app-icon name="mail" [size]="16"></app-icon>
+                  </button>
+                  <button type="button" class="btn btn-icon btn-danger" (click)="archiveMessage(message)" title="Archiver message">
+                    <app-icon name="trash" [size]="16"></app-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-footer" *ngIf="!loadingMessages && !messagesError && messageTotalPages > 1">
+        <div class="pagination">
+          <button type="button" class="btn btn-icon btn-soft" (click)="setMessagePage(messagePage - 1)" [disabled]="messagePage === 1">
+            <span class="icon-rotate"><app-icon name="arrow-right" [size]="14"></app-icon></span>
+          </button>
+          <span class="page-count">Page {{ messagePage }} / {{ messageTotalPages }}</span>
+          <button type="button" class="btn btn-icon btn-soft" (click)="setMessagePage(messagePage + 1)" [disabled]="messagePage === messageTotalPages">
             <app-icon name="arrow-right" [size]="14"></app-icon>
-          </span>
-        </button>
-        <span class="page-count">Page {{ messagePage }} / {{ messageTotalPages }}</span>
-        <button type="button" class="btn btn-icon btn-soft" (click)="setMessagePage(messagePage + 1)" [disabled]="messagePage === messageTotalPages">
-          <app-icon name="arrow-right" [size]="14"></app-icon>
-        </button>
+          </button>
+        </div>
       </div>
-    </div>
 
-    <ng-template #messageState>
-      <div class="empty-state" *ngIf="loadingMessages">Chargement des messages...</div>
-      <div class="empty-state" *ngIf="!loadingMessages && messagesError">{{ messagesError }}</div>
-      <div class="empty-state" *ngIf="!loadingMessages && !messagesError && !recentMessages.length">
-        Aucun message recent.
-      </div>
-    </ng-template>
-  </section>
+      <ng-template #messageState>
+        <div class="empty-state" *ngIf="loadingMessages">Chargement des messages...</div>
+        <div class="empty-state" *ngIf="!loadingMessages && messagesError">{{ messagesError }}</div>
+        <div class="empty-state" *ngIf="!loadingMessages && !messagesError && !recentMessages.length">
+          Aucun message recent.
+        </div>
+      </ng-template>
+    </section>
+
   </main>
 </app-admin-shell>

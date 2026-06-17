@@ -2,7 +2,7 @@
   <aside class="sidebar">
     <div class="sidebar-scroll">
       <div class="brand">
-        <span class="brand-dot"></span>
+        <div class="brand-avatar">MF</div>
         <div>
           <p class="brand-title">Modou Fall</p>
           <p class="brand-sub">Data & Full-Stack</p>
@@ -45,7 +45,6 @@
         </a>
       </div>
 
-      <!-- Préférences : dark mode + langue -->
       <div class="nav-section sidebar-prefs">
         <p class="nav-label">Préférences</p>
         <button class="nav-link pref-btn" type="button" (click)="theme.toggle()">
@@ -71,10 +70,20 @@
     </div>
 
     <div class="sidebar-footer">
-      <button class="nav-link logout-btn" type="button" (click)="logout()">
-        <app-icon name="arrow-right" [size]="16"></app-icon>
-        <span>Déconnexion</span>
-      </button>
+      <div class="sidebar-profile">
+        <div class="profile-avatar">MF</div>
+        <div class="profile-info">
+          <p class="profile-name">Modou Fall</p>
+          <p class="profile-role">Admin</p>
+        </div>
+        <button class="logout-icon-btn" type="button" (click)="logout()" title="Déconnexion">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </button>
+      </div>
     </div>
   </aside>
 

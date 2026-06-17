@@ -37,24 +37,82 @@
 
 .sidebar-footer {
   flex-shrink: 0;
-  padding: 0.5rem 1.2rem 1.2rem;
+  padding: 0.75rem 1.2rem 1rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
 }
 
-.actions-section {
-  padding-top: 0;
+.sidebar-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.5rem 0.4rem;
+  border-radius: 10px;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba(148, 163, 184, 0.08);
+  }
 }
 
-.pref-btn {
-  opacity: 0.85;
+.profile-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #38bdf8, #2563eb);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
 }
 
-.logout-btn {
-  color: #fca5a5;
+.profile-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-name {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-role {
+  margin: 0.1rem 0 0;
+  font-size: 0.68rem;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.logout-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease, color 0.15s ease;
 
   &:hover {
     background: rgba(239, 68, 68, 0.15);
     color: #fca5a5;
   }
+}
+
+.pref-btn {
+  opacity: 0.85;
 }
 
 .brand {
@@ -63,11 +121,19 @@
   gap: 0.75rem;
 }
 
-.brand-dot {
+.brand-avatar {
   width: 36px;
   height: 36px;
-  border-radius: 12px;
+  border-radius: 10px;
   background: linear-gradient(135deg, #38bdf8, #2563eb);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
 }
 
 .brand-title {
