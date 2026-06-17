@@ -21,6 +21,7 @@ export class Login {
   };
   error: string | null = null;
   loading = false;
+  showPassword = false;
   returnUrl: string = '/admin/dashboard';
 
   constructor(

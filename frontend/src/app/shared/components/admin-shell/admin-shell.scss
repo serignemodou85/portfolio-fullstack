@@ -176,10 +176,14 @@
   font-size: 0.9rem;
 }
 
-.nav-link:hover,
+.nav-link:hover {
+  background: rgba(148, 163, 184, 0.1);
+  color: #e2e8f0;
+}
+
 .nav-link.active {
-  background: rgba(148, 163, 184, 0.15);
-  color: #fff;
+  background: rgba(70, 95, 255, 0.18);
+  color: #7592ff;
 }
 
 .admin-main {
