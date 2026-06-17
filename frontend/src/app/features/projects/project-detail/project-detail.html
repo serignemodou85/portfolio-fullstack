@@ -55,6 +55,40 @@
       <p class="description">{{ project.full_description }}</p>
     </article>
 
+    <!-- Blocs étude de cas (seulement si remplis) -->
+    <article class="panel fade-up" *ngIf="project.context || project.problem || project.solution || project.impact">
+      <div class="case-study">
+        <div class="case-step" *ngIf="project.context">
+          <div class="case-num">01</div>
+          <div class="case-body">
+            <h3 class="case-title">{{ t('project.context') }}</h3>
+            <p>{{ project.context }}</p>
+          </div>
+        </div>
+        <div class="case-step" *ngIf="project.problem">
+          <div class="case-num">02</div>
+          <div class="case-body">
+            <h3 class="case-title">{{ t('project.problem') }}</h3>
+            <p>{{ project.problem }}</p>
+          </div>
+        </div>
+        <div class="case-step" *ngIf="project.solution">
+          <div class="case-num">03</div>
+          <div class="case-body">
+            <h3 class="case-title">{{ t('project.solution') }}</h3>
+            <p>{{ project.solution }}</p>
+          </div>
+        </div>
+        <div class="case-step" *ngIf="project.impact">
+          <div class="case-num">04</div>
+          <div class="case-body">
+            <h3 class="case-title">{{ t('project.impact') }}</h3>
+            <p>{{ project.impact }}</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
     <article class="panel fade-up" *ngIf="project.image_1 || project.image_2 || project.image_3">
       <h2>Galerie</h2>
       <div class="gallery">
@@ -63,5 +97,11 @@
         <img *ngIf="project.image_3" [src]="project.image_3" alt="capture 3" />
       </div>
     </article>
+
+    <!-- CTA bas de page -->
+    <div class="project-cta fade-up">
+      <p>{{ t('project.cta.text') }}</p>
+      <a routerLink="/contact" class="btn btn-primary">{{ t('project.cta.btn') }}</a>
+    </div>
   </section>
 </div>

@@ -83,6 +83,31 @@
         </div>
 
         <div class="form-section">
+          <h3 class="form-section-title">Étude de cas (optionnel)</h3>
+          <p class="form-section-meta">Remplis ces champs pour transformer ce projet en étude de cas percutante pour tes clients.</p>
+
+          <div class="form-group">
+            <label for="context">Contexte client</label>
+            <textarea id="context" name="context" rows="3" [(ngModel)]="formData.context" [disabled]="loading" placeholder="Quel était le contexte du client / l'environnement du projet ?"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="problem">Problème à résoudre</label>
+            <textarea id="problem" name="problem" rows="3" [(ngModel)]="formData.problem" [disabled]="loading" placeholder="Quel problème devait être résolu ?"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="solution">Solution apportée</label>
+            <textarea id="solution" name="solution" rows="3" [(ngModel)]="formData.solution" [disabled]="loading" placeholder="Comment as-tu résolu le problème ? Quelles approches techniques ?"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="impact">Résultat / Impact</label>
+            <textarea id="impact" name="impact" rows="3" [(ngModel)]="formData.impact" [disabled]="loading" placeholder="Quels ont été les résultats mesurables ? (ex: 40% d'amélioration des temps de traitement)"></textarea>
+          </div>
+        </div>
+
+        <div class="form-section">
           <div class="section-head">
             <h2>Medias</h2>
             <span class="section-meta">Couverture + 3 images additionnelles</span>

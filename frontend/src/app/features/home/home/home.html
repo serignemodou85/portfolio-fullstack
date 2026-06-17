@@ -1,6 +1,10 @@
 <section class="home-hero">
   <div class="container hero-grid">
     <div class="hero-copy fade-up stagger-1">
+      <span class="avail-badge">
+        <span class="avail-dot"></span>
+        {{ t('home.available') }}
+      </span>
       <p class="eyebrow">{{ t('home.eyebrow') }}</p>
       <h1>{{ t('home.h1') }}</h1>
       <p class="lead">{{ t('home.lead') }}</p>
@@ -69,23 +73,23 @@
     <div class="what-grid">
       <div class="what-card fade-up stagger-1">
         <div class="what-icon">&#128202;</div>
-        <h3>{{ t('home.what.de.title') }}</h3>
-        <p>{{ t('home.what.de.text') }}</p>
+        <h3>{{ t('what.data.title') }}</h3>
+        <p>{{ t('what.data.desc') }}</p>
       </div>
       <div class="what-card fade-up stagger-2">
         <div class="what-icon">&#129302;</div>
-        <h3>{{ t('home.what.ml.title') }}</h3>
-        <p>{{ t('home.what.ml.text') }}</p>
+        <h3>{{ t('what.ml.title') }}</h3>
+        <p>{{ t('what.ml.desc') }}</p>
       </div>
       <div class="what-card fade-up stagger-3">
         <div class="what-icon">&#128268;</div>
-        <h3>{{ t('home.what.backend.title') }}</h3>
-        <p>{{ t('home.what.backend.text') }}</p>
+        <h3>{{ t('what.backend.title') }}</h3>
+        <p>{{ t('what.backend.desc') }}</p>
       </div>
       <div class="what-card fade-up stagger-4">
         <div class="what-icon">&#128187;</div>
-        <h3>{{ t('home.what.frontend.title') }}</h3>
-        <p>{{ t('home.what.frontend.text') }}</p>
+        <h3>{{ t('what.frontend.title') }}</h3>
+        <p>{{ t('what.frontend.desc') }}</p>
       </div>
     </div>
   </div>
@@ -170,9 +174,16 @@
 <section class="section section-cta">
   <div class="container">
     <div class="cta-box fade-up">
+      <span class="avail-badge cta-avail-badge">
+        <span class="avail-dot"></span>
+        {{ t('home.available') }}
+      </span>
       <h2>{{ t('home.cta2.title') }}</h2>
       <p>{{ t('home.cta2.text') }}</p>
-      <a routerLink="/contact" class="btn btn-primary">{{ t('home.cta2.btn') }}</a>
+      <div class="cta-actions">
+        <a routerLink="/contact" class="btn btn-primary">{{ t('home.cta2.btn') }}</a>
+        <a routerLink="/projects" class="btn btn-outline">{{ t('home.cta.work') }}</a>
+      </div>
     </div>
   </div>
 </section>

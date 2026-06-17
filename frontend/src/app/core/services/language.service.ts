@@ -13,9 +13,10 @@ const T: Record<string, Record<Lang, string>> = {
   'nav.contact':      { fr: 'Contact',      en: 'Contact'     },
 
   // ── Home hero ────────────────────────────────────────────────────────────────
+  'home.available':        { fr: 'Disponible pour missions',                                         en: 'Available for freelance'                                         },
   'home.eyebrow':          { fr: 'Data Engineer · ML · Full-Stack',                                  en: 'Data Engineer · ML · Full-Stack'                                 },
   'home.h1':               { fr: 'Je transforme vos données en solutions métier',                    en: 'I turn your data into business solutions'                        },
-  'home.lead':             { fr: 'De la collecte des données à l\'interface utilisateur : pipelines robustes, modèles ML, APIs Django et dashboards Angular — livrés de bout en bout.', en: 'From data collection to user interface: robust pipelines, ML models, Django APIs and Angular dashboards — delivered end-to-end.' },
+  'home.lead':             { fr: 'De la collecte à l\'interface, je conçois des systèmes data robustes et des applications web production-ready.', en: 'From data pipelines to user interfaces, I build robust data systems and production-ready web apps.' },
   'home.cta.hire':         { fr: 'Me contacter',                                                     en: 'Hire me'                                                         },
   'home.cta.work':         { fr: 'Voir mes projets',                                                 en: 'View my work'                                                    },
   'home.cta.cv':           { fr: 'Télécharger CV',                                                   en: 'Download CV'                                                     },
@@ -35,6 +36,16 @@ const T: Record<string, Record<Lang, string>> = {
   'home.what.backend.text':      { fr: 'Django REST Framework, FastAPI, microservices, authentification JWT et intégration de bases de données.', en: 'Django REST Framework, FastAPI, microservices, JWT authentication and database integration.' },
   'home.what.frontend.title':    { fr: 'Frontend & Dashboards',                               en: 'Frontend & Dashboards'                                           },
   'home.what.frontend.text':     { fr: 'Applications Angular standalone, visualisation de données interactives et interfaces responsives.', en: 'Angular standalone apps, interactive data visualization and responsive interfaces.' },
+
+  // ── What cards (short descriptions for home) ──────────────────────────────────
+  'what.data.title':    { fr: 'Data Engineering',          en: 'Data Engineering'          },
+  'what.data.desc':     { fr: 'Pipelines ETL, Spark, SQL, orchestration et architecture data', en: 'ETL pipelines, Spark, SQL, orchestration and data architecture' },
+  'what.ml.title':      { fr: 'Machine Learning',          en: 'Machine Learning'          },
+  'what.ml.desc':       { fr: 'Modèles prédictifs, NLP, déploiement et monitoring en production', en: 'Predictive models, NLP, deployment and production monitoring' },
+  'what.backend.title': { fr: 'Backend & API',             en: 'Backend & API'             },
+  'what.backend.desc':  { fr: 'APIs REST Django, microservices, authentification et performance', en: 'Django REST APIs, microservices, authentication and performance' },
+  'what.frontend.title':{ fr: 'Frontend & Dashboard',      en: 'Frontend & Dashboard'      },
+  'what.frontend.desc': { fr: 'Applications Angular, dashboards data, UX responsive et accessibles', en: 'Angular apps, data dashboards, responsive and accessible UX' },
 
   // ── Home sections ─────────────────────────────────────────────────────────────
   'home.projects.eyebrow':  { fr: 'Sélection',                    en: 'Selection'                },
@@ -148,6 +159,19 @@ const T: Record<string, Record<Lang, string>> = {
   'contact.info.social':        { fr: 'Réseaux',                                      en: 'Networks'                                      },
   'contact.available.title':    { fr: 'Je suis disponible pour',                      en: 'Available for'                                 },
   'contact.available.text':     { fr: 'Missions data engineering · Projets full-stack · Consulting ML · Freelance', en: 'Data engineering missions · Full-stack projects · ML consulting · Freelance' },
+  'contact.missionType':             { fr: 'Type de mission',             en: 'Mission type'         },
+  'contact.missionType.placeholder': { fr: 'Choisir un type...',          en: 'Choose a type...'     },
+  'contact.missionType.other':       { fr: 'Autre',                       en: 'Other'                },
+  'contact.privacy':                 { fr: 'Vos données sont utilisées uniquement pour traiter votre demande.', en: 'Your data is used only to process your request.' },
+  'contact.response':                { fr: 'Réponse sous 24h',            en: 'Reply within 24h'     },
+
+  // ── Project detail – case study ──────────────────────────────────────────────
+  'project.context':  { fr: 'Contexte',             en: 'Context'           },
+  'project.problem':  { fr: 'Problème',             en: 'Problem'           },
+  'project.solution': { fr: 'Solution',             en: 'Solution'          },
+  'project.impact':   { fr: 'Impact & Résultats',   en: 'Impact & Results'  },
+  'project.cta.text': { fr: 'Vous avez un projet similaire ?', en: 'Have a similar project?' },
+  'project.cta.btn':  { fr: 'Démarrer une discussion',         en: 'Start a discussion'      },
 
   // ── Blog / Article list page ──────────────────────────────────────────────────
   'blog.eyebrow':          { fr: 'Blog',                                              en: 'Blog'                                          },

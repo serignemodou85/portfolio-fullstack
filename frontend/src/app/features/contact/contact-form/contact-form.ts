@@ -13,6 +13,7 @@ interface ContactData {
   email: string;
   phone?: string;
   subject: string;
+  mission_type?: string;
   message: string;
 }
 
@@ -35,6 +36,7 @@ export class ContactForm implements OnDestroy {
     email: '',
     phone: '',
     subject: '',
+    mission_type: '',
     message: ''
   };
 
@@ -97,6 +99,7 @@ export class ContactForm implements OnDestroy {
       email: '',
       phone: '',
       subject: '',
+      mission_type: '',
       message: ''
     };
   }

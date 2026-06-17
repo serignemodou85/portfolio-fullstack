@@ -1,9 +1,11 @@
 // src/app/features/projects/project-detail/project-detail.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { ProjectService } from '../services/project';
 import { ProjectDetail as ProjectDetailModel } from '../../../core/models/project.model';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-project-detail',
@@ -12,22 +14,33 @@ import { ProjectDetail as ProjectDetailModel } from '../../../core/models/projec
   templateUrl: './project-detail.html',
   styleUrl: './project-detail.scss'
 })
-export class ProjectDetail implements OnInit {
+export class ProjectDetail implements OnInit, OnDestroy {
   project: ProjectDetailModel | null = null;
   loading = true;
   error: string | null = null;
   readonly placeholderImage = 'assets/placeholders/project.svg';
+  private langSub?: Subscription;
 
   constructor(
     private route: ActivatedRoute,
-    private projectService: ProjectService
+    private projectService: ProjectService,
+    private langService: LanguageService
   ) {}
 
   ngOnInit(): void {
+    this.langSub = this.langService.lang$.subscribe();
     const slug = this.route.snapshot.paramMap.get('slug');
     if (slug) {
       this.loadProject(slug);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.langSub?.unsubscribe();
+  }
+
+  t(key: string): string {
+    return this.langService.t(key);
   }
 
   loadProject(slug: string): void {

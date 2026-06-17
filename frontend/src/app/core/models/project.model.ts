@@ -33,6 +33,10 @@ export interface ProjectList extends ProjectBase {}
 
 export interface ProjectDetail extends ProjectBase {
   full_description?: string;
+  context?: string;
+  problem?: string;
+  solution?: string;
+  impact?: string;
   image_1?: string;
   image_2?: string;
   image_3?: string;
