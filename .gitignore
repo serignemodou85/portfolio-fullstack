@@ -17,6 +17,7 @@ backend/db.sqlite3
 backend/staticfiles/
 backend/media/
 *.log
+.claude
 
 # ========================================
 # ANGULAR / NODE
@@ -25,6 +26,7 @@ frontend/node_modules/
 frontend/dist/
 frontend/.angular/
 frontend/.cache/
+ANGULAR_GUIDE.md
 
 # ========================================
 # IDE

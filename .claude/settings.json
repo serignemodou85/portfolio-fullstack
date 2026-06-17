@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:tailadmin.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(find /tmp/tailadmin/src -type f | head -60)",
+      "Read(//tmp/tailadmin/**)"
+    ]
+  }
+}
