@@ -17,7 +17,11 @@ class Project(models.Model):
     slug = models.SlugField(max_length=200, unique=True, verbose_name="Slug")
     description = models.TextField(verbose_name="Description courte")
     full_description = models.TextField(verbose_name="Description complète", blank=True)
-    
+    context = models.TextField(blank=True, verbose_name="Contexte client")
+    problem = models.TextField(blank=True, verbose_name="Problème à résoudre")
+    solution = models.TextField(blank=True, verbose_name="Solution apportée")
+    impact = models.TextField(blank=True, verbose_name="Résultat / Impact")
+
     # Images
     thumbnail = models.ImageField(
         upload_to='projects/thumbnails/', 

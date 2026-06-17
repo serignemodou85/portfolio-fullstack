@@ -279,8 +279,12 @@ SIMPLE_JWT = {
 # En développement, autorise Angular sur localhost:4200
 CORS_ALLOWED_ORIGINS = env_list(
     'CORS_ALLOWED_ORIGINS',
-    'http://localhost:4200,http://127.0.0.1:4200'
+    'http://localhost:4200,http://127.0.0.1:4200,https://frontend-woad-psi-66.vercel.app,https://portfolio-frontend-rho-silk.vercel.app'
 )
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r'^https://.*\.vercel\.app$',
+]
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -319,7 +323,7 @@ CACHES = {
 
 CSRF_TRUSTED_ORIGINS = env_list(
     'CSRF_TRUSTED_ORIGINS',
-    'http://localhost:4200,http://127.0.0.1:4200'
+    'http://localhost:4200,http://127.0.0.1:4200,https://frontend-woad-psi-66.vercel.app,https://portfolio-frontend-rho-silk.vercel.app,https://*.vercel.app'
 )
 
 # Sécurité transport/cookies (activé automatiquement hors DEBUG)

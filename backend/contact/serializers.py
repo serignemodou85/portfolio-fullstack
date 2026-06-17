@@ -18,7 +18,7 @@ class ContactMessageCreateSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = ContactMessage
-        fields = ['name', 'email', 'phone', 'subject', 'message']
+        fields = ['name', 'email', 'phone', 'subject', 'message', 'mission_type']
     
     def validate_name(self, value):
         value = (value or '').strip()

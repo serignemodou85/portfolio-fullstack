@@ -22,7 +22,21 @@ class ContactMessage(models.Model):
     )
     subject = models.CharField(max_length=200, verbose_name="Sujet")
     message = models.TextField(verbose_name="Message")
-    
+
+    MISSION_TYPE_CHOICES = [
+        ('data', 'Data Engineering'),
+        ('dev', 'Développement Full-Stack'),
+        ('consulting', 'Consulting / Architecture'),
+        ('autre', 'Autre'),
+    ]
+    mission_type = models.CharField(
+        max_length=20,
+        choices=MISSION_TYPE_CHOICES,
+        blank=True,
+        default='',
+        verbose_name="Type de mission",
+    )
+
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
