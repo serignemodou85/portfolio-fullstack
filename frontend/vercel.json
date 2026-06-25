@@ -26,6 +26,12 @@
       ]
     },
     {
+      "source": "/((?!.*\\.[a-z0-9]+$).*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+      ]
+    },
+    {
       "source": "/assets/documents/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache, must-revalidate" }
