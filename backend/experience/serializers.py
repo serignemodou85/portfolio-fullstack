@@ -2,7 +2,7 @@
 from rest_framework import serializers
 
 from .models import Experience
-from portfolio_backend.cloudinary_utils import safe_file_url as _safe_file_url
+from portfolio_backend.cloudinary_utils import safe_file_url as _safe_file_url, safe_raw_url as _safe_raw_url
 
 
 class ExperienceSerializer(serializers.ModelSerializer):
@@ -35,7 +35,7 @@ class ExperienceSerializer(serializers.ModelSerializer):
         return _safe_file_url(self.context.get('request'), obj.company_logo)
 
     def get_certificate_file(self, obj):
-        return _safe_file_url(self.context.get('request'), obj.certificate_file)
+        return _safe_raw_url(obj.certificate_file)
 
 
 class ExperienceCreateUpdateSerializer(serializers.ModelSerializer):

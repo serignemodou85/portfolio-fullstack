@@ -44,6 +44,8 @@ class Experience(models.Model):
         resource_type='raw',
         blank=True,
         null=True,
+        overwrite=True,
+        invalidate=True,
         verbose_name="Certificat (PDF/image)",
     )
     

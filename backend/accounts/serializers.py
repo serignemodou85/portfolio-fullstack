@@ -5,7 +5,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode
 
-from portfolio_backend.cloudinary_utils import safe_file_url as _safe_file_url
+from portfolio_backend.cloudinary_utils import safe_file_url as _safe_file_url, safe_raw_url as _safe_raw_url
 
 User = get_user_model()
 
@@ -31,7 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
         return _safe_file_url(self.context.get('request'), obj.profile_picture)
 
     def get_cv_file(self, obj):
-        return _safe_file_url(self.context.get('request'), obj.cv_file)
+        return _safe_raw_url(obj.cv_file)
 
 
 class UserPublicSerializer(serializers.ModelSerializer):
@@ -53,7 +53,7 @@ class UserPublicSerializer(serializers.ModelSerializer):
         return _safe_file_url(self.context.get('request'), obj.profile_picture)
 
     def get_cv_file(self, obj):
-        return _safe_file_url(self.context.get('request'), obj.cv_file)
+        return _safe_raw_url(obj.cv_file)
 
 
 class RegisterSerializer(serializers.ModelSerializer):
