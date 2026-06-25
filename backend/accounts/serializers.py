@@ -14,9 +14,6 @@ class UserSerializer(serializers.ModelSerializer):
     """
     Serializer pour le modèle User - Version complète
     """
-    profile_picture = serializers.SerializerMethodField()
-    cv_file = serializers.SerializerMethodField()
-
     class Meta:
         model = User
         fields = [
@@ -26,21 +23,23 @@ class UserSerializer(serializers.ModelSerializer):
             'date_joined', 'is_staff', 'is_superuser'
         ]
         read_only_fields = ['id', 'date_joined', 'is_staff', 'is_superuser']
+        extra_kwargs = {
+            'profile_picture': {'required': False},
+            'cv_file': {'required': False},
+        }
 
-    def get_profile_picture(self, obj):
-        return _safe_file_url(self.context.get('request'), obj.profile_picture)
-
-    def get_cv_file(self, obj):
-        return _safe_raw_url(obj.cv_file)
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        request = self.context.get('request')
+        data['profile_picture'] = _safe_file_url(request, instance.profile_picture)
+        data['cv_file'] = _safe_raw_url(instance.cv_file)
+        return data
 
 
 class UserPublicSerializer(serializers.ModelSerializer):
     """
     Serializer public - Seulement les infos visibles par tous
     """
-    profile_picture = serializers.SerializerMethodField()
-    cv_file = serializers.SerializerMethodField()
-
     class Meta:
         model = User
         fields = [
@@ -48,12 +47,17 @@ class UserPublicSerializer(serializers.ModelSerializer):
             'bio', 'profile_picture', 'cv_file', 'location',
             'github_url', 'linkedin_url', 'twitter_url', 'website_url'
         ]
+        extra_kwargs = {
+            'profile_picture': {'required': False},
+            'cv_file': {'required': False},
+        }
 
-    def get_profile_picture(self, obj):
-        return _safe_file_url(self.context.get('request'), obj.profile_picture)
-
-    def get_cv_file(self, obj):
-        return _safe_raw_url(obj.cv_file)
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        request = self.context.get('request')
+        data['profile_picture'] = _safe_file_url(request, instance.profile_picture)
+        data['cv_file'] = _safe_raw_url(instance.cv_file)
+        return data
 
 
 class RegisterSerializer(serializers.ModelSerializer):
