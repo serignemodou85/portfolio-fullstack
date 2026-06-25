@@ -1,5 +1,6 @@
 # Django Core
 Django==6.0.1
+argon2-cffi==23.1.0
 
 # Django REST Framework
 djangorestframework==3.15.2
@@ -24,9 +25,6 @@ Pillow==11.0.0
 # Cloudinary (stockage media)
 cloudinary==1.40.0
 django-cloudinary-storage==0.3.0
-
-# Environment Variables (recommande pour production)
-python-decouple==3.8
 
 # Production Server (optionnel)
 gunicorn==23.0.0

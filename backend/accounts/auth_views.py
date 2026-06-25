@@ -9,7 +9,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import PasswordResetRequestSerializer, PasswordResetConfirmSerializer
 
@@ -38,6 +39,64 @@ class ThrottledTokenObtainPairView(TokenObtainPairView):
     serializer_class = EmailOrUsernameTokenObtainPairSerializer
     throttle_classes = [ScopedRateThrottle]
     throttle_scope = 'auth_login'
+
+
+def _refresh_cookie_kwargs() -> dict:
+    """SameSite=None;Secure en prod (cross-origin Vercel→Render), Lax en dev (localhost same-site)."""
+    secure = not settings.DEBUG
+    return {
+        'httponly': True,
+        'secure': secure,
+        'samesite': 'None' if secure else 'Lax',
+        'max_age': int(settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'].total_seconds()),
+    }
+
+
+class CookieTokenObtainPairView(ThrottledTokenObtainPairView):
+    """Login: access token dans le body JSON, refresh token dans un cookie HttpOnly."""
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == 200:
+            refresh = response.data.pop('refresh', None)
+            if refresh:
+                response.set_cookie('refresh_token', refresh, **_refresh_cookie_kwargs())
+        return response
+
+
+class CookieTokenRefreshView(APIView):
+    """Rafraîchit l'access token depuis le cookie HttpOnly, retourne le nouveau dans le body."""
+    permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'auth_login'
+
+    def post(self, request):
+        raw = request.COOKIES.get('refresh_token')
+        if not raw:
+            return Response({'detail': 'Session expirée.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        serializer = TokenRefreshSerializer(data={'refresh': raw})
+        try:
+            serializer.is_valid(raise_exception=True)
+        except (TokenError, InvalidToken):
+            return Response({'detail': 'Session expirée, veuillez vous reconnecter.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        response = Response({'access': serializer.validated_data['access']})
+        if 'refresh' in serializer.validated_data:
+            response.set_cookie('refresh_token', serializer.validated_data['refresh'], **_refresh_cookie_kwargs())
+        return response
+
+
+class CookieLogoutView(APIView):
+    """Déconnexion: supprime le cookie refresh_token côté serveur."""
+    permission_classes = [AllowAny]
+
+    def post(self, _request):
+        kwargs = _refresh_cookie_kwargs()
+        response = Response({'detail': 'Déconnecté.'})
+        response.set_cookie('refresh_token', '', max_age=0, httponly=True,
+                            secure=kwargs['secure'], samesite=kwargs['samesite'])
+        return response
 
 
 class PasswordResetRequestView(APIView):

@@ -17,9 +17,6 @@ from .serializers import UserSerializer, UserPublicSerializer, RegisterSerialize
 User = get_user_model()
 
 class UserViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet pour gerer les utilisateurs
-    """
     queryset = User.objects.all()
     parser_classes = [MultiPartParser, FormParser, JSONParser]
 
@@ -29,47 +26,33 @@ class UserViewSet(viewsets.ModelViewSet):
         return UserSerializer
 
     def get_permissions(self):
-        """
-        Seul l'admin staff/superuser peut gerer les comptes.
-        L'endpoint /me reste accessible a tout utilisateur connecte.
-        """
-        if self.action in ['me']:
+        if self.action == 'me':
             return [IsAuthenticated()]
-        if self.action in ['public_profile']:
+        if self.action == 'public_profile':
             return [AllowAny()]
         return [IsAdminUser()]
 
     @action(detail=False, methods=['get', 'patch'], permission_classes=[IsAuthenticated])
     def me(self, request):
-        """
-        Endpoint personnalise : /api/users/me/
-        Retourne les infos de l'utilisateur connecte
-        """
         if request.method == 'PATCH':
             serializer = UserSerializer(request.user, data=request.data, partial=True, context={'request': request})
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
-
-        serializer = UserSerializer(request.user, context={'request': request})
-        return Response(serializer.data)
+        return Response(UserSerializer(request.user, context={'request': request}).data)
 
     @action(detail=False, methods=['get'], permission_classes=[AllowAny])
     def public_profile(self, request):
-        """
-        Endpoint public : /api/users/public_profile/
-        Retourne le profil public de l'admin principal.
-        """
-        if not (request.user and request.user.is_authenticated):
-            return cache_page(settings.CACHE_TTL)(self._public_profile_impl)(request)
-        return self._public_profile_impl(request)
-
-    def _public_profile_impl(self, request):
-        user = User.objects.filter(is_superuser=True).first() or User.objects.filter(is_staff=True).first() or User.objects.first()
-        if not user:
-            return Response({'detail': 'Profil introuvable.'}, status=status.HTTP_404_NOT_FOUND)
-        serializer = UserPublicSerializer(user, context={'request': request})
-        return Response(serializer.data)
+        def _view(req):
+            user = (User.objects.filter(is_superuser=True).first()
+                    or User.objects.filter(is_staff=True).first()
+                    or User.objects.first())
+            if not user:
+                return Response({'detail': 'Profil introuvable.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response(UserPublicSerializer(user, context={'request': req}).data)
+        if request.user and request.user.is_authenticated:
+            return _view(request)
+        return cache_page(settings.CACHE_TTL)(_view)(request)
 
 
 

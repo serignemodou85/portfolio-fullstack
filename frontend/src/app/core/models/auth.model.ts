@@ -5,7 +5,6 @@ export interface LoginRequest {
 
 export interface TokenResponse {
   access: string;
-  refresh: string;
 }
 
 export interface User {

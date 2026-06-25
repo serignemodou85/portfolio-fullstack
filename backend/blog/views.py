@@ -41,10 +41,7 @@ class TagViewSet(viewsets.ModelViewSet):
 
 
 class ArticleViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet pour les articles
-    """
-    queryset = Article.objects.select_related('author', 'category').prefetch_related('tags').filter(status='published').order_by('-published_at')
+    queryset = Article.objects.select_related('author', 'category').prefetch_related('tags')
     permission_classes = [IsAdminOrReadOnly]
     lookup_field = 'slug'
 
@@ -54,12 +51,10 @@ class ArticleViewSet(viewsets.ModelViewSet):
     ordering_fields = ['published_at', 'views_count']
 
     def get_queryset(self):
-        """
-        Les admins voient tous les articles, les autres seulement les publies
-        """
+        qs = super().get_queryset()
         if self.request.user.is_staff:
-            return Article.objects.select_related('author', 'category').prefetch_related('tags').all().order_by('-created_at')
-        return Article.objects.select_related('author', 'category').prefetch_related('tags').filter(status='published').order_by('-published_at')
+            return qs.order_by('-created_at')
+        return qs.filter(status='published').order_by('-published_at')
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -72,15 +67,11 @@ class ArticleViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
     def retrieve(self, request, *args, **kwargs):
-        """
-        Incremente le compteur de vues a chaque lecture
-        """
         instance = self.get_object()
-        Article.objects.filter(pk=instance.pk).update(views_count=F('views_count') + 1)
-        instance.refresh_from_db(fields=['views_count'])
-
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        if not (request.user and request.user.is_authenticated and request.user.is_staff):
+            Article.objects.filter(pk=instance.pk).update(views_count=F('views_count') + 1)
+            instance.refresh_from_db(fields=['views_count'])
+        return Response(self.get_serializer(instance).data)
 
     @action(detail=False, methods=['get'])
     def featured(self, request):

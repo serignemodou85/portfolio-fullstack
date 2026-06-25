@@ -5,13 +5,12 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponseNotFound
 from django.views.static import serve
 from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt.views import TokenRefreshView
-
-# Import des ViewSets
 from accounts.views import UserViewSet
 from accounts.views import dashboard_stats
 from accounts.auth_views import (
-    ThrottledTokenObtainPairView,
+    CookieTokenObtainPairView,
+    CookieTokenRefreshView,
+    CookieLogoutView,
     PasswordResetRequestView,
     PasswordResetConfirmView,
 )
@@ -77,9 +76,10 @@ urlpatterns = [
     # Admin Django (optionnel en prod)
     path('admin/', admin.site.urls) if settings.DJANGO_ADMIN_ENABLED else path('admin/', admin_block),
     
-    # Authentification JWT
-    path('api/auth/login/', ThrottledTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    # Authentification JWT (cookies HttpOnly)
+    path('api/auth/login/', CookieTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/auth/refresh/', CookieTokenRefreshView.as_view(), name='token_refresh'),
+    path('api/auth/logout/', CookieLogoutView.as_view(), name='token_logout'),
     path('api/auth/password-reset/request/', PasswordResetRequestView.as_view(), name='password-reset-request'),
     path('api/auth/password-reset/confirm/', PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
     path('api/dashboard/stats/', dashboard_stats, name='dashboard-stats'),

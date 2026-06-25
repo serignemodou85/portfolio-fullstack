@@ -26,21 +26,12 @@ class SkillCategoryViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def with_skills(self, request):
-        """
-        Endpoint personnalise : /api/skill-categories/with_skills/
-        Retourne toutes les categories avec leurs competences
-        """
+        def _view(req):
+            cats = self.get_queryset().prefetch_related('skills')
+            return Response(SkillCategoryWithSkillsSerializer(cats, many=True).data)
         if request.user and request.user.is_authenticated:
-            categories = self.get_queryset().prefetch_related('skills')
-            serializer = SkillCategoryWithSkillsSerializer(categories, many=True)
-            return Response(serializer.data)
-
-        return cache_page(settings.CACHE_TTL)(self._with_skills_public)(request)
-
-    def _with_skills_public(self, request):
-        categories = self.get_queryset().prefetch_related('skills')
-        serializer = SkillCategoryWithSkillsSerializer(categories, many=True)
-        return Response(serializer.data)
+            return _view(request)
+        return cache_page(settings.CACHE_TTL)(_view)(request)
 
 
 class SkillViewSet(viewsets.ModelViewSet):

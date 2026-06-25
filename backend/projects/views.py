@@ -18,16 +18,10 @@ from .serializers import (
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet pour gerer les projets
-    GET: Public (lecture seule)
-    POST/PUT/DELETE: Authentification requise
-    """
     queryset = Project.objects.select_related('created_by').all().order_by('-created_at')
     permission_classes = [IsAdminOrReadOnly]
     lookup_field = 'slug'
 
-    # Filtres et recherche
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['status', 'is_featured']
     search_fields = ['title', 'description', 'technologies']
@@ -41,19 +35,14 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return ProjectDetailSerializer
 
     def perform_create(self, serializer):
-        """Assigne automatiquement l'utilisateur connecte lors de la creation."""
         serializer.save(created_by=self.request.user)
 
     def retrieve(self, request, *args, **kwargs):
-        """
-        Incremente les vues quand un visiteur consulte le detail public d'un projet.
-        """
         instance = self.get_object()
         if not (request.user and request.user.is_authenticated and request.user.is_staff):
             Project.objects.filter(pk=instance.pk).update(views=F('views') + 1)
             instance.refresh_from_db(fields=['views'])
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        return Response(self.get_serializer(instance).data)
 
     def list(self, request, *args, **kwargs):
         if request.user and request.user.is_authenticated:
@@ -62,9 +51,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
     def restore(self, request, slug=None):
-        """Restaure un projet archive."""
         project = self.get_object()
         project.status = 'in_progress'
         project.save(update_fields=['status'])
-        serializer = ProjectDetailSerializer(project, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(ProjectDetailSerializer(project, context={'request': request}).data)

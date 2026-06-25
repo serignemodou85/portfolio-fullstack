@@ -1,17 +1,8 @@
 # projects/serializers.py
 from rest_framework import serializers
+from portfolio_backend.cloudinary_utils import safe_file_url as _safe_file_url
 from .models import Project
 from accounts.serializers import UserPublicSerializer
-
-
-def _safe_file_url(request, file_field):
-    if not file_field:
-        return None
-    try:
-        url = file_field.url
-    except Exception:
-        return None
-    return request.build_absolute_uri(url) if request else url
 
 
 class ProjectListSerializer(serializers.ModelSerializer):

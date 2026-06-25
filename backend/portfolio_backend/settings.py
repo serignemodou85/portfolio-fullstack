@@ -165,6 +165,11 @@ else:
     }
 
 
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+]
+
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
@@ -283,7 +288,8 @@ CORS_ALLOWED_ORIGINS = env_list(
 )
 
 CORS_ALLOWED_ORIGIN_REGEXES = [
-    r'^https://.*\.vercel\.app$',
+    r'^https://portfolio-frontend[\w\-]*\.vercel\.app$',
+    r'^https://frontend-woad[\w\-]*\.vercel\.app$',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -323,7 +329,7 @@ CACHES = {
 
 CSRF_TRUSTED_ORIGINS = env_list(
     'CSRF_TRUSTED_ORIGINS',
-    'http://localhost:4200,http://127.0.0.1:4200,https://frontend-woad-psi-66.vercel.app,https://portfolio-frontend-rho-silk.vercel.app,https://*.vercel.app'
+    'http://localhost:4200,http://127.0.0.1:4200,https://frontend-woad-psi-66.vercel.app,https://portfolio-frontend-rho-silk.vercel.app'
 )
 
 # Sécurité transport/cookies (activé automatiquement hors DEBUG)
