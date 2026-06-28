@@ -168,7 +168,7 @@ export class Dashboard implements OnInit {
 
   get processedMessages(): ContactMessage[] {
     const query = this.messageSearch.trim().toLowerCase();
-    let items = this.recentMessages;
+    let items = this.recentMessages.filter(m => m.status !== 'archived');
     if (query) {
       items = items.filter((message) =>
         [message.name, message.email, message.subject, message.message]
