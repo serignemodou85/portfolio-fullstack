@@ -47,15 +47,21 @@ export class ExperienceService {
   }
 
   createExperience(payload: FormData): Observable<ExperienceItem> {
-    return this.http.post<ExperienceItem>(`${this.apiUrl}/`, payload);
+    return this.http.post<ExperienceItem>(`${this.apiUrl}/`, payload).pipe(
+      map((item) => { this.cache.clear(); return item; })
+    );
   }
 
   updateExperience(id: number, payload: FormData): Observable<ExperienceItem> {
-    return this.http.put<ExperienceItem>(`${this.apiUrl}/${id}/`, payload);
+    return this.http.patch<ExperienceItem>(`${this.apiUrl}/${id}/`, payload).pipe(
+      map((item) => { this.cache.clear(); return item; })
+    );
   }
 
   deleteExperience(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}/`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}/`).pipe(
+      map((v) => { this.cache.clear(); return v; })
+    );
   }
 
   private fetchAllPages(initial: PaginatedResponse<ExperienceItem>, cacheKey: string): Observable<ExperienceItem[]> {

@@ -108,7 +108,7 @@ export class ProfileAdmin implements OnInit {
 
     const payload = new FormData();
     Object.entries(this.formData).forEach(([key, value]) => {
-      if (value !== null && value !== '') {
+      if (value !== null && value !== undefined) {
         payload.append(key, value as string);
       }
     });

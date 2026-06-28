@@ -49,6 +49,7 @@ export class MessageArchives implements OnInit {
   }
 
   get pagedMessages(): ContactMessage[] {
+    this.syncPage();
     return this.paginate(this.processedMessages, this.page);
   }
 

@@ -87,10 +87,12 @@ export class SkillsAdmin implements OnInit {
   }
 
   get pagedCategories(): SkillCategory[] {
+    this.syncCategoryPage();
     return this.paginate(this.processedCategories, this.categoryPage);
   }
 
   get pagedSkills(): SkillItem[] {
+    this.syncSkillPage();
     return this.paginate(this.processedSkills, this.skillPage);
   }
 

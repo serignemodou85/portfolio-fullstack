@@ -52,6 +52,7 @@ export class ProjectArchives implements OnInit {
   }
 
   get pagedArchives(): ProjectList[] {
+    this.syncPage();
     return this.paginate(this.processedArchives, this.page);
   }
 
@@ -94,6 +95,7 @@ export class ProjectArchives implements OnInit {
     this.projectService.restoreProject(project.slug).subscribe({
       next: () => {
         this.archivedProjects = this.archivedProjects.filter((item) => item.slug !== project.slug);
+        this.syncPage();
       },
       error: (err) => {
         console.error('Erreur restauration projet:', err);

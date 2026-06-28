@@ -231,7 +231,7 @@
             <label>Categorie</label>
             <select [(ngModel)]="articleForm.category" name="art_category">
               <option value="">Aucune</option>
-              <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+              <option *ngFor="let cat of categories" [value]="cat.id + ''">{{ cat.name }}</option>
             </select>
           </div>
           <div class="field">

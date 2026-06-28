@@ -124,10 +124,12 @@ export class Dashboard implements OnInit {
   }
 
   get pagedProjects(): ProjectList[] {
+    this.syncProjectPage();
     return this.paginate(this.processedProjects, this.projectPage);
   }
 
   get pagedMessages(): ContactMessage[] {
+    this.syncMessagePage();
     return this.paginate(this.processedMessages, this.messagePage);
   }
 

@@ -91,14 +91,17 @@ export class BlogAdmin implements OnInit {
   }
 
   get pagedCategories(): BlogCategory[] {
+    this.syncCategoryPage();
     return this.paginate(this.processedCategories, this.categoryPage);
   }
 
   get pagedTags(): BlogTag[] {
+    this.syncTagPage();
     return this.paginate(this.processedTags, this.tagPage);
   }
 
   get pagedArticles(): ArticleList[] {
+    this.syncArticlePage();
     return this.paginate(this.processedArticles, this.articlePage);
   }
 
@@ -290,6 +293,7 @@ export class BlogAdmin implements OnInit {
 
   editArticle(article: ArticleList): void {
     this.editingArticleSlug = article.slug;
+    this.featuredImage = null;
     this.blogService.getArticle(article.slug).subscribe({
       next: (detail: any) => {
         this.articleForm = {

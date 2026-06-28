@@ -68,6 +68,7 @@ export class ExperienceAdmin implements OnInit {
   }
 
   get pagedExperiences(): ExperienceItem[] {
+    this.syncExperiencePage();
     return this.paginate(this.processedExperiences, this.experiencePage);
   }
 
@@ -99,6 +100,8 @@ export class ExperienceAdmin implements OnInit {
 
   startEdit(item: ExperienceItem): void {
     this.editingId = item.id;
+    this.companyLogo = null;
+    this.certificateFile = null;
     this.formData = {
       type: item.type,
       title: item.title,
