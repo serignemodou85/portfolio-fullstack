@@ -290,7 +290,8 @@ export class Dashboard implements OnInit {
     this.contactService.archive(message.id).subscribe({
       next: () => {
         const wasNew = message.status === 'new';
-        message.status = 'archived';
+        this.recentMessages = this.recentMessages.filter(item => item.id !== message.id);
+        this.syncMessagePage();
         if (wasNew) {
           this.stats.unreadMessages = Math.max((this.stats.unreadMessages || 0) - 1, 0);
         }
