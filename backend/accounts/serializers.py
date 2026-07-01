@@ -32,7 +32,7 @@ class UserSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         request = self.context.get('request')
         data['profile_picture'] = _safe_file_url(request, instance.profile_picture)
-        data['cv_file'] = _safe_raw_url(instance.cv_file)
+        data['cv_file'] = _safe_raw_url(instance.cv_file, force_download=True)
         return data
 
 
@@ -56,7 +56,7 @@ class UserPublicSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         request = self.context.get('request')
         data['profile_picture'] = _safe_file_url(request, instance.profile_picture)
-        data['cv_file'] = _safe_raw_url(instance.cv_file)
+        data['cv_file'] = _safe_raw_url(instance.cv_file, force_download=True)
         return data
 
 

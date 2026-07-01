@@ -23,13 +23,16 @@ def safe_file_url(request, file_field):
     return request.build_absolute_uri(url) if request else url
 
 
-def safe_raw_url(file_field) -> str | None:
+def safe_raw_url(file_field, force_download: bool = False) -> str | None:
     """URL correcte pour les fichiers raw Cloudinary (PDF, certificats, CV).
 
     CloudinaryField stocke en base : raw/upload/v{version}/{public_id}.{format}
     str(field) retourne uniquement le public_id — sans version ni extension.
     On lit les attributs du CloudinaryResource pour reconstruire l'URL complète
     avec la vraie version et le bon format, évitant le placeholder v1 erroné.
+
+    force_download=True ajoute fl_attachment pour forcer le téléchargement
+    (évite les erreurs des viewers PDF cross-origin comme Adobe Acrobat).
     """
     if not file_field:
         return None
@@ -50,6 +53,8 @@ def safe_raw_url(file_field) -> str | None:
             kwargs['format'] = fmt
         if version:
             kwargs['version'] = version
+        if force_download:
+            kwargs['flags'] = 'attachment'
 
         url, _ = cloudinary.utils.cloudinary_url(public_id, **kwargs)
         return url or None
