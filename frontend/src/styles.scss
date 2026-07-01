@@ -1628,3 +1628,33 @@ a {
 [data-theme="dark"] .icon-preview { background: #21262d; border-color: #30363d; }
 [data-theme="dark"] .chip { background: #161b22; border-color: #30363d; color: #c9d1d9; }
 [data-theme="dark"] .chip:hover { background: #21262d; color: #58a6ff; border-color: #388bfd; }
+
+/* ── Dashboard shared globals (not component-scoped) ── */
+.dashboard .btn { border-radius: 8px; padding: .42rem .75rem; font-size: .8rem; font-weight: 600; gap: .35rem; }
+.dashboard .btn:hover:not(:disabled) { transform: translateY(-1px); }
+.dashboard .btn:active:not(:disabled) { transform: translateY(0); }
+.dashboard .btn[disabled] { opacity: .45; cursor: not-allowed; }
+.dashboard .btn-primary { background: #2563eb; color: #fff; border-color: #2563eb; }
+.dashboard .btn-primary:hover:not(:disabled) { background: #1d4ed8; border-color: #1d4ed8; box-shadow: 0 4px 12px rgba(37,99,235,.28); }
+.dashboard .btn-soft { background: #eef2ff; color: #1e40af; border-color: #c7d2fe; }
+.dashboard .btn-soft:hover:not(:disabled) { background: #e0e7ff; }
+.dashboard .btn-outline { background: #fff; color: #334155; border-color: #e2e8f0; }
+.dashboard .btn-outline:hover:not(:disabled) { background: #f1f5f9; border-color: #94a3b8; }
+.dashboard .btn-danger { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
+.dashboard .btn-danger:hover:not(:disabled) { background: #fee2e2; box-shadow: 0 4px 10px rgba(220,38,38,.15); }
+.dashboard .btn-icon { padding: 0; }
+.dashboard .status-badge { position: static; display: inline-flex; align-items: center; gap: .35rem; padding: .2rem .55rem; border-radius: 999px; font-size: .67rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; border: 1px solid transparent; }
+.dashboard .status-badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; background: currentColor; display: inline-block; }
+.dashboard .status-badge.in_progress { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
+.dashboard .status-badge.completed   { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+.dashboard .status-badge.archived    { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+.dashboard .message-status.new     { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+.dashboard .message-status.read    { background: #f8fafc; color: #475569; border-color: #e2e8f0; }
+.dashboard .message-status.replied { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+.dashboard .row-actions      { display: inline-flex; align-items: center; gap: .4rem; }
+.dashboard .row-actions .btn { min-width: 34px; min-height: 34px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; }
+.dashboard .table-footer { display: flex; justify-content: flex-end; align-items: center; padding: .7rem 1.2rem; border-top: 1px solid #e5e7eb; }
+.dashboard .pagination   { display: flex; align-items: center; gap: .45rem; }
+.dashboard .page-count   { font-size: .8rem; color: #64748b; padding: 0 .3rem; }
+.dashboard .icon-rotate  { display: inline-flex; transform: rotate(180deg); }
+.dashboard .empty-state  { padding: 2.5rem 1.5rem; text-align: center; color: #94a3b8; font-size: .88rem; border-top: 1px solid #e5e7eb; }
