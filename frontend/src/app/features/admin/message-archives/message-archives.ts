@@ -6,6 +6,8 @@ import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { ContactService } from '../../../core/services/contact.service';
 import { ContactMessage } from '../../../core/models/contact.model';
+import { ToastService } from '../../../core/services/toast.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 
 @Component({
   selector: 'app-message-archives',
@@ -24,7 +26,11 @@ export class MessageArchives implements OnInit {
   searchTerm = '';
   sortKey: 'date_desc' | 'date_asc' | 'name_asc' | 'name_desc' = 'date_desc';
 
-  constructor(private contactService: ContactService) {}
+  constructor(
+    private contactService: ContactService,
+    private toastService: ToastService,
+    private confirmService: ConfirmService
+  ) {}
 
   ngOnInit(): void {
     this.loadArchivedMessages();
@@ -80,38 +86,49 @@ export class MessageArchives implements OnInit {
   }
 
   restoreMessage(message: ContactMessage): void {
-    if (!message?.id) {
-      return;
-    }
-    this.contactService.restore(message.id).subscribe({
-      next: () => {
-        this.archivedMessages = this.archivedMessages.filter((item) => item.id !== message.id);
-        this.syncPage();
-      },
-      error: (err) => {
-        console.error('Erreur restauration message:', err);
-        window.alert('La restauration a echoue.');
-      }
+    if (!message?.id) return;
+
+    this.confirmService.confirm({
+      title: 'Restaurer le message',
+      message: `Restaurer le message de ${message.name} dans la boîte de réception ?`,
+      confirmLabel: 'Restaurer',
+      danger: false
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+      this.contactService.restore(message.id!).subscribe({
+        next: () => {
+          this.archivedMessages = this.archivedMessages.filter((item) => item.id !== message.id);
+          this.syncPage();
+          this.toastService.success('Message restauré.');
+        },
+        error: (err) => {
+          console.error('Erreur restauration message:', err);
+          this.toastService.error('La restauration a échoué.');
+        }
+      });
     });
   }
 
   deleteMessage(message: ContactMessage): void {
-    if (!message?.id) {
-      return;
-    }
-    const confirmed = window.confirm('Supprimer ce message definitivement ?');
-    if (!confirmed) {
-      return;
-    }
-    this.contactService.deleteMessage(message.id).subscribe({
-      next: () => {
-        this.archivedMessages = this.archivedMessages.filter((item) => item.id !== message.id);
-        this.syncPage();
-      },
-      error: (err) => {
-        console.error('Erreur suppression message:', err);
-        window.alert('La suppression a echoue.');
-      }
+    if (!message?.id) return;
+
+    this.confirmService.confirm({
+      title: 'Supprimer le message',
+      message: `Supprimer définitivement le message de ${message.name} ? Cette action est irréversible.`,
+      confirmLabel: 'Supprimer'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+      this.contactService.deleteMessage(message.id!).subscribe({
+        next: () => {
+          this.archivedMessages = this.archivedMessages.filter((item) => item.id !== message.id);
+          this.syncPage();
+          this.toastService.success('Message supprimé.');
+        },
+        error: (err) => {
+          console.error('Erreur suppression message:', err);
+          this.toastService.error('La suppression a échoué.');
+        }
+      });
     });
   }
 

@@ -1,0 +1,48 @@
+<div class="modal-backdrop" *ngIf="state" (click)="cancel()" role="dialog" aria-modal="true">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <div class="modal-icon" [class.modal-icon-danger]="state.danger !== false" [class.modal-icon-primary]="state.danger === false">
+        <svg *ngIf="state.danger !== false" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        <svg *ngIf="state.danger === false" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </div>
+      <div>
+        <h3 class="modal-title">{{ state.title || (state.danger !== false ? 'Confirmer la suppression' : 'Confirmation') }}</h3>
+        <p class="modal-message">{{ state.message }}</p>
+      </div>
+    </div>
+
+    <div *ngIf="state.withInput" class="modal-input-wrap">
+      <label class="modal-input-label" *ngIf="state.inputLabel">{{ state.inputLabel }}</label>
+      <textarea
+        class="modal-textarea"
+        [(ngModel)]="inputValue"
+        [placeholder]="state.inputPlaceholder || ''"
+        rows="4"
+        autofocus
+      ></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-outline" type="button" (click)="cancel()">
+        {{ state.cancelLabel || 'Annuler' }}
+      </button>
+      <button
+        class="btn"
+        type="button"
+        [class.btn-danger]="state.danger !== false"
+        [class.btn-primary]="state.danger === false"
+        (click)="accept()"
+        [disabled]="state.withInput && !inputValue.trim()"
+      >
+        {{ state.confirmLabel || (state.danger !== false ? 'Supprimer' : 'Confirmer') }}
+      </button>
+    </div>
+
+  </div>
+</div>

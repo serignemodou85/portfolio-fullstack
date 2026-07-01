@@ -8,6 +8,8 @@ import { ArticleList } from '../../../core/models/article.model';
 import { BlogCategory, BlogTag } from '../../../core/models/blog.model';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
+import { ToastService } from '../../../core/services/toast.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 
 @Component({
   selector: 'app-blog-admin',
@@ -55,7 +57,11 @@ export class BlogAdmin implements OnInit {
     published_at: ''
   };
 
-  constructor(private blogService: BlogService) {}
+  constructor(
+    private blogService: BlogService,
+    private toastService: ToastService,
+    private confirmService: ConfirmService
+  ) {}
 
   ngOnInit(): void {
     this.loadAll();
@@ -195,13 +201,16 @@ export class BlogAdmin implements OnInit {
   }
 
   deleteCategory(cat: BlogCategory): void {
-    const confirmed = window.confirm('Supprimer cette categorie ?');
-    if (!confirmed) {
-      return;
-    }
-    this.blogService.deleteCategory(cat.slug).subscribe({
-      next: () => this.loadAll(),
-      error: () => (this.error = 'Erreur suppression categorie.')
+    this.confirmService.confirm({
+      title: 'Supprimer la catégorie',
+      message: `Supprimer "${cat.name}" ? Les articles associés perdront leur catégorie.`,
+      confirmLabel: 'Supprimer'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+      this.blogService.deleteCategory(cat.slug).subscribe({
+        next: () => { this.toastService.success('Catégorie supprimée.'); this.loadAll(); },
+        error: () => this.toastService.error('Erreur suppression catégorie.')
+      });
     });
   }
 
@@ -233,13 +242,16 @@ export class BlogAdmin implements OnInit {
   }
 
   deleteTag(tag: BlogTag): void {
-    const confirmed = window.confirm('Supprimer ce tag ?');
-    if (!confirmed) {
-      return;
-    }
-    this.blogService.deleteTag(tag.slug).subscribe({
-      next: () => this.loadAll(),
-      error: () => (this.error = 'Erreur suppression tag.')
+    this.confirmService.confirm({
+      title: 'Supprimer le tag',
+      message: `Supprimer le tag "${tag.name}" ?`,
+      confirmLabel: 'Supprimer'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+      this.blogService.deleteTag(tag.slug).subscribe({
+        next: () => { this.toastService.success('Tag supprimé.'); this.loadAll(); },
+        error: () => this.toastService.error('Erreur suppression tag.')
+      });
     });
   }
 
@@ -314,13 +326,16 @@ export class BlogAdmin implements OnInit {
   }
 
   deleteArticle(article: ArticleList): void {
-    const confirmed = window.confirm('Supprimer cet article ?');
-    if (!confirmed) {
-      return;
-    }
-    this.blogService.deleteArticle(article.slug).subscribe({
-      next: () => this.loadAll(),
-      error: () => (this.error = 'Erreur suppression article.')
+    this.confirmService.confirm({
+      title: 'Supprimer l\'article',
+      message: `Supprimer "${article.title}" ? Cette action est irréversible.`,
+      confirmLabel: 'Supprimer'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+      this.blogService.deleteArticle(article.slug).subscribe({
+        next: () => { this.toastService.success('Article supprimé.'); this.loadAll(); },
+        error: () => this.toastService.error('Erreur suppression article.')
+      });
     });
   }
 

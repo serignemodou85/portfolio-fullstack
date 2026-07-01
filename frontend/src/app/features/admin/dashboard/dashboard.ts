@@ -12,6 +12,8 @@ import { ContactMessage } from '../../../core/models/contact.model';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
 import { ContactService } from '../../../core/services/contact.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 import { environment } from '../../../../environments/environment';
 
 
@@ -58,7 +60,9 @@ export class Dashboard implements OnInit {
     private projectService: ProjectService,
     private contactService: ContactService,
     private dashboardService: DashboardService,
-    private router: Router
+    private router: Router,
+    private toastService: ToastService,
+    private confirmService: ConfirmService
   ) {}
 
   ngOnInit(): void {
@@ -187,33 +191,38 @@ export class Dashboard implements OnInit {
   }
 
   archiveProject(project: ProjectList): void {
-    if (!project?.slug) {
-      return;
-    }
+    if (!project?.slug) return;
 
-    const confirmed = window.confirm('Archiver ce projet ?');
-    if (!confirmed) {
-      return;
-    }
+    this.confirmService.confirm({
+      title: 'Archiver le projet',
+      message: `Archiver "${project.title}" ? Il sera déplacé dans les archives.`,
+      confirmLabel: 'Archiver',
+      cancelLabel: 'Annuler',
+      danger: false
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
 
-    const payload = new FormData();
-    payload.append('status', 'archived');
+      const payload = new FormData();
+      payload.append('status', 'archived');
 
-    this.projectService.partialUpdateProject(project.slug, payload).subscribe({
-      next: (updated) => {
-        this.activeProjects = this.activeProjects.filter((item) => item.slug !== updated.slug);
-        this.archivedProjects = [updated, ...this.archivedProjects.filter((item) => item.slug !== updated.slug)];
-        this.recentProjects = this.activeProjects;
-        this.stats.totalProjects = this.activeProjects.length + this.archivedProjects.length;
-        this.stats.activeProjects = this.activeProjects.length;
-        this.stats.completedProjects = this.activeProjects.filter((p) => p.status === 'completed').length;
-        this.stats.inProgressProjects = this.activeProjects.filter((p) => p.status === 'in_progress').length;
-        this.syncProjectPage();
-        this.loadStatsFromAPI();
-      },
-      error: (err) => {
-        console.error('Erreur archivage projet:', err);
-      }
+      this.projectService.partialUpdateProject(project.slug!, payload).subscribe({
+        next: (updated) => {
+          this.activeProjects = this.activeProjects.filter((item) => item.slug !== updated.slug);
+          this.archivedProjects = [updated, ...this.archivedProjects.filter((item) => item.slug !== updated.slug)];
+          this.recentProjects = this.activeProjects;
+          this.stats.totalProjects = this.activeProjects.length + this.archivedProjects.length;
+          this.stats.activeProjects = this.activeProjects.length;
+          this.stats.completedProjects = this.activeProjects.filter((p) => p.status === 'completed').length;
+          this.stats.inProgressProjects = this.activeProjects.filter((p) => p.status === 'in_progress').length;
+          this.syncProjectPage();
+          this.loadStatsFromAPI();
+          this.toastService.success('Projet archivé.');
+        },
+        error: (err) => {
+          console.error('Erreur archivage projet:', err);
+          this.toastService.error('Impossible d\'archiver ce projet.');
+        }
+      });
     });
   }
 
@@ -239,30 +248,35 @@ export class Dashboard implements OnInit {
   }
 
   replyToMessage(message: ContactMessage): void {
-    if (!message?.id) {
-      return;
-    }
+    if (!message?.id) return;
 
-    const reply = window.prompt(`Reponse pour ${message.email}`);
-    if (!reply || !reply.trim()) {
-      return;
-    }
+    this.confirmService.prompt({
+      title: `Répondre à ${message.name}`,
+      message: `Destinataire : ${message.email}`,
+      inputLabel: 'Votre réponse',
+      inputPlaceholder: 'Écrivez votre réponse...',
+      confirmLabel: 'Envoyer',
+      cancelLabel: 'Annuler',
+      danger: false
+    }).subscribe(reply => {
+      if (!reply) return;
 
-    this.contactService.reply(message.id, reply.trim()).subscribe({
-      next: () => {
-        const wasNew = message.status === 'new';
-        message.status = 'replied';
-        if (wasNew) {
-          this.stats.unreadMessages = Math.max((this.stats.unreadMessages || 0) - 1, 0);
+      this.contactService.reply(message.id!, reply).subscribe({
+        next: () => {
+          const wasNew = message.status === 'new';
+          message.status = 'replied';
+          if (wasNew) {
+            this.stats.unreadMessages = Math.max((this.stats.unreadMessages || 0) - 1, 0);
+          }
+          this.toastService.success('Réponse envoyée par email.');
+          this.loadRecentMessages();
+          this.loadStatsFromAPI();
+        },
+        error: (err) => {
+          console.error('Erreur reply:', err);
+          this.toastService.error('Échec de l\'envoi de la réponse.');
         }
-        window.alert('Reponse envoyee par email.');
-        this.loadRecentMessages();
-        this.loadStatsFromAPI();
-      },
-      error: (err) => {
-        console.error('Erreur reply:', err);
-        window.alert('Echec envoi reponse.');
-      }
+      });
     });
   }
 
@@ -288,30 +302,33 @@ export class Dashboard implements OnInit {
   }
 
   deleteMessage(message: ContactMessage): void {
-    if (!message?.id) {
-      return;
-    }
+    if (!message?.id) return;
 
-    const confirmed = window.confirm('Supprimer ce message definitivement ?');
-    if (!confirmed) {
-      return;
-    }
+    this.confirmService.confirm({
+      title: 'Supprimer le message',
+      message: `Supprimer définitivement le message de ${message.name} ? Cette action est irréversible.`,
+      confirmLabel: 'Supprimer',
+      cancelLabel: 'Annuler'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
 
-    this.contactService.deleteMessage(message.id).subscribe({
-      next: () => {
-        const wasNew = message.status === 'new';
-        this.recentMessages = this.recentMessages.filter((item) => item.id !== message.id);
-        this.syncMessagePage();
-        if (wasNew) {
-          this.stats.unreadMessages = Math.max((this.stats.unreadMessages || 0) - 1, 0);
+      this.contactService.deleteMessage(message.id!).subscribe({
+        next: () => {
+          const wasNew = message.status === 'new';
+          this.recentMessages = this.recentMessages.filter((item) => item.id !== message.id);
+          this.syncMessagePage();
+          if (wasNew) {
+            this.stats.unreadMessages = Math.max((this.stats.unreadMessages || 0) - 1, 0);
+          }
+          this.toastService.success('Message supprimé.');
+          this.loadRecentMessages();
+          this.loadStatsFromAPI();
+        },
+        error: (err) => {
+          console.error('Erreur suppression message:', err);
+          this.toastService.error('Suppression impossible.');
         }
-        this.loadRecentMessages();
-        this.loadStatsFromAPI();
-      },
-      error: (err) => {
-        console.error('Erreur suppression message:', err);
-        window.alert('Suppression impossible.');
-      }
+      });
     });
   }
 

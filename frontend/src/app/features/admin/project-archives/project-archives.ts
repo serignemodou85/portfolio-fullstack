@@ -6,6 +6,8 @@ import { ProjectService } from '../../projects/services/project';
 import { ProjectList } from '../../../core/models/project.model';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
+import { ToastService } from '../../../core/services/toast.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -27,7 +29,11 @@ export class ProjectArchives implements OnInit {
   readonly placeholderImage = 'assets/placeholders/project.svg';
   private readonly mediaBase = environment.apiUrl.replace(/\/api\/?$/, '');
 
-  constructor(private projectService: ProjectService) {}
+  constructor(
+    private projectService: ProjectService,
+    private toastService: ToastService,
+    private confirmService: ConfirmService
+  ) {}
 
   ngOnInit(): void {
     this.loadArchivedProjects();
@@ -83,48 +89,49 @@ export class ProjectArchives implements OnInit {
   }
 
   restoreProject(project: ProjectList): void {
-    if (!project.slug) {
-      return;
-    }
+    if (!project.slug) return;
 
-    const confirmed = window.confirm('Restaurer ce projet ?');
-    if (!confirmed) {
-      return;
-    }
-
-    this.projectService.restoreProject(project.slug).subscribe({
-      next: () => {
-        this.archivedProjects = this.archivedProjects.filter((item) => item.slug !== project.slug);
-        this.syncPage();
-      },
-      error: (err) => {
-        console.error('Erreur restauration projet:', err);
-        window.alert('La restauration a echoue.');
-      }
+    this.confirmService.confirm({
+      title: 'Restaurer le projet',
+      message: `Restaurer "${project.title}" dans les projets actifs ?`,
+      confirmLabel: 'Restaurer',
+      danger: false
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+      this.projectService.restoreProject(project.slug!).subscribe({
+        next: () => {
+          this.archivedProjects = this.archivedProjects.filter((item) => item.slug !== project.slug);
+          this.syncPage();
+          this.toastService.success('Projet restauré.');
+        },
+        error: (err) => {
+          console.error('Erreur restauration projet:', err);
+          this.toastService.error('La restauration a échoué.');
+        }
+      });
     });
   }
 
   deletePermanently(project: ProjectList): void {
-    if (!project.slug) {
-      return;
-    }
+    if (!project.slug) return;
 
-    const confirmed = window.confirm(
-      'Suppression definitive: ce projet sera efface de la base. Continuer ?'
-    );
-    if (!confirmed) {
-      return;
-    }
-
-    this.projectService.deleteProject(project.slug).subscribe({
-      next: () => {
-        this.archivedProjects = this.archivedProjects.filter((item) => item.slug !== project.slug);
-        this.syncPage();
-      },
-      error: (err) => {
-        console.error('Erreur suppression definitive projet:', err);
-        window.alert('La suppression definitive a echoue.');
-      }
+    this.confirmService.confirm({
+      title: 'Suppression définitive',
+      message: `Supprimer définitivement "${project.title}" ? Il sera effacé de la base de données, sans possibilité de récupération.`,
+      confirmLabel: 'Supprimer définitivement'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+      this.projectService.deleteProject(project.slug!).subscribe({
+        next: () => {
+          this.archivedProjects = this.archivedProjects.filter((item) => item.slug !== project.slug);
+          this.syncPage();
+          this.toastService.success('Projet supprimé définitivement.');
+        },
+        error: (err) => {
+          console.error('Erreur suppression définitive projet:', err);
+          this.toastService.error('La suppression définitive a échoué.');
+        }
+      });
     });
   }
 

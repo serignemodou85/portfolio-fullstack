@@ -8,6 +8,8 @@ import { SkillCategory, SkillItem } from '../../../core/models/skill.model';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { ICON_SUGGESTIONS, resolveIconFromKeyword } from '../../../shared/utils/icon-keyword';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
+import { ToastService } from '../../../core/services/toast.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 
 @Component({
   selector: 'app-skills-admin',
@@ -60,7 +62,11 @@ export class SkillsAdmin implements OnInit {
     order: 0
   };
 
-  constructor(private skillService: SkillService) {}
+  constructor(
+    private skillService: SkillService,
+    private toastService: ToastService,
+    private confirmService: ConfirmService
+  ) {}
 
   ngOnInit(): void {
     this.loadAll();
@@ -173,13 +179,17 @@ export class SkillsAdmin implements OnInit {
   }
 
   deleteCategory(id: number): void {
-    const confirmed = window.confirm('Supprimer cette categorie ?');
-    if (!confirmed) {
-      return;
-    }
-    this.skillService.deleteCategory(id).subscribe({
-      next: () => this.loadAll(),
-      error: () => (this.error = 'Erreur suppression categorie.')
+    const cat = this.categories.find(c => c.id === id);
+    this.confirmService.confirm({
+      title: 'Supprimer la catégorie',
+      message: `Supprimer "${cat?.name ?? 'cette catégorie'}" ? Les compétences associées seront aussi supprimées.`,
+      confirmLabel: 'Supprimer'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+      this.skillService.deleteCategory(id).subscribe({
+        next: () => { this.toastService.success('Catégorie supprimée.'); this.loadAll(); },
+        error: () => this.toastService.error('Erreur suppression catégorie.')
+      });
     });
   }
 
@@ -224,13 +234,17 @@ export class SkillsAdmin implements OnInit {
   }
 
   deleteSkill(id: number): void {
-    const confirmed = window.confirm('Supprimer cette competence ?');
-    if (!confirmed) {
-      return;
-    }
-    this.skillService.deleteSkill(id).subscribe({
-      next: () => this.loadAll(),
-      error: () => (this.error = 'Erreur suppression skill.')
+    const skill = this.skills.find(s => s.id === id);
+    this.confirmService.confirm({
+      title: 'Supprimer la compétence',
+      message: `Supprimer "${skill?.name ?? 'cette compétence'}" ?`,
+      confirmLabel: 'Supprimer'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+      this.skillService.deleteSkill(id).subscribe({
+        next: () => { this.toastService.success('Compétence supprimée.'); this.loadAll(); },
+        error: () => this.toastService.error('Erreur suppression compétence.')
+      });
     });
   }
 

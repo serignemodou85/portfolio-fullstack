@@ -7,6 +7,8 @@ import { ExperienceService } from '../../../core/services/experience.service';
 import { ExperienceItem } from '../../../core/models/experience.model';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
+import { ToastService } from '../../../core/services/toast.service';
+import { ConfirmService } from '../../../core/services/confirm.service';
 
 @Component({
   selector: 'app-experience-admin',
@@ -43,7 +45,9 @@ export class ExperienceAdmin implements OnInit {
 
   constructor(
     private experienceService: ExperienceService,
-    private router: Router
+    private router: Router,
+    private toastService: ToastService,
+    private confirmService: ConfirmService
   ) {}
 
   ngOnInit(): void {
@@ -202,13 +206,17 @@ export class ExperienceAdmin implements OnInit {
   }
 
   deleteExperience(id: number): void {
-    const confirmed = window.confirm('Supprimer cette experience ?');
-    if (!confirmed) {
-      return;
-    }
-    this.experienceService.deleteExperience(id).subscribe({
-      next: () => this.loadExperiences(),
-      error: (err) => (this.error = this.getErrorMessage(err, 'Erreur lors de la suppression.'))
+    const exp = this.experiences.find(e => e.id === id);
+    this.confirmService.confirm({
+      title: 'Supprimer l\'expérience',
+      message: `Supprimer "${exp?.title ?? 'cette expérience'}" ? Cette action est irréversible.`,
+      confirmLabel: 'Supprimer'
+    }).subscribe(confirmed => {
+      if (!confirmed) return;
+      this.experienceService.deleteExperience(id).subscribe({
+        next: () => { this.toastService.success('Expérience supprimée.'); this.loadExperiences(); },
+        error: (err) => this.toastService.error(this.getErrorMessage(err, 'Erreur lors de la suppression.'))
+      });
     });
   }
 
