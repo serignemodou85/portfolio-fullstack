@@ -10,6 +10,7 @@ import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-blog-admin',
@@ -60,7 +61,8 @@ export class BlogAdmin implements OnInit {
   constructor(
     private blogService: BlogService,
     private toastService: ToastService,
-    private confirmService: ConfirmService
+    private confirmService: ConfirmService,
+    public lang: LanguageService
   ) {}
 
   ngOnInit(): void {
@@ -357,13 +359,9 @@ export class BlogAdmin implements OnInit {
   }
 
   statusLabel(status: string): string {
-    if (status === 'published') {
-      return 'Publié';
-    }
-    if (status === 'archived') {
-      return 'Archivé';
-    }
-    return 'Brouillon';
+    if (status === 'published') return this.lang.t('admin.blog.art.published');
+    if (status === 'archived') return this.lang.t('admin.blog.art.archived');
+    return this.lang.t('admin.blog.art.draft');
   }
 
   private toDateTimeLocalValue(value?: string | null): string {

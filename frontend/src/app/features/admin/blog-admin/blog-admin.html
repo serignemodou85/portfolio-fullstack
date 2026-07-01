@@ -4,22 +4,22 @@
       <div>
         <p class="eyebrow">Admin content</p>
         <h1>Blog manager</h1>
-        <p class="subtitle">Articles, categories et tags avec workflow editorial complet.</p>
+        <p class="subtitle">{{ lang.t('admin.blog.subtitle') }}</p>
       </div>
-      <a routerLink="/admin/dashboard" class="btn btn-outline">Retour dashboard</a>
+      <a routerLink="/admin/dashboard" class="btn btn-outline">{{ lang.t('admin.blog.back') }}</a>
     </header>
 
     <section class="stats-strip">
       <article class="stat-card">
-        <p class="stat-label">Articles</p>
+        <p class="stat-label">{{ lang.t('admin.blog.th.article') }}s</p>
         <p class="stat-value">{{ articles.length }}</p>
       </article>
       <article class="stat-card">
-        <p class="stat-label">Categories</p>
+        <p class="stat-label">{{ lang.t('admin.blog.th.category') }}s</p>
         <p class="stat-value">{{ categories.length }}</p>
       </article>
       <article class="stat-card">
-        <p class="stat-label">Tags</p>
+        <p class="stat-label">{{ lang.t('admin.form.tags') }}</p>
         <p class="stat-value">{{ tags.length }}</p>
       </article>
     </section>
@@ -27,43 +27,43 @@
     <div class="layout-small">
       <section class="panel">
         <div class="panel-head">
-          <h2>{{ editingCategorySlug ? 'Modifier categorie' : 'Nouvelle categorie' }}</h2>
+          <h2>{{ editingCategorySlug ? lang.t('admin.blog.cat.edit') : lang.t('admin.blog.cat.new') }}</h2>
         </div>
         <form (ngSubmit)="submitCategory()">
           <div class="field">
-            <label>Nom</label>
+            <label>{{ lang.t('admin.form.name') }}</label>
             <input type="text" [(ngModel)]="categoryForm.name" name="cat_name" required />
           </div>
           <div class="field">
-            <label>Slug</label>
+            <label>{{ lang.t('admin.form.slug') }}</label>
             <input type="text" [(ngModel)]="categoryForm.slug" name="cat_slug" />
           </div>
           <div class="field">
-            <label>Description</label>
+            <label>{{ lang.t('admin.form.description') }}</label>
             <textarea [(ngModel)]="categoryForm.description" name="cat_desc" rows="3"></textarea>
           </div>
           <div class="actions">
             <button class="btn btn-primary" type="submit">
-              {{ editingCategorySlug ? 'Mettre a jour' : 'Creer' }}
+              {{ editingCategorySlug ? lang.t('admin.form.update') : lang.t('admin.form.create') }}
             </button>
-            <button class="btn btn-soft" type="button" (click)="resetCategory()">Annuler</button>
+            <button class="btn btn-soft" type="button" (click)="resetCategory()">{{ lang.t('admin.form.cancel') }}</button>
           </div>
         </form>
         <div class="table-wrap" *ngIf="processedCategories.length; else emptyCategories">
           <div class="table-tools">
             <div class="field inline">
-              <label for="blog_cat_search">Recherche</label>
-              <input id="blog_cat_search" type="search" [(ngModel)]="categorySearch" name="blog_cat_search" placeholder="Nom, slug..." />
+              <label for="blog_cat_search">{{ lang.t('admin.field.search') }}</label>
+              <input id="blog_cat_search" type="search" [(ngModel)]="categorySearch" name="blog_cat_search" [placeholder]="lang.t('admin.blog.ph.cat')" />
             </div>
             <div class="field inline">
-              <label for="blog_cat_sort">Tri</label>
+              <label for="blog_cat_sort">{{ lang.t('admin.field.sort') }}</label>
               <select id="blog_cat_sort" [(ngModel)]="categorySort" name="blog_cat_sort">
-                <option value="name_asc">Nom A-Z</option>
-                <option value="name_desc">Nom Z-A</option>
+                <option value="name_asc">{{ lang.t('admin.sort.name_asc') }}</option>
+                <option value="name_desc">{{ lang.t('admin.sort.name_desc') }}</option>
               </select>
             </div>
             <div class="field inline">
-              <label for="blog_cat_page_size">Par page</label>
+              <label for="blog_cat_page_size">{{ lang.t('admin.field.per_page') }}</label>
               <select id="blog_cat_page_size" [(ngModel)]="pageSize" name="blog_cat_page_size" (ngModelChange)="setPageSize($event)">
                 <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
               </select>
@@ -72,9 +72,9 @@
           <table class="data-table compact">
             <thead>
               <tr>
-                <th>Nom</th>
-                <th>Slug</th>
-                <th>Actions</th>
+                <th>{{ lang.t('admin.form.name') }}</th>
+                <th>{{ lang.t('admin.form.slug') }}</th>
+                <th>{{ lang.t('admin.th.actions') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -83,10 +83,10 @@
                 <td>{{ cat.slug }}</td>
                 <td>
                   <div class="row-actions">
-                    <button type="button" class="btn btn-icon btn-soft" (click)="editCategory(cat)" title="Editer">
+                    <button type="button" class="btn btn-icon btn-soft" (click)="editCategory(cat)" [title]="lang.t('admin.action.edit')">
                       <app-icon name="edit" [size]="16"></app-icon>
                     </button>
-                    <button type="button" class="btn btn-icon btn-danger" (click)="deleteCategory(cat)" title="Supprimer">
+                    <button type="button" class="btn btn-icon btn-danger" (click)="deleteCategory(cat)" [title]="lang.t('admin.action.delete')">
                       <app-icon name="trash" [size]="16"></app-icon>
                     </button>
                   </div>
@@ -98,56 +98,54 @@
         <div class="table-footer" *ngIf="categoryTotalPages > 1">
           <div class="pagination">
             <button type="button" class="btn btn-icon btn-soft" (click)="setCategoryPage(categoryPage - 1)" [disabled]="categoryPage === 1">
-              <span class="icon-rotate">
-                <app-icon name="arrow-right" [size]="14"></app-icon>
-              </span>
+              <span class="icon-rotate"><app-icon name="arrow-right" [size]="14"></app-icon></span>
             </button>
-            <span class="page-count">Page {{ categoryPage }} / {{ categoryTotalPages }}</span>
+            <span class="page-count">{{ lang.t('admin.pagination.page') }} {{ categoryPage }} / {{ categoryTotalPages }}</span>
             <button type="button" class="btn btn-icon btn-soft" (click)="setCategoryPage(categoryPage + 1)" [disabled]="categoryPage === categoryTotalPages">
               <app-icon name="arrow-right" [size]="14"></app-icon>
             </button>
           </div>
         </div>
         <ng-template #emptyCategories>
-          <div class="empty-state">Aucune categorie.</div>
+          <div class="empty-state">{{ lang.t('admin.blog.empty.cat') }}</div>
         </ng-template>
       </section>
 
       <section class="panel">
         <div class="panel-head">
-          <h2>{{ editingTagSlug ? 'Modifier tag' : 'Nouveau tag' }}</h2>
+          <h2>{{ editingTagSlug ? lang.t('admin.blog.tag.edit') : lang.t('admin.blog.tag.new') }}</h2>
         </div>
         <form (ngSubmit)="submitTag()">
           <div class="field">
-            <label>Nom</label>
+            <label>{{ lang.t('admin.form.name') }}</label>
             <input type="text" [(ngModel)]="tagForm.name" name="tag_name" required />
           </div>
           <div class="field">
-            <label>Slug</label>
+            <label>{{ lang.t('admin.form.slug') }}</label>
             <input type="text" [(ngModel)]="tagForm.slug" name="tag_slug" />
           </div>
           <div class="actions">
             <button class="btn btn-primary" type="submit">
-              {{ editingTagSlug ? 'Mettre a jour' : 'Creer' }}
+              {{ editingTagSlug ? lang.t('admin.form.update') : lang.t('admin.form.create') }}
             </button>
-            <button class="btn btn-soft" type="button" (click)="resetTag()">Annuler</button>
+            <button class="btn btn-soft" type="button" (click)="resetTag()">{{ lang.t('admin.form.cancel') }}</button>
           </div>
         </form>
         <div class="table-wrap" *ngIf="processedTags.length; else emptyTags">
           <div class="table-tools">
             <div class="field inline">
-              <label for="blog_tag_search">Recherche</label>
-              <input id="blog_tag_search" type="search" [(ngModel)]="tagSearch" name="blog_tag_search" placeholder="Nom, slug..." />
+              <label for="blog_tag_search">{{ lang.t('admin.field.search') }}</label>
+              <input id="blog_tag_search" type="search" [(ngModel)]="tagSearch" name="blog_tag_search" [placeholder]="lang.t('admin.blog.ph.cat')" />
             </div>
             <div class="field inline">
-              <label for="blog_tag_sort">Tri</label>
+              <label for="blog_tag_sort">{{ lang.t('admin.field.sort') }}</label>
               <select id="blog_tag_sort" [(ngModel)]="tagSort" name="blog_tag_sort">
-                <option value="name_asc">Nom A-Z</option>
-                <option value="name_desc">Nom Z-A</option>
+                <option value="name_asc">{{ lang.t('admin.sort.name_asc') }}</option>
+                <option value="name_desc">{{ lang.t('admin.sort.name_desc') }}</option>
               </select>
             </div>
             <div class="field inline">
-              <label for="blog_tag_page_size">Par page</label>
+              <label for="blog_tag_page_size">{{ lang.t('admin.field.per_page') }}</label>
               <select id="blog_tag_page_size" [(ngModel)]="pageSize" name="blog_tag_page_size" (ngModelChange)="setPageSize($event)">
                 <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
               </select>
@@ -156,9 +154,9 @@
           <table class="data-table compact">
             <thead>
               <tr>
-                <th>Nom</th>
-                <th>Slug</th>
-                <th>Actions</th>
+                <th>{{ lang.t('admin.form.name') }}</th>
+                <th>{{ lang.t('admin.form.slug') }}</th>
+                <th>{{ lang.t('admin.th.actions') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -167,10 +165,10 @@
                 <td>{{ tag.slug }}</td>
                 <td>
                   <div class="row-actions">
-                    <button type="button" class="btn btn-icon btn-soft" (click)="editTag(tag)" title="Editer">
+                    <button type="button" class="btn btn-icon btn-soft" (click)="editTag(tag)" [title]="lang.t('admin.action.edit')">
                       <app-icon name="edit" [size]="16"></app-icon>
                     </button>
-                    <button type="button" class="btn btn-icon btn-danger" (click)="deleteTag(tag)" title="Supprimer">
+                    <button type="button" class="btn btn-icon btn-danger" (click)="deleteTag(tag)" [title]="lang.t('admin.action.delete')">
                       <app-icon name="trash" [size]="16"></app-icon>
                     </button>
                   </div>
@@ -182,85 +180,83 @@
         <div class="table-footer" *ngIf="tagTotalPages > 1">
           <div class="pagination">
             <button type="button" class="btn btn-icon btn-soft" (click)="setTagPage(tagPage - 1)" [disabled]="tagPage === 1">
-              <span class="icon-rotate">
-                <app-icon name="arrow-right" [size]="14"></app-icon>
-              </span>
+              <span class="icon-rotate"><app-icon name="arrow-right" [size]="14"></app-icon></span>
             </button>
-            <span class="page-count">Page {{ tagPage }} / {{ tagTotalPages }}</span>
+            <span class="page-count">{{ lang.t('admin.pagination.page') }} {{ tagPage }} / {{ tagTotalPages }}</span>
             <button type="button" class="btn btn-icon btn-soft" (click)="setTagPage(tagPage + 1)" [disabled]="tagPage === tagTotalPages">
               <app-icon name="arrow-right" [size]="14"></app-icon>
             </button>
           </div>
         </div>
         <ng-template #emptyTags>
-          <div class="empty-state">Aucun tag.</div>
+          <div class="empty-state">{{ lang.t('admin.blog.empty.tag') }}</div>
         </ng-template>
       </section>
     </div>
 
     <section class="panel">
       <div class="panel-head">
-        <h2>{{ editingArticleSlug ? 'Modifier article' : 'Nouvel article' }}</h2>
-        <span class="panel-meta">Tous les champs editables du modele `Article`</span>
+        <h2>{{ editingArticleSlug ? lang.t('admin.blog.art.edit') : lang.t('admin.blog.art.new') }}</h2>
+        <span class="panel-meta">{{ lang.t('admin.blog.art.meta') }}</span>
       </div>
 
       <form (ngSubmit)="submitArticle()">
         <div class="grid two">
           <div class="field">
-            <label>Titre</label>
+            <label>{{ lang.t('admin.form.title') }}</label>
             <input type="text" [(ngModel)]="articleForm.title" name="art_title" required />
           </div>
           <div class="field">
-            <label>Slug</label>
+            <label>{{ lang.t('admin.form.slug') }}</label>
             <input type="text" [(ngModel)]="articleForm.slug" name="art_slug" />
           </div>
         </div>
 
         <div class="field">
-          <label>Extrait</label>
+          <label>{{ lang.t('admin.form.excerpt') }}</label>
           <textarea [(ngModel)]="articleForm.excerpt" name="art_excerpt" rows="3"></textarea>
         </div>
 
         <div class="field">
-          <label>Contenu</label>
+          <label>{{ lang.t('admin.form.content') }}</label>
           <textarea [(ngModel)]="articleForm.content" name="art_content" rows="7"></textarea>
         </div>
 
         <div class="grid three">
           <div class="field">
-            <label>Categorie</label>
+            <label>{{ lang.t('admin.form.category') }}</label>
             <select [(ngModel)]="articleForm.category" name="art_category">
-              <option value="">Aucune</option>
+              <option value="">{{ lang.t('admin.form.none') }}</option>
               <option *ngFor="let cat of categories" [value]="cat.id + ''">{{ cat.name }}</option>
             </select>
           </div>
           <div class="field">
-            <label>Statut</label>
+            <label>{{ lang.t('admin.form.status') }}</label>
             <select [(ngModel)]="articleForm.status" name="art_status">
-              <option value="draft">Brouillon</option>
-              <option value="published">Publie</option>
-              <option value="archived">Archive</option>
+              <option value="draft">{{ lang.t('admin.blog.art.draft') }}</option>
+              <option value="published">{{ lang.t('admin.blog.art.published') }}</option>
+              <option value="archived">{{ lang.t('admin.blog.art.archived') }}</option>
             </select>
           </div>
           <div class="field">
-            <label>Lecture (min)</label>
+            <label>{{ lang.t('admin.form.reading_time') }}</label>
             <input type="number" [(ngModel)]="articleForm.reading_time" name="art_time" min="1" />
           </div>
         </div>
 
         <div class="grid two">
           <div class="field">
-            <label>Date de publication</label>
+            <label>{{ lang.t('admin.form.published_at') }}</label>
             <input type="datetime-local" [(ngModel)]="articleForm.published_at" name="art_published" />
           </div>
           <div class="field">
-            <label>Image de couverture</label>
+            <label>{{ lang.t('admin.form.cover_image') }}</label>
             <input type="file" (change)="onImageSelected($event)" />
           </div>
         </div>
 
         <div class="field">
-          <label>Tags</label>
+          <label>{{ lang.t('admin.form.tags') }}</label>
           <div class="tags-grid">
             <label class="tag-item" *ngFor="let tag of tags">
               <input
@@ -275,41 +271,41 @@
 
         <label class="check">
           <input type="checkbox" [(ngModel)]="articleForm.is_featured" name="art_featured" />
-          <span>Mettre en avant cet article</span>
+          <span>{{ lang.t('admin.blog.art.featured') }}</span>
         </label>
 
         <div class="actions">
           <button class="btn btn-primary" type="submit">
-            {{ editingArticleSlug ? 'Mettre a jour' : 'Publier' }}
+            {{ editingArticleSlug ? lang.t('admin.form.update') : lang.t('admin.form.publish') }}
           </button>
-          <button class="btn btn-soft" type="button" (click)="resetArticleForm()">Annuler</button>
+          <button class="btn btn-soft" type="button" (click)="resetArticleForm()">{{ lang.t('admin.form.cancel') }}</button>
         </div>
       </form>
     </section>
 
     <section class="panel">
       <div class="panel-head">
-        <h2>Articles</h2>
-        <span class="panel-meta" *ngIf="loading">Chargement...</span>
+        <h2>{{ lang.t('admin.blog.th.article') }}s</h2>
+        <span class="panel-meta" *ngIf="loading">{{ lang.t('admin.blog.loading') }}</span>
       </div>
 
       <div class="table-wrap" *ngIf="processedArticles.length; else emptyArticles">
         <div class="table-tools">
           <div class="field inline">
-            <label for="blog_article_search">Recherche</label>
-            <input id="blog_article_search" type="search" [(ngModel)]="articleSearch" name="blog_article_search" placeholder="Titre, categorie..." />
+            <label for="blog_article_search">{{ lang.t('admin.field.search') }}</label>
+            <input id="blog_article_search" type="search" [(ngModel)]="articleSearch" name="blog_article_search" [placeholder]="lang.t('admin.blog.ph.article')" />
           </div>
           <div class="field inline">
-            <label for="blog_article_sort">Tri</label>
+            <label for="blog_article_sort">{{ lang.t('admin.field.sort') }}</label>
             <select id="blog_article_sort" [(ngModel)]="articleSort" name="blog_article_sort">
-              <option value="date_desc">Date recente</option>
-              <option value="date_asc">Date ancienne</option>
-              <option value="title_asc">Titre A-Z</option>
-              <option value="title_desc">Titre Z-A</option>
+              <option value="date_desc">{{ lang.t('admin.sort.date_desc') }}</option>
+              <option value="date_asc">{{ lang.t('admin.sort.date_asc') }}</option>
+              <option value="title_asc">{{ lang.t('admin.sort.title_asc') }}</option>
+              <option value="title_desc">{{ lang.t('admin.sort.title_desc') }}</option>
             </select>
           </div>
           <div class="field inline">
-            <label for="blog_article_page_size">Par page</label>
+            <label for="blog_article_page_size">{{ lang.t('admin.field.per_page') }}</label>
             <select id="blog_article_page_size" [(ngModel)]="pageSize" name="blog_article_page_size" (ngModelChange)="setPageSize($event)">
               <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
             </select>
@@ -318,12 +314,12 @@
         <table class="data-table">
           <thead>
             <tr>
-              <th>Article</th>
-              <th>Categorie</th>
-              <th>Statut</th>
-              <th>Lecture</th>
-              <th>Date</th>
-              <th>Actions</th>
+              <th>{{ lang.t('admin.blog.th.article') }}</th>
+              <th>{{ lang.t('admin.blog.th.category') }}</th>
+              <th>{{ lang.t('admin.th.status') }}</th>
+              <th>{{ lang.t('admin.blog.th.reading') }}</th>
+              <th>{{ lang.t('admin.th.date') }}</th>
+              <th>{{ lang.t('admin.th.actions') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -346,10 +342,10 @@
               <td>{{ (article.published_at || article.created_at) | date:'dd/MM/yyyy' }}</td>
               <td>
                 <div class="row-actions">
-                  <button type="button" class="btn btn-icon btn-soft" (click)="editArticle(article)" title="Editer">
+                  <button type="button" class="btn btn-icon btn-soft" (click)="editArticle(article)" [title]="lang.t('admin.action.edit')">
                     <app-icon name="edit" [size]="16"></app-icon>
                   </button>
-                  <button type="button" class="btn btn-icon btn-danger" (click)="deleteArticle(article)" title="Supprimer">
+                  <button type="button" class="btn btn-icon btn-danger" (click)="deleteArticle(article)" [title]="lang.t('admin.action.delete')">
                     <app-icon name="trash" [size]="16"></app-icon>
                   </button>
                 </div>
@@ -362,11 +358,9 @@
       <div class="table-footer" *ngIf="articleTotalPages > 1">
         <div class="pagination">
           <button type="button" class="btn btn-icon btn-soft" (click)="setArticlePage(articlePage - 1)" [disabled]="articlePage === 1">
-            <span class="icon-rotate">
-              <app-icon name="arrow-right" [size]="14"></app-icon>
-            </span>
+            <span class="icon-rotate"><app-icon name="arrow-right" [size]="14"></app-icon></span>
           </button>
-          <span class="page-count">Page {{ articlePage }} / {{ articleTotalPages }}</span>
+          <span class="page-count">{{ lang.t('admin.pagination.page') }} {{ articlePage }} / {{ articleTotalPages }}</span>
           <button type="button" class="btn btn-icon btn-soft" (click)="setArticlePage(articlePage + 1)" [disabled]="articlePage === articleTotalPages">
             <app-icon name="arrow-right" [size]="14"></app-icon>
           </button>
@@ -374,7 +368,7 @@
       </div>
 
       <ng-template #emptyArticles>
-        <div class="empty-state">Aucun article disponible.</div>
+        <div class="empty-state">{{ lang.t('admin.blog.empty.art') }}</div>
       </ng-template>
       <p *ngIf="error" class="error">{{ error }}</p>
     </section>

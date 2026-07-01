@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectService } from '../../projects/services/project';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-project-form',
@@ -49,7 +50,8 @@ export class ProjectForm implements OnInit {
   constructor(
     private projectService: ProjectService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    public lang: LanguageService
   ) {}
 
   ngOnInit(): void {

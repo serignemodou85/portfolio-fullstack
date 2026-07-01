@@ -3,8 +3,8 @@
     <header class="page-header">
       <div>
         <p class="eyebrow">Admin messages</p>
-        <h1>Archives messages</h1>
-        <p class="subtitle">Restaurer un message ou le supprimer definitivement.</p>
+        <h1>{{ lang.t('admin.msg_archives.title') }}</h1>
+        <p class="subtitle">{{ lang.t('admin.msg_archives.subtitle') }}</p>
       </div>
       <div class="header-actions">
         <a routerLink="/admin/dashboard" class="btn btn-outline btn-back">
@@ -15,30 +15,30 @@
 
     <section class="panel">
       <div class="panel-head">
-        <h2>Liste des messages archives</h2>
+        <h2>{{ lang.t('admin.msg_archives.list') }}</h2>
         <span class="panel-meta">{{ processedMessages.length }} message(s)</span>
       </div>
 
-      <div *ngIf="loading" class="loading-state">Chargement...</div>
+      <div *ngIf="loading" class="loading-state">{{ lang.t('admin.blog.loading') }}</div>
       <div *ngIf="error" class="error-state">{{ error }}</div>
 
       <div class="table-wrap" *ngIf="!loading && !error && processedMessages.length; else emptyState">
         <div class="table-tools">
           <div class="field inline">
-            <label for="archive_message_search">Recherche</label>
-            <input id="archive_message_search" type="search" [(ngModel)]="searchTerm" name="archive_message_search" placeholder="Nom, email..." />
+            <label for="archive_message_search">{{ lang.t('admin.field.search') }}</label>
+            <input id="archive_message_search" type="search" [(ngModel)]="searchTerm" name="archive_message_search" [placeholder]="lang.t('admin.ph.message_search')" />
           </div>
           <div class="field inline">
-            <label for="archive_message_sort">Tri</label>
+            <label for="archive_message_sort">{{ lang.t('admin.field.sort') }}</label>
             <select id="archive_message_sort" [(ngModel)]="sortKey" name="archive_message_sort">
-              <option value="date_desc">Date recente</option>
-              <option value="date_asc">Date ancienne</option>
-              <option value="name_asc">Nom A-Z</option>
-              <option value="name_desc">Nom Z-A</option>
+              <option value="date_desc">{{ lang.t('admin.sort.date_desc') }}</option>
+              <option value="date_asc">{{ lang.t('admin.sort.date_asc') }}</option>
+              <option value="name_asc">{{ lang.t('admin.sort.name_asc') }}</option>
+              <option value="name_desc">{{ lang.t('admin.sort.name_desc') }}</option>
             </select>
           </div>
           <div class="field inline">
-            <label for="archive_message_page_size">Par page</label>
+            <label for="archive_message_page_size">{{ lang.t('admin.field.per_page') }}</label>
             <select id="archive_message_page_size" [(ngModel)]="pageSize" name="archive_message_page_size" (ngModelChange)="setPageSize($event)">
               <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
             </select>
@@ -48,10 +48,10 @@
         <table class="archive-table">
           <thead>
             <tr>
-              <th>Contact</th>
-              <th>Sujet</th>
-              <th>Date</th>
-              <th>Actions</th>
+              <th>{{ lang.t('admin.th.contact') }}</th>
+              <th>{{ lang.t('admin.th.subject') }}</th>
+              <th>{{ lang.t('admin.th.date') }}</th>
+              <th>{{ lang.t('admin.th.actions') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -68,10 +68,10 @@
               <td>{{ message.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
               <td>
                 <div class="row-actions">
-                  <button type="button" class="btn btn-soft" (click)="restoreMessage(message)" title="Restaurer">
+                  <button type="button" class="btn btn-soft" (click)="restoreMessage(message)" [title]="lang.t('admin.action.restore')">
                     <app-icon name="check" [size]="16"></app-icon>
                   </button>
-                  <button type="button" class="btn btn-danger" (click)="deleteMessage(message)" title="Supprimer definitivement">
+                  <button type="button" class="btn btn-danger" (click)="deleteMessage(message)" [title]="lang.t('admin.action.delete_perm')">
                     <app-icon name="trash" [size]="16"></app-icon>
                   </button>
                 </div>
@@ -82,7 +82,7 @@
       </div>
 
       <ng-template #emptyState>
-        <div class="empty-state" *ngIf="!loading && !error">Aucun message archive.</div>
+        <div class="empty-state" *ngIf="!loading && !error">{{ lang.t('admin.msg_archives.empty') }}</div>
       </ng-template>
 
       <div class="table-footer" *ngIf="!loading && !error && totalPages > 1">
@@ -92,7 +92,7 @@
               <app-icon name="arrow-right" [size]="14"></app-icon>
             </span>
           </button>
-          <span class="page-count">Page {{ page }} / {{ totalPages }}</span>
+          <span class="page-count">{{ lang.t('admin.pagination.page') }} {{ page }} / {{ totalPages }}</span>
           <button type="button" class="btn btn-icon btn-soft" (click)="setPage(page + 1)" [disabled]="page === totalPages">
             <app-icon name="arrow-right" [size]="14"></app-icon>
           </button>

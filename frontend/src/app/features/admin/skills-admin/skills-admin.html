@@ -3,18 +3,18 @@
     <header class="page-header">
       <div>
         <p class="eyebrow">Admin content</p>
-        <h1>Competences</h1>
+        <h1>{{ lang.t('admin.nav.skills') }}</h1>
       </div>
-      <a routerLink="/admin/dashboard" class="btn btn-outline">Retour dashboard</a>
+      <a routerLink="/admin/dashboard" class="btn btn-outline">{{ lang.t('admin.blog.back') }}</a>
     </header>
 
     <section class="stats-strip">
       <article class="stat-card">
-        <p class="stat-label">Categories</p>
+        <p class="stat-label">{{ lang.t('admin.skills.stat.cat') }}</p>
         <p class="stat-value">{{ categories.length }}</p>
       </article>
       <article class="stat-card">
-        <p class="stat-label">Competences</p>
+        <p class="stat-label">{{ lang.t('admin.skills.stat.skill') }}</p>
         <p class="stat-value">{{ skills.length }}</p>
       </article>
     </section>
@@ -22,17 +22,17 @@
     <div class="layout">
       <section class="panel">
         <div class="panel-head">
-          <h2>{{ editingCategoryId ? 'Modifier categorie' : 'Nouvelle categorie' }}</h2>
+          <h2>{{ lang.t(editingCategoryId ? 'admin.skills.cat.edit' : 'admin.skills.cat.new') }}</h2>
         </div>
 
         <form (ngSubmit)="submitCategory()">
           <div class="field">
-            <label for="cat_name">Nom</label>
+            <label for="cat_name">{{ lang.t('admin.form.name') }}</label>
             <input id="cat_name" type="text" [(ngModel)]="categoryForm.name" name="cat_name" (input)="onCategoryNameInput()" required />
           </div>
 
           <div class="field">
-            <label for="cat_icon">Icone</label>
+            <label for="cat_icon">{{ lang.t('admin.field.icon') }}</label>
             <div class="icon-input">
               <span class="icon-preview">
                 <app-icon [name]="getCategoryIconPreview(categoryForm.icon, categoryForm.name)" [size]="18"></app-icon>
@@ -59,34 +59,34 @@
           </div>
 
           <div class="field">
-            <label for="cat_order">Ordre</label>
+            <label for="cat_order">{{ lang.t('admin.field.order') }}</label>
             <input id="cat_order" type="number" [(ngModel)]="categoryForm.order" name="cat_order" min="0" />
           </div>
 
           <div class="actions">
             <button class="btn btn-primary" type="submit">
-              {{ editingCategoryId ? 'Mettre a jour' : 'Creer la categorie' }}
+              {{ lang.t(editingCategoryId ? 'admin.form.update' : 'admin.skills.cat.create') }}
             </button>
-            <button class="btn btn-soft" type="button" (click)="resetCategory()">Annuler</button>
+            <button class="btn btn-soft" type="button" (click)="resetCategory()">{{ lang.t('admin.form.cancel') }}</button>
           </div>
         </form>
 
         <div class="table-wrap" *ngIf="processedCategories.length; else emptyCategory">
           <div class="table-tools">
             <div class="field inline">
-              <label for="cat_search">Recherche</label>
-              <input id="cat_search" type="search" [(ngModel)]="categorySearch" name="cat_search" placeholder="Nom, icone..." />
+              <label for="cat_search">{{ lang.t('admin.field.search') }}</label>
+              <input id="cat_search" type="search" [(ngModel)]="categorySearch" name="cat_search" [placeholder]="lang.t('admin.skills.ph.cat')" />
             </div>
             <div class="field inline">
-              <label for="cat_sort">Tri</label>
+              <label for="cat_sort">{{ lang.t('admin.field.sort') }}</label>
               <select id="cat_sort" [(ngModel)]="categorySort" name="cat_sort">
-                <option value="order_asc">Ordre croissant</option>
-                <option value="name_asc">Nom A-Z</option>
-                <option value="name_desc">Nom Z-A</option>
+                <option value="order_asc">{{ lang.t('admin.sort.order_asc') }}</option>
+                <option value="name_asc">{{ lang.t('admin.sort.name_asc') }}</option>
+                <option value="name_desc">{{ lang.t('admin.sort.name_desc') }}</option>
               </select>
             </div>
             <div class="field inline">
-              <label for="cat_page_size">Par page</label>
+              <label for="cat_page_size">{{ lang.t('admin.field.per_page') }}</label>
               <select id="cat_page_size" [(ngModel)]="pageSize" name="cat_page_size" (ngModelChange)="setPageSize($event)">
                 <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
               </select>
@@ -95,10 +95,10 @@
           <table class="data-table compact">
             <thead>
               <tr>
-                <th>Categorie</th>
-                <th>Icone</th>
-                <th>Ordre</th>
-                <th>Actions</th>
+                <th>{{ lang.t('admin.th.category') }}</th>
+                <th>{{ lang.t('admin.th.icon') }}</th>
+                <th>{{ lang.t('admin.th.order') }}</th>
+                <th>{{ lang.t('admin.th.actions') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -115,10 +115,10 @@
                 <td>{{ cat.order }}</td>
                 <td>
                   <div class="row-actions">
-                    <button type="button" class="btn btn-icon btn-soft" (click)="editCategory(cat)" title="Editer">
+                    <button type="button" class="btn btn-icon btn-soft" (click)="editCategory(cat)" [title]="lang.t('admin.action.edit')">
                       <app-icon name="edit" [size]="16"></app-icon>
                     </button>
-                    <button type="button" class="btn btn-icon btn-danger" (click)="cat.id && deleteCategory(cat.id)" title="Supprimer">
+                    <button type="button" class="btn btn-icon btn-danger" (click)="cat.id && deleteCategory(cat.id)" [title]="lang.t('admin.action.delete')">
                       <app-icon name="trash" [size]="16"></app-icon>
                     </button>
                   </div>
@@ -134,33 +134,33 @@
                 <app-icon name="arrow-right" [size]="14"></app-icon>
               </span>
             </button>
-            <span class="page-count">Page {{ categoryPage }} / {{ categoryTotalPages }}</span>
+            <span class="page-count">{{ lang.t('admin.pagination.page') }} {{ categoryPage }} / {{ categoryTotalPages }}</span>
             <button type="button" class="btn btn-icon btn-soft" (click)="setCategoryPage(categoryPage + 1)" [disabled]="categoryPage === categoryTotalPages">
               <app-icon name="arrow-right" [size]="14"></app-icon>
             </button>
           </div>
         </div>
         <ng-template #emptyCategory>
-          <div class="empty-state">Aucune categorie pour le moment.</div>
+          <div class="empty-state">{{ lang.t('admin.skills.empty.cat') }}</div>
         </ng-template>
       </section>
 
       <section class="panel">
         <div class="panel-head">
-          <h2>{{ editingSkillId ? 'Modifier competence' : 'Nouvelle competence' }}</h2>
+          <h2>{{ lang.t(editingSkillId ? 'admin.skills.skill.edit' : 'admin.skills.skill.new') }}</h2>
         </div>
 
         <form (ngSubmit)="submitSkill()">
           <div class="grid two">
             <div class="field">
-              <label for="skill_name">Nom</label>
+              <label for="skill_name">{{ lang.t('admin.form.name') }}</label>
               <input id="skill_name" type="text" [(ngModel)]="skillForm.name" name="skill_name" required />
             </div>
 
             <div class="field">
-              <label for="skill_category">Categorie</label>
+              <label for="skill_category">{{ lang.t('admin.form.category') }}</label>
               <select id="skill_category" [(ngModel)]="skillForm.category" name="skill_category" [disabled]="!categories.length" required>
-                <option [ngValue]="null" disabled>Selectionnez une categorie</option>
+                <option [ngValue]="null" disabled>{{ lang.t('admin.skills.select_cat') }}</option>
                 <option *ngFor="let cat of categories" [ngValue]="cat.id ?? null">{{ cat.name }}</option>
               </select>
             </div>
@@ -168,60 +168,60 @@
 
           <div class="grid three">
             <div class="field">
-              <label for="skill_proficiency">Niveau</label>
+              <label for="skill_proficiency">{{ lang.t('admin.field.level') }}</label>
               <select id="skill_proficiency" [(ngModel)]="skillForm.proficiency" name="skill_proficiency">
-                <option [value]="1">Debutant</option>
-                <option [value]="2">Intermediaire</option>
-                <option [value]="3">Avance</option>
-                <option [value]="4">Expert</option>
+                <option [value]="1">{{ lang.t('admin.skills.level.1') }}</option>
+                <option [value]="2">{{ lang.t('admin.skills.level.2') }}</option>
+                <option [value]="3">{{ lang.t('admin.skills.level.3') }}</option>
+                <option [value]="4">{{ lang.t('admin.skills.level.4') }}</option>
               </select>
             </div>
             <div class="field">
-              <label for="skill_percentage">Pourcentage</label>
+              <label for="skill_percentage">{{ lang.t('admin.field.percentage') }}</label>
               <input id="skill_percentage" type="number" [(ngModel)]="skillForm.percentage" name="skill_percentage" min="0" max="100" />
             </div>
             <div class="field">
-              <label for="skill_years">Annees d experience</label>
+              <label for="skill_years">{{ lang.t('admin.field.years_exp') }}</label>
               <input id="skill_years" type="number" [(ngModel)]="skillForm.years_of_experience" name="skill_years" step="0.1" min="0" />
             </div>
           </div>
 
           <div class="grid two">
             <div class="field">
-              <label for="skill_icon">Icone</label>
+              <label for="skill_icon">{{ lang.t('admin.field.icon') }}</label>
               <input id="skill_icon" type="text" [(ngModel)]="skillForm.icon" name="skill_icon" />
             </div>
             <div class="field">
-              <label for="skill_order">Ordre</label>
+              <label for="skill_order">{{ lang.t('admin.field.order') }}</label>
               <input id="skill_order" type="number" [(ngModel)]="skillForm.order" name="skill_order" min="0" />
             </div>
           </div>
 
           <div class="actions">
             <button class="btn btn-primary" type="submit" [disabled]="!categories.length && !editingSkillId">
-              {{ editingSkillId ? 'Mettre a jour' : 'Creer la competence' }}
+              {{ lang.t(editingSkillId ? 'admin.form.update' : 'admin.skills.skill.create') }}
             </button>
-            <button class="btn btn-soft" type="button" (click)="resetSkill()">Annuler</button>
+            <button class="btn btn-soft" type="button" (click)="resetSkill()">{{ lang.t('admin.form.cancel') }}</button>
           </div>
         </form>
 
         <div class="table-wrap" *ngIf="processedSkills.length; else emptySkill">
           <div class="table-tools">
             <div class="field inline">
-              <label for="skill_search">Recherche</label>
-              <input id="skill_search" type="search" [(ngModel)]="skillSearch" name="skill_search" placeholder="Nom, categorie..." />
+              <label for="skill_search">{{ lang.t('admin.field.search') }}</label>
+              <input id="skill_search" type="search" [(ngModel)]="skillSearch" name="skill_search" [placeholder]="lang.t('admin.skills.ph.skill')" />
             </div>
             <div class="field inline">
-              <label for="skill_sort">Tri</label>
+              <label for="skill_sort">{{ lang.t('admin.field.sort') }}</label>
               <select id="skill_sort" [(ngModel)]="skillSort" name="skill_sort">
-                <option value="order_asc">Ordre croissant</option>
-                <option value="name_asc">Nom A-Z</option>
-                <option value="name_desc">Nom Z-A</option>
-                <option value="proficiency_desc">Niveau desc</option>
+                <option value="order_asc">{{ lang.t('admin.sort.order_asc') }}</option>
+                <option value="name_asc">{{ lang.t('admin.sort.name_asc') }}</option>
+                <option value="name_desc">{{ lang.t('admin.sort.name_desc') }}</option>
+                <option value="proficiency_desc">{{ lang.t('admin.sort.proficiency_desc') }}</option>
               </select>
             </div>
             <div class="field inline">
-              <label for="skill_page_size">Par page</label>
+              <label for="skill_page_size">{{ lang.t('admin.field.per_page') }}</label>
               <select id="skill_page_size" [(ngModel)]="pageSize" name="skill_page_size" (ngModelChange)="setPageSize($event)">
                 <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
               </select>
@@ -230,19 +230,19 @@
           <table class="data-table">
             <thead>
               <tr>
-                <th>Competence</th>
-                <th>Categorie</th>
-                <th>Niveau</th>
-                <th>Progression</th>
-                <th>Experience</th>
-                <th>Actions</th>
+                <th>{{ lang.t('admin.th.skill') }}</th>
+                <th>{{ lang.t('admin.th.category') }}</th>
+                <th>{{ lang.t('admin.th.level') }}</th>
+                <th>{{ lang.t('admin.th.progress') }}</th>
+                <th>{{ lang.t('admin.th.exp_years') }}</th>
+                <th>{{ lang.t('admin.th.actions') }}</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let skill of pagedSkills; trackBy: trackBySkill">
                 <td>
                   <p class="cell-title">{{ skill.name }}</p>
-                  <p class="cell-sub">{{ skill.icon || 'sans icone' }}</p>
+                  <p class="cell-sub">{{ skill.icon || lang.t('admin.skills.sans_icone') }}</p>
                 </td>
                 <td>{{ skill.category_name || skill.category }}</td>
                 <td>
@@ -254,13 +254,13 @@
                   </div>
                   <span class="progress-text">{{ skill.percentage }}%</span>
                 </td>
-                <td>{{ skill.years_of_experience }} an(s)</td>
+                <td>{{ skill.years_of_experience }} {{ lang.t('skills.years') }}</td>
                 <td>
                   <div class="row-actions">
-                    <button type="button" class="btn btn-icon btn-soft" (click)="editSkill(skill)" title="Editer">
+                    <button type="button" class="btn btn-icon btn-soft" (click)="editSkill(skill)" [title]="lang.t('admin.action.edit')">
                       <app-icon name="edit" [size]="16"></app-icon>
                     </button>
-                    <button type="button" class="btn btn-icon btn-danger" (click)="deleteSkill(skill.id)" title="Supprimer">
+                    <button type="button" class="btn btn-icon btn-danger" (click)="deleteSkill(skill.id)" [title]="lang.t('admin.action.delete')">
                       <app-icon name="trash" [size]="16"></app-icon>
                     </button>
                   </div>
@@ -276,14 +276,14 @@
                 <app-icon name="arrow-right" [size]="14"></app-icon>
               </span>
             </button>
-            <span class="page-count">Page {{ skillPage }} / {{ skillTotalPages }}</span>
+            <span class="page-count">{{ lang.t('admin.pagination.page') }} {{ skillPage }} / {{ skillTotalPages }}</span>
             <button type="button" class="btn btn-icon btn-soft" (click)="setSkillPage(skillPage + 1)" [disabled]="skillPage === skillTotalPages">
               <app-icon name="arrow-right" [size]="14"></app-icon>
             </button>
           </div>
         </div>
         <ng-template #emptySkill>
-          <div class="empty-state">Aucune competence pour le moment.</div>
+          <div class="empty-state">{{ lang.t('admin.skills.empty.skill') }}</div>
         </ng-template>
       </section>
     </div>

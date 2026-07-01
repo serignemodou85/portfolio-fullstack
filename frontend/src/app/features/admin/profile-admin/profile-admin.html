@@ -3,15 +3,15 @@
     <header class="page-header">
       <div>
         <p class="eyebrow">Admin profile</p>
-        <h1>Mon profil</h1>
-        <p class="subtitle">Mettez a jour vos informations et la photo affichee sur la page d'accueil.</p>
+        <h1>{{ lang.t('admin.profile.title') }}</h1>
+        <p class="subtitle">{{ lang.t('admin.profile.subtitle') }}</p>
       </div>
-      <a routerLink="/admin/dashboard" class="btn btn-outline">Retour dashboard</a>
+      <a routerLink="/admin/dashboard" class="btn btn-outline">{{ lang.t('admin.blog.back') }}</a>
     </header>
 
     <section class="panel" *ngIf="!loading; else loadingState">
       <div class="panel-head">
-        <h2>Informations publiques</h2>
+        <h2>{{ lang.t('admin.profile.public_info') }}</h2>
       </div>
 
       <form (ngSubmit)="submit()">
@@ -20,50 +20,50 @@
             <div class="avatar">
               <img *ngIf="previewUrl; else placeholder" [src]="previewUrl" alt="Profil" />
               <ng-template #placeholder>
-                <div class="avatar-placeholder">Photo</div>
+                <div class="avatar-placeholder">{{ lang.t('admin.profile.photo') }}</div>
               </ng-template>
             </div>
-            <label class="btn btn-soft" for="profile_image">Changer la photo</label>
+            <label class="btn btn-soft" for="profile_image">{{ lang.t('admin.profile.change_photo') }}</label>
             <input id="profile_image" type="file" accept="image/*" (change)="onImageSelected($event)" />
-            <p class="hint">Image affichee sur la page d'accueil.</p>
+            <p class="hint">{{ lang.t('admin.profile.photo_hint') }}</p>
           </div>
 
           <div class="profile-form">
             <div class="grid two">
               <div class="field">
-                <label for="first_name">Prenom</label>
+                <label for="first_name">{{ lang.t('admin.field.first_name') }}</label>
                 <input id="first_name" type="text" [(ngModel)]="formData.first_name" name="first_name" autocomplete="given-name" />
               </div>
               <div class="field">
-                <label for="last_name">Nom</label>
+                <label for="last_name">{{ lang.t('admin.field.last_name') }}</label>
                 <input id="last_name" type="text" [(ngModel)]="formData.last_name" name="last_name" autocomplete="family-name" />
               </div>
             </div>
 
             <div class="grid two">
               <div class="field">
-                <label for="email">Email</label>
+                <label for="email">{{ lang.t('admin.field.email') }}</label>
                 <input id="email" type="email" [(ngModel)]="formData.email" name="email" autocomplete="email" />
               </div>
               <div class="field">
-                <label for="phone">Telephone</label>
+                <label for="phone">{{ lang.t('admin.field.phone') }}</label>
                 <input id="phone" type="text" [(ngModel)]="formData.phone" name="phone" autocomplete="tel" />
               </div>
             </div>
 
             <div class="grid two">
               <div class="field">
-                <label for="location">Localisation</label>
+                <label for="location">{{ lang.t('admin.field.location') }}</label>
                 <input id="location" type="text" [(ngModel)]="formData.location" name="location" autocomplete="address-level2" />
               </div>
               <div class="field">
-                <label for="website">Site web</label>
+                <label for="website">{{ lang.t('admin.field.website') }}</label>
                 <input id="website" type="url" [(ngModel)]="formData.website_url" name="website_url" autocomplete="url" />
               </div>
             </div>
 
             <div class="field">
-              <label for="bio">Bio courte</label>
+              <label for="bio">{{ lang.t('admin.field.bio') }}</label>
               <textarea id="bio" rows="3" [(ngModel)]="formData.bio" name="bio" autocomplete="off"></textarea>
             </div>
 
@@ -86,22 +86,22 @@
             </div>
 
             <div class="cv-section">
-              <p class="field-label">CV téléchargeable (PDF)</p>
+              <p class="field-label">{{ lang.t('admin.profile.cv') }}</p>
               <div class="cv-row">
                 <label class="btn btn-soft" for="cv_file">
-                  {{ cvName ? cvName : 'Choisir un PDF' }}
+                  {{ cvName ? cvName : lang.t('admin.profile.cv_choose') }}
                 </label>
                 <input id="cv_file" type="file" accept=".pdf,application/pdf" (change)="onCvSelected($event)" />
                 <a *ngIf="currentCvUrl" [href]="currentCvUrl" target="_blank" rel="noopener" class="btn btn-outline">
-                  Voir CV actuel
+                  {{ lang.t('admin.profile.cv_view') }}
                 </a>
-                <span *ngIf="!currentCvUrl && !cvName" class="hint">Aucun CV enregistré</span>
+                <span *ngIf="!currentCvUrl && !cvName" class="hint">{{ lang.t('admin.profile.cv_empty') }}</span>
               </div>
             </div>
 
             <div class="actions">
-              <button class="btn btn-primary" type="submit" [disabled]="saving">Enregistrer</button>
-              <button class="btn btn-soft" type="button" (click)="loadProfile()">Recharger</button>
+              <button class="btn btn-primary" type="submit" [disabled]="saving">{{ lang.t('admin.form.save') }}</button>
+              <button class="btn btn-soft" type="button" (click)="loadProfile()">{{ lang.t('admin.btn.reload') }}</button>
             </div>
           </div>
         </div>
@@ -113,7 +113,7 @@
 
     <ng-template #loadingState>
       <div class="panel">
-        <div class="empty-state">Chargement du profil...</div>
+        <div class="empty-state">{{ lang.t('admin.profile.loading') }}</div>
       </div>
     </ng-template>
   </div>

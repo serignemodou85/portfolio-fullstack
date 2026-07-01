@@ -3,21 +3,21 @@
     <header class="page-header">
       <div>
         <p class="eyebrow">Content management</p>
-        <h1>Experiences</h1>
-        <p class="subtitle">Gestion des experiences professionnelles et formations.</p>
+        <h1>{{ lang.t('admin.nav.experiences') }}</h1>
+        <p class="subtitle">{{ lang.t('admin.exp.subtitle') }}</p>
       </div>
-      <a routerLink="/admin/dashboard" class="btn btn-outline">Retour dashboard</a>
+      <a routerLink="/admin/dashboard" class="btn btn-outline">{{ lang.t('admin.blog.back') }}</a>
     </header>
 
     <section class="panel">
       <div class="panel-head">
-        <h2>{{ editingId ? 'Modifier une experience' : 'Nouvelle experience ou formation' }}</h2>
+        <h2>{{ lang.t(editingId ? 'admin.exp.form.edit' : 'admin.exp.form.new') }}</h2>
       </div>
 
       <form (ngSubmit)="submit()">
         <div class="grid three">
           <div class="field">
-            <label for="exp_type">Type</label>
+            <label for="exp_type">{{ lang.t('admin.field.type') }}</label>
             <select id="exp_type" [(ngModel)]="formData.type" name="type" (ngModelChange)="onTypeChange()" required>
               <option value="work">Work</option>
               <option value="education">Education</option>
@@ -25,61 +25,61 @@
             </select>
           </div>
           <div class="field">
-            <label for="exp_title">Titre</label>
+            <label for="exp_title">{{ lang.t('admin.form.title') }}</label>
             <input id="exp_title" type="text" [(ngModel)]="formData.title" name="title" autocomplete="organization-title" required />
           </div>
           <div class="field">
-            <label for="exp_company">Entreprise / Ecole</label>
+            <label for="exp_company">{{ lang.t('admin.field.company') }}</label>
             <input id="exp_company" type="text" [(ngModel)]="formData.company" name="company" autocomplete="organization" required />
           </div>
         </div>
 
         <div class="grid three">
           <div class="field">
-            <label for="exp_location">Lieu</label>
+            <label for="exp_location">{{ lang.t('admin.field.location') }}</label>
             <input id="exp_location" type="text" [(ngModel)]="formData.location" name="location" autocomplete="address-level2" />
           </div>
           <div class="field">
-            <label for="exp_start_date">Date debut</label>
+            <label for="exp_start_date">{{ lang.t('admin.field.start_date') }}</label>
             <input id="exp_start_date" type="date" [(ngModel)]="formData.start_date" name="start_date" required />
           </div>
           <div class="field">
-            <label for="exp_end_date">Date fin</label>
+            <label for="exp_end_date">{{ lang.t('admin.field.end_date') }}</label>
             <input id="exp_end_date" type="date" [(ngModel)]="formData.end_date" name="end_date" [disabled]="formData.is_current" />
           </div>
         </div>
 
         <div class="grid two">
           <div class="field">
-            <label for="exp_order">Ordre affichage</label>
+            <label for="exp_order">{{ lang.t('admin.field.display_order') }}</label>
             <input id="exp_order" type="number" [(ngModel)]="formData.order" name="order" min="0" />
           </div>
           <div class="field" *ngIf="formData.type !== 'certification'">
-            <label for="exp_logo">Logo entreprise</label>
+            <label for="exp_logo">{{ lang.t('admin.field.logo') }}</label>
             <input id="exp_logo" type="file" accept="image/*" (change)="onFileSelected($event)" />
           </div>
           <div class="field" *ngIf="formData.type === 'certification'">
-            <label for="exp_certificate">Certificat (PDF/image)</label>
+            <label for="exp_certificate">{{ lang.t('admin.field.certificate') }}</label>
             <input id="exp_certificate" type="file" accept=".pdf,image/*" (change)="onCertificateSelected($event)" />
-            <p class="field-help">Pour une certification, vous pouvez joindre un PDF.</p>
+            <p class="field-help">{{ lang.t('admin.field.cert_help') }}</p>
           </div>
         </div>
 
         <div class="field">
-          <label for="exp_description">Description</label>
+          <label for="exp_description">{{ lang.t('admin.form.description') }}</label>
           <textarea id="exp_description" [(ngModel)]="formData.description" name="description" rows="4" autocomplete="off" required></textarea>
         </div>
 
         <label class="check">
           <input type="checkbox" [(ngModel)]="formData.is_current" name="is_current" />
-          <span>Experience en cours</span>
+          <span>{{ lang.t('admin.field.is_current') }}</span>
         </label>
 
         <div class="actions">
           <button class="btn btn-primary" type="submit" [disabled]="loading">
-            {{ editingId ? 'Mettre a jour' : 'Ajouter' }}
+            {{ lang.t(editingId ? 'admin.form.update' : 'admin.btn.add') }}
           </button>
-          <button class="btn btn-soft" type="button" (click)="resetForm()">Annuler</button>
+          <button class="btn btn-soft" type="button" (click)="resetForm()">{{ lang.t('admin.form.cancel') }}</button>
         </div>
       </form>
       <p *ngIf="error" class="error">{{ error }}</p>
@@ -87,27 +87,27 @@
 
     <section class="panel">
       <div class="panel-head">
-        <h2>Liste des experiences</h2>
-        <span class="panel-meta">{{ processedExperiences.length }} elements</span>
+        <h2>{{ lang.t('admin.exp.list.title') }}</h2>
+        <span class="panel-meta">{{ processedExperiences.length }} {{ lang.t('admin.exp.elements') }}</span>
       </div>
 
       <div class="table-tools">
         <div class="field inline">
-          <label for="exp_search">Recherche</label>
-          <input id="exp_search" type="search" [(ngModel)]="searchTerm" name="exp_search" placeholder="Titre, entreprise, lieu..." />
+          <label for="exp_search">{{ lang.t('admin.field.search') }}</label>
+          <input id="exp_search" type="search" [(ngModel)]="searchTerm" name="exp_search" [placeholder]="lang.t('admin.exp.ph.search')" />
         </div>
         <div class="field inline">
-          <label for="exp_sort">Tri</label>
+          <label for="exp_sort">{{ lang.t('admin.field.sort') }}</label>
           <select id="exp_sort" [(ngModel)]="sortKey" name="exp_sort">
-            <option value="start_date_desc">Date debut (recent)</option>
-            <option value="start_date_asc">Date debut (ancien)</option>
-            <option value="title_asc">Titre A-Z</option>
-            <option value="title_desc">Titre Z-A</option>
-            <option value="order_asc">Ordre croissant</option>
+            <option value="start_date_desc">{{ lang.t('admin.sort.start_date_desc') }}</option>
+            <option value="start_date_asc">{{ lang.t('admin.sort.start_date_asc') }}</option>
+            <option value="title_asc">{{ lang.t('admin.sort.title_asc') }}</option>
+            <option value="title_desc">{{ lang.t('admin.sort.title_desc') }}</option>
+            <option value="order_asc">{{ lang.t('admin.sort.order_asc') }}</option>
           </select>
         </div>
         <div class="field inline">
-          <label for="exp_page_size">Par page</label>
+          <label for="exp_page_size">{{ lang.t('admin.field.per_page') }}</label>
           <select id="exp_page_size" [(ngModel)]="pageSize" name="exp_page_size" (ngModelChange)="setPageSize($event)">
             <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
           </select>
@@ -118,12 +118,12 @@
         <table class="data-table">
           <thead>
             <tr>
-              <th>Titre</th>
-              <th>Type</th>
-              <th>Societe</th>
-              <th>Periode</th>
-              <th>Statut</th>
-              <th>Actions</th>
+              <th>{{ lang.t('admin.th.title') }}</th>
+              <th>{{ lang.t('admin.th.type') }}</th>
+              <th>{{ lang.t('admin.th.company') }}</th>
+              <th>{{ lang.t('admin.th.period') }}</th>
+              <th>{{ lang.t('admin.th.status') }}</th>
+              <th>{{ lang.t('admin.th.actions') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -131,23 +131,23 @@
               <td>
                 <strong>{{ exp.title }}</strong>
                 <div *ngIf="exp.certificate_file">
-                  <a class="inline-link" [href]="exp.certificate_file" target="_blank" rel="noopener">Voir certificat</a>
+                  <a class="inline-link" [href]="exp.certificate_file" target="_blank" rel="noopener">{{ lang.t('admin.exp.cert_view') }}</a>
                 </div>
               </td>
               <td><span class="badge">{{ exp.type }}</span></td>
               <td>{{ exp.company }}</td>
-              <td>{{ exp.start_date | date:'MM/yyyy' }} - {{ exp.end_date ? (exp.end_date | date:'MM/yyyy') : 'Present' }}</td>
+              <td>{{ exp.start_date | date:'MM/yyyy' }} - {{ exp.end_date ? (exp.end_date | date:'MM/yyyy') : lang.t('admin.exp.present') }}</td>
               <td>
                 <span class="badge" [class.badge-success]="exp.is_current">
-                  {{ exp.is_current ? 'en cours' : 'termine' }}
+                  {{ exp.is_current ? lang.t('admin.exp.current') : lang.t('admin.exp.done') }}
                 </span>
               </td>
               <td>
                 <div class="row-actions">
-                  <button type="button" class="btn btn-icon btn-soft" (click)="startEdit(exp)" title="Editer">
+                  <button type="button" class="btn btn-icon btn-soft" (click)="startEdit(exp)" [title]="lang.t('admin.action.edit')">
                     <app-icon name="edit" [size]="16"></app-icon>
                   </button>
-                  <button type="button" class="btn btn-icon btn-danger" (click)="deleteExperience(exp.id)" title="Supprimer">
+                  <button type="button" class="btn btn-icon btn-danger" (click)="deleteExperience(exp.id)" [title]="lang.t('admin.action.delete')">
                     <app-icon name="trash" [size]="16"></app-icon>
                   </button>
                 </div>
@@ -158,7 +158,7 @@
       </div>
 
       <ng-template #emptyData>
-        <div class="empty-state">Aucune experience disponible.</div>
+        <div class="empty-state">{{ lang.t('admin.exp.empty') }}</div>
       </ng-template>
 
       <div class="table-footer" *ngIf="experienceTotalPages > 1">
@@ -168,7 +168,7 @@
               <app-icon name="arrow-right" [size]="14"></app-icon>
             </span>
           </button>
-          <span class="page-count">Page {{ experiencePage }} / {{ experienceTotalPages }}</span>
+          <span class="page-count">{{ lang.t('admin.pagination.page') }} {{ experiencePage }} / {{ experienceTotalPages }}</span>
           <button type="button" class="btn btn-icon btn-soft" (click)="setExperiencePage(experiencePage + 1)" [disabled]="experiencePage === experienceTotalPages">
             <app-icon name="arrow-right" [size]="14"></app-icon>
           </button>

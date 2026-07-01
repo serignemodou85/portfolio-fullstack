@@ -10,6 +10,7 @@ import { ICON_SUGGESTIONS, resolveIconFromKeyword } from '../../../shared/utils/
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-skills-admin',
@@ -65,7 +66,8 @@ export class SkillsAdmin implements OnInit {
   constructor(
     private skillService: SkillService,
     private toastService: ToastService,
-    private confirmService: ConfirmService
+    private confirmService: ConfirmService,
+    public lang: LanguageService
   ) {}
 
   ngOnInit(): void {

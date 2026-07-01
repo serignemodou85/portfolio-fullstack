@@ -8,6 +8,7 @@ import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
+import { LanguageService } from '../../../core/services/language.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -32,7 +33,8 @@ export class ProjectArchives implements OnInit {
   constructor(
     private projectService: ProjectService,
     private toastService: ToastService,
-    private confirmService: ConfirmService
+    private confirmService: ConfirmService,
+    public lang: LanguageService
   ) {}
 
   ngOnInit(): void {

@@ -3,43 +3,42 @@
     <header class="page-header">
       <div>
         <p class="eyebrow">Admin projects</p>
-        <h1>Archives projets</h1>
-        <p class="subtitle">Restaurer un projet ou le supprimer definitivement.</p>
+        <h1>{{ lang.t('admin.proj_archives.title') }}</h1>
+        <p class="subtitle">{{ lang.t('admin.proj_archives.subtitle') }}</p>
       </div>
       <div class="header-actions">
         <a routerLink="/admin/dashboard" class="btn btn-outline btn-back">
           <app-icon name="arrow-right" [size]="16"></app-icon>
-          
         </a>
       </div>
     </header>
 
     <section class="panel">
       <div class="panel-head">
-        <h2>Liste des projets archives</h2>
+        <h2>{{ lang.t('admin.proj_archives.list') }}</h2>
         <span class="panel-meta">{{ processedArchives.length }} projet(s)</span>
       </div>
 
-      <div *ngIf="loading" class="loading-state">Chargement...</div>
+      <div *ngIf="loading" class="loading-state">{{ lang.t('admin.blog.loading') }}</div>
       <div *ngIf="error" class="error-state">{{ error }}</div>
 
       <div class="table-wrap" *ngIf="!loading && !error && processedArchives.length; else emptyState">
         <div class="table-tools">
           <div class="field inline">
-            <label for="archive_search">Recherche</label>
-            <input id="archive_search" type="search" [(ngModel)]="searchTerm" name="archive_search" placeholder="Titre, techno..." />
+            <label for="archive_search">{{ lang.t('admin.field.search') }}</label>
+            <input id="archive_search" type="search" [(ngModel)]="searchTerm" name="archive_search" [placeholder]="lang.t('admin.ph.project_search')" />
           </div>
           <div class="field inline">
-            <label for="archive_sort">Tri</label>
+            <label for="archive_sort">{{ lang.t('admin.field.sort') }}</label>
             <select id="archive_sort" [(ngModel)]="sortKey" name="archive_sort">
-              <option value="updated_desc">Archivage recent</option>
-              <option value="updated_asc">Archivage ancien</option>
-              <option value="title_asc">Titre A-Z</option>
-              <option value="title_desc">Titre Z-A</option>
+              <option value="updated_desc">{{ lang.t('admin.sort.archive_desc') }}</option>
+              <option value="updated_asc">{{ lang.t('admin.sort.archive_asc') }}</option>
+              <option value="title_asc">{{ lang.t('admin.sort.title_asc') }}</option>
+              <option value="title_desc">{{ lang.t('admin.sort.title_desc') }}</option>
             </select>
           </div>
           <div class="field inline">
-            <label for="archive_page_size">Par page</label>
+            <label for="archive_page_size">{{ lang.t('admin.field.per_page') }}</label>
             <select id="archive_page_size" [(ngModel)]="pageSize" name="archive_page_size" (ngModelChange)="setPageSize($event)">
               <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
             </select>
@@ -48,10 +47,10 @@
         <table class="archive-table">
           <thead>
             <tr>
-              <th>Projet</th>
-              <th>Technologies</th>
-              <th>Date archivage</th>
-              <th>Actions</th>
+              <th>{{ lang.t('admin.th.project') }}</th>
+              <th>{{ lang.t('admin.th.technologies') }}</th>
+              <th>{{ lang.t('admin.th.archive_date') }}</th>
+              <th>{{ lang.t('admin.th.actions') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -79,13 +78,11 @@
               </td>
               <td>
                 <div class="row-actions">
-                  <button type="button" class="btn btn-soft" (click)="restoreProject(project)">
+                  <button type="button" class="btn btn-soft" (click)="restoreProject(project)" [title]="lang.t('admin.action.restore')">
                     <app-icon name="check" [size]="16"></app-icon>
-                    
                   </button>
-                  <button type="button" class="btn btn-danger" (click)="deletePermanently(project)">
+                  <button type="button" class="btn btn-danger" (click)="deletePermanently(project)" [title]="lang.t('admin.action.delete_perm')">
                     <app-icon name="trash" [size]="16"></app-icon>
-                    
                   </button>
                 </div>
               </td>
@@ -95,7 +92,7 @@
       </div>
 
       <ng-template #emptyState>
-        <div class="empty-state" *ngIf="!loading && !error">Aucun projet archive.</div>
+        <div class="empty-state" *ngIf="!loading && !error">{{ lang.t('admin.proj_archives.empty') }}</div>
       </ng-template>
 
       <div class="table-footer" *ngIf="!loading && !error && totalPages > 1">
@@ -105,7 +102,7 @@
               <app-icon name="arrow-right" [size]="14"></app-icon>
             </span>
           </button>
-          <span class="page-count">Page {{ page }} / {{ totalPages }}</span>
+          <span class="page-count">{{ lang.t('admin.pagination.page') }} {{ page }} / {{ totalPages }}</span>
           <button type="button" class="btn btn-icon btn-soft" (click)="setPage(page + 1)" [disabled]="page === totalPages">
             <app-icon name="arrow-right" [size]="14"></app-icon>
           </button>

@@ -9,6 +9,7 @@ import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-experience-admin',
@@ -47,7 +48,8 @@ export class ExperienceAdmin implements OnInit {
     private experienceService: ExperienceService,
     private router: Router,
     private toastService: ToastService,
-    private confirmService: ConfirmService
+    private confirmService: ConfirmService,
+    public lang: LanguageService
   ) {}
 
   ngOnInit(): void {

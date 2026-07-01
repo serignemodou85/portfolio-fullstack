@@ -3,18 +3,18 @@
     <header class="page-header">
       <div>
         <p class="eyebrow">Admin content</p>
-        <h1>{{ isEditMode ? 'Modifier le projet' : 'Nouveau projet' }}</h1>
+        <h1>{{ lang.t(isEditMode ? 'admin.project.edit' : 'admin.project.new') }}</h1>
       </div>
       <div class="header-actions">
         <button type="button" class="btn btn-ghost" (click)="onCancel()" [disabled]="loading">
-          Retour dashboard
+          {{ lang.t('admin.blog.back') }}
         </button>
       </div>
     </header>
 
     <section class="form-card">
       <div *ngIf="success" class="alert alert-success">
-        Projet {{ isEditMode ? 'modifie' : 'cree' }} avec succes.
+        {{ lang.t(isEditMode ? 'admin.project.success.updated' : 'admin.project.success.created') }}
       </div>
       <div *ngIf="error" class="alert alert-error">
         {{ error }}
@@ -23,13 +23,13 @@
       <form (ngSubmit)="onSubmit()" #projectForm="ngForm">
         <div class="form-section">
           <div class="section-head">
-            <h2>Informations principales</h2>
-            <span class="section-meta">Titre, slug, descriptions</span>
+            <h2>{{ lang.t('admin.project.section.main') }}</h2>
+            <span class="section-meta">{{ lang.t('admin.project.section.main.sub') }}</span>
           </div>
 
           <div class="grid two">
             <div class="form-group">
-              <label for="title">Titre *</label>
+              <label for="title">{{ lang.t('admin.form.title') }} *</label>
               <input
                 type="text"
                 id="title"
@@ -43,7 +43,7 @@
             </div>
 
             <div class="form-group">
-              <label for="slug">Slug *</label>
+              <label for="slug">{{ lang.t('admin.form.slug') }} *</label>
               <input
                 type="text"
                 id="slug"
@@ -57,7 +57,7 @@
           </div>
 
           <div class="form-group">
-            <label for="description">Description courte *</label>
+            <label for="description">{{ lang.t('admin.form.description') }} *</label>
             <textarea
               id="description"
               name="description"
@@ -70,7 +70,7 @@
           </div>
 
           <div class="form-group">
-            <label for="full_description">Description complete</label>
+            <label for="full_description">{{ lang.t('admin.form.content') }}</label>
             <textarea
               id="full_description"
               name="full_description"
@@ -83,39 +83,39 @@
         </div>
 
         <div class="form-section">
-          <h3 class="form-section-title">Étude de cas (optionnel)</h3>
-          <p class="form-section-meta">Remplis ces champs pour transformer ce projet en étude de cas percutante pour tes clients.</p>
+          <h3 class="form-section-title">{{ lang.t('admin.project.section.case') }}</h3>
+          <p class="form-section-meta">{{ lang.t('admin.project.section.case.sub') }}</p>
 
           <div class="form-group">
-            <label for="context">Contexte client</label>
+            <label for="context">{{ lang.t('admin.field.context') }}</label>
             <textarea id="context" name="context" rows="3" [(ngModel)]="formData.context" [disabled]="loading" placeholder="Quel était le contexte du client / l'environnement du projet ?"></textarea>
           </div>
 
           <div class="form-group">
-            <label for="problem">Problème à résoudre</label>
+            <label for="problem">{{ lang.t('admin.field.problem') }}</label>
             <textarea id="problem" name="problem" rows="3" [(ngModel)]="formData.problem" [disabled]="loading" placeholder="Quel problème devait être résolu ?"></textarea>
           </div>
 
           <div class="form-group">
-            <label for="solution">Solution apportée</label>
-            <textarea id="solution" name="solution" rows="3" [(ngModel)]="formData.solution" [disabled]="loading" placeholder="Comment as-tu résolu le problème ? Quelles approches techniques ?"></textarea>
+            <label for="solution">{{ lang.t('admin.field.solution') }}</label>
+            <textarea id="solution" name="solution" rows="3" [(ngModel)]="formData.solution" [disabled]="loading" placeholder="Comment as-tu résolu le problème ?"></textarea>
           </div>
 
           <div class="form-group">
-            <label for="impact">Résultat / Impact</label>
-            <textarea id="impact" name="impact" rows="3" [(ngModel)]="formData.impact" [disabled]="loading" placeholder="Quels ont été les résultats mesurables ? (ex: 40% d'amélioration des temps de traitement)"></textarea>
+            <label for="impact">{{ lang.t('admin.field.impact') }}</label>
+            <textarea id="impact" name="impact" rows="3" [(ngModel)]="formData.impact" [disabled]="loading" placeholder="Quels ont été les résultats mesurables ?"></textarea>
           </div>
         </div>
 
         <div class="form-section">
           <div class="section-head">
-            <h2>Medias</h2>
-            <span class="section-meta">Couverture + 3 images additionnelles</span>
+            <h2>{{ lang.t('admin.project.section.media') }}</h2>
+            <span class="section-meta">{{ lang.t('admin.project.section.media.sub') }}</span>
           </div>
 
           <div class="grid two">
             <div class="form-group">
-              <label for="technologies">Technologies *</label>
+              <label for="technologies">{{ lang.t('admin.th.technologies') }} *</label>
               <input
                 type="text"
                 id="technologies"
@@ -128,7 +128,7 @@
             </div>
 
             <div class="form-group">
-              <label for="thumbnail">Image de couverture {{ isEditMode ? '' : '*' }}</label>
+              <label for="thumbnail">{{ lang.t('admin.form.cover_image') }}{{ isEditMode ? '' : ' *' }}</label>
               <input
                 type="file"
                 id="thumbnail"
@@ -142,33 +142,15 @@
           <div class="grid three">
             <div class="form-group">
               <label for="image_1">Image 1</label>
-              <input
-                type="file"
-                id="image_1"
-                accept="image/*"
-                (change)="onAdditionalImageSelected($event, 1)"
-                [disabled]="loading"
-              />
+              <input type="file" id="image_1" accept="image/*" (change)="onAdditionalImageSelected($event, 1)" [disabled]="loading" />
             </div>
             <div class="form-group">
               <label for="image_2">Image 2</label>
-              <input
-                type="file"
-                id="image_2"
-                accept="image/*"
-                (change)="onAdditionalImageSelected($event, 2)"
-                [disabled]="loading"
-              />
+              <input type="file" id="image_2" accept="image/*" (change)="onAdditionalImageSelected($event, 2)" [disabled]="loading" />
             </div>
             <div class="form-group">
               <label for="image_3">Image 3</label>
-              <input
-                type="file"
-                id="image_3"
-                accept="image/*"
-                (change)="onAdditionalImageSelected($event, 3)"
-                [disabled]="loading"
-              />
+              <input type="file" id="image_3" accept="image/*" (change)="onAdditionalImageSelected($event, 3)" [disabled]="loading" />
             </div>
           </div>
 
@@ -179,34 +161,34 @@
 
         <div class="form-section">
           <div class="section-head">
-            <h2>Publication</h2>
-            <span class="section-meta">Statut, dates, liens et mise en avant</span>
+            <h2>{{ lang.t('admin.project.section.pub') }}</h2>
+            <span class="section-meta">{{ lang.t('admin.project.section.pub.sub') }}</span>
           </div>
 
           <div class="grid three">
             <div class="form-group">
-              <label for="status">Statut du projet *</label>
+              <label for="status">{{ lang.t('admin.form.status') }} *</label>
               <select id="status" name="status" [(ngModel)]="formData.status" required [disabled]="loading">
-                <option value="in_progress">En cours</option>
-                <option value="completed">Termine</option>
-                <option value="archived">Archive</option>
+                <option value="in_progress">{{ lang.t('admin.project.status.in_progress') }}</option>
+                <option value="completed">{{ lang.t('admin.project.status.completed') }}</option>
+                <option value="archived">{{ lang.t('admin.project.status.archived') }}</option>
               </select>
             </div>
 
             <div class="form-group">
-              <label for="start_date">Date debut *</label>
+              <label for="start_date">{{ lang.t('admin.field.start_date') }} *</label>
               <input type="date" id="start_date" name="start_date" [(ngModel)]="formData.start_date" required [disabled]="loading" />
             </div>
 
             <div class="form-group">
-              <label for="end_date">Date fin</label>
+              <label for="end_date">{{ lang.t('admin.field.end_date') }}</label>
               <input type="date" id="end_date" name="end_date" [(ngModel)]="formData.end_date" [disabled]="loading" />
             </div>
           </div>
 
           <div class="grid two">
             <div class="form-group">
-              <label for="github_url">Lien GitHub</label>
+              <label for="github_url">{{ lang.t('admin.field.github') }}</label>
               <input
                 type="url"
                 id="github_url"
@@ -218,7 +200,7 @@
             </div>
 
             <div class="form-group">
-              <label for="live_url">Lien demo</label>
+              <label for="live_url">{{ lang.t('admin.field.demo') }}</label>
               <input
                 type="url"
                 id="live_url"
@@ -233,27 +215,27 @@
           <div class="grid two">
             <label class="check">
               <input type="checkbox" name="is_featured" [(ngModel)]="formData.is_featured" [disabled]="loading" />
-              <span>Projet mis en avant</span>
+              <span>{{ lang.t('admin.field.featured') }}</span>
             </label>
 
             <div class="form-group">
-              <label for="order">Ordre affichage</label>
+              <label for="order">{{ lang.t('admin.field.display_order') }}</label>
               <input type="number" id="order" name="order" [(ngModel)]="formData.order" [disabled]="loading" min="0" />
             </div>
           </div>
 
           <div class="form-group">
-            <label for="views">Vues</label>
+            <label for="views">{{ lang.t('admin.field.views') }}</label>
             <input type="number" id="views" name="views" [(ngModel)]="formData.views" [disabled]="loading" min="0" />
           </div>
         </div>
 
         <div class="actions">
           <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="loading">
-            Annuler
+            {{ lang.t('admin.form.cancel') }}
           </button>
           <button type="submit" class="btn btn-primary" [disabled]="!projectForm.valid || loading">
-            {{ loading ? 'Enregistrement...' : (isEditMode ? 'Mettre a jour' : 'Creer le projet') }}
+            {{ loading ? lang.t('admin.btn.saving') : lang.t(isEditMode ? 'admin.form.update' : 'admin.btn.create_project') }}
           </button>
         </div>
       </form>

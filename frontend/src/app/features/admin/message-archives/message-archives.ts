@@ -8,6 +8,7 @@ import { ContactService } from '../../../core/services/contact.service';
 import { ContactMessage } from '../../../core/models/contact.model';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-message-archives',
@@ -29,7 +30,8 @@ export class MessageArchives implements OnInit {
   constructor(
     private contactService: ContactService,
     private toastService: ToastService,
-    private confirmService: ConfirmService
+    private confirmService: ConfirmService,
+    public lang: LanguageService
   ) {}
 
   ngOnInit(): void {

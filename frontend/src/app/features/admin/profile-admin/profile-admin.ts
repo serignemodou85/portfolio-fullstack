@@ -7,6 +7,7 @@ import { UserService } from '../../../core/services/user.service';
 import { AuthService } from '../../../core/services/auth';
 import { User } from '../../../core/models/auth.model';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-profile-admin',
@@ -52,7 +53,7 @@ export class ProfileAdmin implements OnInit {
   cvName: string | null = null;
   currentCvUrl: string | null = null;
 
-  constructor(private userService: UserService, private authService: AuthService) {}
+  constructor(private userService: UserService, private authService: AuthService, public lang: LanguageService) {}
 
   ngOnInit(): void {
     this.loadProfile();
