@@ -5,14 +5,14 @@
     <header class="topbar">
       <div class="topbar-left">
         <p class="greeting-date">{{ today }}</p>
-        <h1 class="greeting-title">Bonjour, {{ currentUser?.first_name || 'Modou' }}</h1>
+        <h1 class="greeting-title">{{ lang.t('admin.dash.greeting') }} {{ currentUser?.first_name || 'Modou' }}</h1>
       </div>
       <div class="topbar-actions">
         <a routerLink="/admin/projects/new" class="btn btn-primary">
           <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
-          <span>Nouveau projet</span>
+          <span>{{ lang.t('admin.dash.new_project') }}</span>
         </a>
       </div>
     </header>
@@ -26,8 +26,8 @@
           </svg>
         </div>
         <p class="kpi-value">{{ stats.totalProjects }}</p>
-        <p class="kpi-label">Projets</p>
-        <p class="kpi-meta"><span class="kpi-tag kpi-tag-blue">{{ stats.activeProjects || 0 }} actifs</span></p>
+        <p class="kpi-label">{{ lang.t('admin.kpi.projects') }}</p>
+        <p class="kpi-meta"><span class="kpi-tag kpi-tag-blue">{{ stats.activeProjects || 0 }} {{ lang.t('admin.kpi.active') }}</span></p>
       </article>
 
       <article class="kpi-card">
@@ -38,7 +38,7 @@
           </svg>
         </div>
         <p class="kpi-value">{{ stats.totalArticles }}</p>
-        <p class="kpi-label">Articles</p>
+        <p class="kpi-label">{{ lang.t('admin.kpi.articles') }}</p>
         <p class="kpi-meta"><span class="kpi-tag kpi-tag-purple">Blog</span></p>
       </article>
 
@@ -50,8 +50,8 @@
           </svg>
         </div>
         <p class="kpi-value">{{ stats.unreadMessages || 0 }}</p>
-        <p class="kpi-label">Non lus</p>
-        <p class="kpi-meta"><span class="kpi-tag kpi-tag-amber">Messages</span></p>
+        <p class="kpi-label">{{ lang.t('admin.kpi.unread') }}</p>
+        <p class="kpi-meta"><span class="kpi-tag kpi-tag-amber">{{ lang.t('admin.qa.messages.label') }}</span></p>
       </article>
 
       <article class="kpi-card">
@@ -62,8 +62,8 @@
           </svg>
         </div>
         <p class="kpi-value">{{ stats.totalViews || 0 }}</p>
-        <p class="kpi-label">Vues</p>
-        <p class="kpi-meta"><span class="kpi-tag kpi-tag-teal">Totales</span></p>
+        <p class="kpi-label">{{ lang.t('admin.kpi.views') }}</p>
+        <p class="kpi-meta"><span class="kpi-tag kpi-tag-teal">{{ lang.t('admin.kpi.views.total') }}</span></p>
       </article>
     </section>
 
@@ -76,8 +76,8 @@
             <line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/>
           </svg>
         </div>
-        <p class="qa-label">Nouveau projet</p>
-        <p class="qa-sub">Ajouter un projet</p>
+        <p class="qa-label">{{ lang.t('admin.qa.project.label') }}</p>
+        <p class="qa-sub">{{ lang.t('admin.qa.project.sub') }}</p>
       </a>
 
       <a routerLink="/admin/blog" class="qa-card">
@@ -87,8 +87,8 @@
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
           </svg>
         </div>
-        <p class="qa-label">Nouveau blog</p>
-        <p class="qa-sub">Rédiger un article</p>
+        <p class="qa-label">{{ lang.t('admin.qa.blog.label') }}</p>
+        <p class="qa-sub">{{ lang.t('admin.qa.blog.sub') }}</p>
       </a>
 
       <a routerLink="/admin/messages/archives" class="qa-card">
@@ -98,8 +98,8 @@
             <polyline points="22,6 12,13 2,6"/>
           </svg>
         </div>
-        <p class="qa-label">Messages</p>
-        <p class="qa-sub">{{ stats.unreadMessages || 0 }} non lu{{ (stats.unreadMessages || 0) > 1 ? 's' : '' }}</p>
+        <p class="qa-label">{{ lang.t('admin.qa.messages.label') }}</p>
+        <p class="qa-sub">{{ stats.unreadMessages || 0 }} {{ lang.t((stats.unreadMessages || 0) > 1 ? 'admin.qa.messages.unreads' : 'admin.qa.messages.unread') }}</p>
       </a>
 
       <a routerLink="/admin/profile" class="qa-card">
@@ -109,19 +109,19 @@
             <circle cx="12" cy="7" r="4"/>
           </svg>
         </div>
-        <p class="qa-label">Mon profil</p>
-        <p class="qa-sub">Paramètres</p>
+        <p class="qa-label">{{ lang.t('admin.qa.profile.label') }}</p>
+        <p class="qa-sub">{{ lang.t('admin.qa.profile.sub') }}</p>
       </a>
     </section>
 
     <!-- Table Projets actifs -->
     <section class="panel">
       <div class="panel-head">
-        <h2>Projets actifs</h2>
+        <h2>{{ lang.t('admin.section.projects') }}</h2>
         <div class="panel-head-actions">
           <a routerLink="/admin/projects/archives" class="btn btn-outline">
             <app-icon name="archive" [size]="16"></app-icon>
-            <span>Voir archives</span>
+            <span>{{ lang.t('admin.btn.archives') }}</span>
           </a>
         </div>
       </div>
@@ -129,20 +129,20 @@
       <div class="table-wrap" *ngIf="processedProjects.length; else emptyActive">
         <div class="table-tools">
           <div class="field inline">
-            <label for="project_search">Recherche</label>
-            <input id="project_search" type="search" [(ngModel)]="projectSearch" name="project_search" placeholder="Titre, techno..." />
+            <label for="project_search">{{ lang.t('admin.field.search') }}</label>
+            <input id="project_search" type="search" [(ngModel)]="projectSearch" name="project_search" [placeholder]="lang.t('admin.ph.project_search')" />
           </div>
           <div class="field inline">
-            <label for="project_sort">Tri</label>
+            <label for="project_sort">{{ lang.t('admin.field.sort') }}</label>
             <select id="project_sort" [(ngModel)]="projectSort" name="project_sort">
-              <option value="updated_desc">Maj recente</option>
-              <option value="updated_asc">Maj ancienne</option>
-              <option value="title_asc">Titre A-Z</option>
-              <option value="title_desc">Titre Z-A</option>
+              <option value="updated_desc">{{ lang.t('admin.sort.updated_desc') }}</option>
+              <option value="updated_asc">{{ lang.t('admin.sort.updated_asc') }}</option>
+              <option value="title_asc">{{ lang.t('admin.sort.title_asc') }}</option>
+              <option value="title_desc">{{ lang.t('admin.sort.title_desc') }}</option>
             </select>
           </div>
           <div class="field inline">
-            <label for="project_page_size">Par page</label>
+            <label for="project_page_size">{{ lang.t('admin.field.per_page') }}</label>
             <select id="project_page_size" [(ngModel)]="pageSize" name="project_page_size" (ngModelChange)="setPageSize($event)">
               <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
             </select>
@@ -151,11 +151,11 @@
         <table class="project-table">
           <thead>
             <tr>
-              <th>Projet</th>
-              <th>Description</th>
-              <th>Statut</th>
-              <th>Vues</th>
-              <th>Actions</th>
+              <th>{{ lang.t('admin.th.project') }}</th>
+              <th>{{ lang.t('admin.th.description') }}</th>
+              <th>{{ lang.t('admin.th.status') }}</th>
+              <th>{{ lang.t('admin.th.views') }}</th>
+              <th>{{ lang.t('admin.th.actions') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -184,10 +184,10 @@
               <td>{{ project.views || 0 }}</td>
               <td>
                 <div class="row-actions">
-                  <a [routerLink]="['/admin/projects/edit', project.slug]" class="btn btn-icon btn-soft" title="Modifier">
+                  <a [routerLink]="['/admin/projects/edit', project.slug]" class="btn btn-icon btn-soft" [title]="lang.t('admin.th.actions')">
                     <app-icon name="edit" [size]="16"></app-icon>
                   </a>
-                  <button type="button" class="btn btn-icon btn-danger" (click)="archiveProject(project)" title="Archiver">
+                  <button type="button" class="btn btn-icon btn-danger" (click)="archiveProject(project)" [title]="lang.t('admin.btn.archives')">
                     <app-icon name="trash" [size]="16"></app-icon>
                   </button>
                 </div>
@@ -202,7 +202,7 @@
           <button type="button" class="btn btn-icon btn-soft" (click)="setProjectPage(projectPage - 1)" [disabled]="projectPage === 1">
             <span class="icon-rotate"><app-icon name="arrow-right" [size]="14"></app-icon></span>
           </button>
-          <span class="page-count">Page {{ projectPage }} / {{ projectTotalPages }}</span>
+          <span class="page-count">{{ lang.t('admin.pagination.page') }} {{ projectPage }} / {{ projectTotalPages }}</span>
           <button type="button" class="btn btn-icon btn-soft" (click)="setProjectPage(projectPage + 1)" [disabled]="projectPage === projectTotalPages">
             <app-icon name="arrow-right" [size]="14"></app-icon>
           </button>
@@ -210,18 +210,18 @@
       </div>
 
       <ng-template #emptyActive>
-        <div class="empty-state">Aucun projet actif.</div>
+        <div class="empty-state">{{ lang.t('admin.empty.projects') }}</div>
       </ng-template>
     </section>
 
     <!-- Table Messages -->
     <section class="panel">
       <div class="panel-head">
-        <h2>Messages récents</h2>
+        <h2>{{ lang.t('admin.section.messages') }}</h2>
         <div class="panel-head-actions">
           <a routerLink="/admin/messages/archives" class="btn btn-outline">
             <app-icon name="archive" [size]="16"></app-icon>
-            <span>Voir archives</span>
+            <span>{{ lang.t('admin.btn.archives') }}</span>
           </a>
         </div>
       </div>
@@ -229,20 +229,20 @@
       <div class="table-wrap" *ngIf="!loadingMessages && !messagesError && processedMessages.length; else messageState">
         <div class="table-tools">
           <div class="field inline">
-            <label for="message_search">Recherche</label>
-            <input id="message_search" type="search" [(ngModel)]="messageSearch" name="message_search" placeholder="Nom, email..." />
+            <label for="message_search">{{ lang.t('admin.field.search') }}</label>
+            <input id="message_search" type="search" [(ngModel)]="messageSearch" name="message_search" [placeholder]="lang.t('admin.ph.message_search')" />
           </div>
           <div class="field inline">
-            <label for="message_sort">Tri</label>
+            <label for="message_sort">{{ lang.t('admin.field.sort') }}</label>
             <select id="message_sort" [(ngModel)]="messageSort" name="message_sort">
-              <option value="date_desc">Date recente</option>
-              <option value="date_asc">Date ancienne</option>
-              <option value="name_asc">Nom A-Z</option>
-              <option value="name_desc">Nom Z-A</option>
+              <option value="date_desc">{{ lang.t('admin.sort.date_desc') }}</option>
+              <option value="date_asc">{{ lang.t('admin.sort.date_asc') }}</option>
+              <option value="name_asc">{{ lang.t('admin.sort.name_asc') }}</option>
+              <option value="name_desc">{{ lang.t('admin.sort.name_desc') }}</option>
             </select>
           </div>
           <div class="field inline">
-            <label for="message_page_size">Par page</label>
+            <label for="message_page_size">{{ lang.t('admin.field.per_page') }}</label>
             <select id="message_page_size" [(ngModel)]="pageSize" name="message_page_size" (ngModelChange)="setPageSize($event)">
               <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
             </select>
@@ -251,11 +251,11 @@
         <table class="project-table messages-table">
           <thead>
             <tr>
-              <th>Contact</th>
-              <th>Sujet</th>
-              <th>Statut</th>
-              <th>Date</th>
-              <th>Actions</th>
+              <th>{{ lang.t('admin.th.contact') }}</th>
+              <th>{{ lang.t('admin.th.subject') }}</th>
+              <th>{{ lang.t('admin.th.status') }}</th>
+              <th>{{ lang.t('admin.th.date') }}</th>
+              <th>{{ lang.t('admin.th.actions') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -277,19 +277,19 @@
               </td>
               <td>
                 <span class="status-badge message-status" [class]="message.status">
-                  {{ message.status === 'new' ? 'Nouveau' : (message.status === 'read' ? 'Lu' : (message.status === 'replied' ? 'Repondu' : 'Archive')) }}
+                  {{ message.status === 'new' ? lang.t('admin.msg.new') : (message.status === 'read' ? lang.t('admin.msg.read') : (message.status === 'replied' ? lang.t('admin.msg.replied') : lang.t('admin.msg.archived'))) }}
                 </span>
               </td>
               <td>{{ message.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
               <td>
                 <div class="row-actions">
-                  <button type="button" class="btn btn-icon btn-soft" (click)="markMessageAsRead(message)" title="Marquer lu">
+                  <button type="button" class="btn btn-icon btn-soft" (click)="markMessageAsRead(message)" [title]="lang.t('admin.action.mark_read')">
                     <app-icon name="check" [size]="16"></app-icon>
                   </button>
-                  <button type="button" class="btn btn-icon btn-outline" (click)="replyToMessage(message)" title="Repondre">
+                  <button type="button" class="btn btn-icon btn-outline" (click)="replyToMessage(message)" [title]="lang.t('admin.action.reply')">
                     <app-icon name="mail" [size]="16"></app-icon>
                   </button>
-                  <button type="button" class="btn btn-icon btn-danger" (click)="archiveMessage(message)" title="Archiver message">
+                  <button type="button" class="btn btn-icon btn-danger" (click)="archiveMessage(message)" [title]="lang.t('admin.action.archive_msg')">
                     <app-icon name="trash" [size]="16"></app-icon>
                   </button>
                 </div>
@@ -304,7 +304,7 @@
           <button type="button" class="btn btn-icon btn-soft" (click)="setMessagePage(messagePage - 1)" [disabled]="messagePage === 1">
             <span class="icon-rotate"><app-icon name="arrow-right" [size]="14"></app-icon></span>
           </button>
-          <span class="page-count">Page {{ messagePage }} / {{ messageTotalPages }}</span>
+          <span class="page-count">{{ lang.t('admin.pagination.page') }} {{ messagePage }} / {{ messageTotalPages }}</span>
           <button type="button" class="btn btn-icon btn-soft" (click)="setMessagePage(messagePage + 1)" [disabled]="messagePage === messageTotalPages">
             <app-icon name="arrow-right" [size]="14"></app-icon>
           </button>
@@ -312,10 +312,10 @@
       </div>
 
       <ng-template #messageState>
-        <div class="empty-state" *ngIf="loadingMessages">Chargement des messages...</div>
+        <div class="empty-state" *ngIf="loadingMessages">{{ lang.t('admin.loading.messages') }}</div>
         <div class="empty-state" *ngIf="!loadingMessages && messagesError">{{ messagesError }}</div>
         <div class="empty-state" *ngIf="!loadingMessages && !messagesError && !recentMessages.length">
-          Aucun message recent.
+          {{ lang.t('admin.empty.messages') }}
         </div>
       </ng-template>
     </section>

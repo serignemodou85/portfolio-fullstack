@@ -14,6 +14,7 @@ import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
 import { ContactService } from '../../../core/services/contact.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
+import { LanguageService } from '../../../core/services/language.service';
 import { environment } from '../../../../environments/environment';
 
 
@@ -62,7 +63,8 @@ export class Dashboard implements OnInit {
     private dashboardService: DashboardService,
     private router: Router,
     private toastService: ToastService,
-    private confirmService: ConfirmService
+    private confirmService: ConfirmService,
+    public lang: LanguageService
   ) {}
 
   ngOnInit(): void {
@@ -384,7 +386,8 @@ export class Dashboard implements OnInit {
   }
 
   get today(): string {
-    return new Date().toLocaleDateString('fr-FR', {
+    const locale = this.lang.current === 'fr' ? 'fr-FR' : 'en-US';
+    return new Date().toLocaleDateString(locale, {
       weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
     });
   }

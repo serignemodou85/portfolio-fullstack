@@ -17,15 +17,15 @@
         </a>
         <a routerLink="/admin/profile" routerLinkActive="active" class="nav-link">
           <app-icon name="user" [size]="16"></app-icon>
-          <span>Profil</span>
+          <span>{{ langService.t('admin.nav.profile') }}</span>
         </a>
       </div>
 
       <div class="nav-section">
-        <p class="nav-label">Gestion contenu</p>
+        <p class="nav-label">{{ langService.t('admin.nav.section.content') }}</p>
         <a routerLink="/admin/projects/new" routerLinkActive="active" class="nav-link">
           <app-icon name="file" [size]="16"></app-icon>
-          <span>Projets</span>
+          <span>{{ langService.t('admin.nav.projects') }}</span>
         </a>
         <a routerLink="/admin/blog" routerLinkActive="active" class="nav-link">
           <app-icon name="edit" [size]="16"></app-icon>
@@ -33,11 +33,11 @@
         </a>
         <a routerLink="/admin/experiences" routerLinkActive="active" class="nav-link">
           <app-icon name="user" [size]="16"></app-icon>
-          <span>Expériences</span>
+          <span>{{ langService.t('admin.nav.experiences') }}</span>
         </a>
         <a routerLink="/admin/skills" routerLinkActive="active" class="nav-link">
           <app-icon name="settings" [size]="16"></app-icon>
-          <span>Compétences</span>
+          <span>{{ langService.t('admin.nav.skills') }}</span>
         </a>
         <a routerLink="/admin/projects/archives" routerLinkActive="active" class="nav-link">
           <app-icon name="archive" [size]="16"></app-icon>
@@ -46,7 +46,7 @@
       </div>
 
       <div class="nav-section sidebar-prefs">
-        <p class="nav-label">Préférences</p>
+        <p class="nav-label">{{ langService.t('admin.nav.section.prefs') }}</p>
         <button class="nav-link pref-btn" type="button" (click)="theme.toggle()">
           <svg *ngIf="theme.isDark" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
@@ -57,7 +57,7 @@
           <svg *ngIf="!theme.isDark" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
           </svg>
-          <span>{{ theme.isDark ? 'Mode clair' : 'Mode sombre' }}</span>
+          <span>{{ theme.isDark ? langService.t('admin.nav.theme.light') : langService.t('admin.nav.theme.dark') }}</span>
         </button>
         <button class="nav-link pref-btn" type="button" (click)="langService.toggle()">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -72,7 +72,7 @@
             <polyline points="16 17 21 12 16 7"/>
             <line x1="21" y1="12" x2="9" y2="12"/>
           </svg>
-          <span>Déconnexion</span>
+          <span>{{ langService.t('admin.nav.logout') }}</span>
         </button>
       </div>
     </div>
