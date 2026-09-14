@@ -27,10 +27,10 @@
 
 .contact-form-card,
 .info-card {
-  border: 1px solid #dbe4ef;
+  border: 1px solid var(--line);
   border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 14px 26px rgba(15, 23, 42, 0.06);
+  background: var(--card);
+  box-shadow: 0 1px 2px rgba(10, 14, 23, 0.04);
 }
 
 .contact-form-card {
@@ -83,7 +83,7 @@
   label {
     display: block;
     margin-bottom: 0.32rem;
-    color: #334155;
+    color: var(--ink-700);
     font-size: 0.8rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -94,12 +94,12 @@
   textarea,
   select {
     width: 100%;
-    border: 1px solid #cdd7e4;
+    border: 1px solid var(--line);
     border-radius: 10px;
     padding: 0.66rem 0.8rem;
     font-size: 0.92rem;
-    background: #fff;
-    color: #0f172a;
+    background: var(--card);
+    color: var(--ink-900);
     font-family: inherit;
 
     &:focus {
@@ -109,8 +109,8 @@
     }
 
     &:disabled {
-      background: #f8fafc;
-      color: #94a3b8;
+      background: var(--surface);
+      color: var(--ink-500);
     }
   }
 
@@ -142,7 +142,7 @@
 .privacy-note {
   margin-top: 0.75rem;
   font-size: 0.8rem;
-  color: #64748b;
+  color: var(--ink-500);
 }
 
 .contact-info {
@@ -180,8 +180,8 @@
 }
 
 .info-card--available {
-  background: linear-gradient(135deg, #eff6ff, #e0f2fe);
-  border-color: #bfdbfe;
+  background: var(--brand-100);
+  border-color: var(--line);
 
   h3 {
     color: #1d4ed8;
@@ -195,7 +195,7 @@
 
 .available-text {
   font-size: 0.88rem;
-  color: #1e40af;
+  color: var(--ink-700);
   line-height: 1.7;
   font-weight: 500;
 }
@@ -246,7 +246,7 @@
 .contact-item-label {
   font-size: 0.72rem;
   font-weight: 700;
-  color: #94a3b8;
+  color: var(--ink-500);
   text-transform: uppercase;
   letter-spacing: 0.07em;
   margin: 0 0 0.15rem;
@@ -255,7 +255,7 @@
 .contact-item-value {
   display: block;
   font-size: 0.88rem;
-  color: #0f172a;
+  color: var(--ink-900);
   text-decoration: none;
   font-weight: 500;
 

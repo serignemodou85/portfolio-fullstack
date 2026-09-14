@@ -39,11 +39,11 @@
 }
 
 .skill-card {
-  border: 1px solid #dbe4ef;
+  border: 1px solid var(--line);
   border-radius: 16px;
-  background: #fff;
+  background: var(--card);
   padding: 1rem;
-  box-shadow: 0 14px 26px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 1px 2px rgba(10, 14, 23, 0.04);
 }
 
 .skill-card-head {
@@ -70,9 +70,9 @@
   width: 28px;
   height: 28px;
   border-radius: 9px;
-  border: 1px solid #cbdcf3;
-  background: #eef4ff;
-  color: #1e3a8a;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-900);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -80,19 +80,19 @@
 
 .category-icon-label {
   font-size: 0.74rem;
-  color: #1e3a8a;
+  color: var(--ink-900);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .count {
-  border: 1px solid #dbe4ef;
-  background: #f8fbff;
+  border: 1px solid var(--line);
+  background: var(--surface);
   border-radius: 999px;
   padding: 0.24rem 0.56rem;
   font-size: 0.72rem;
-  color: #334155;
+  color: var(--ink-700);
   font-weight: 700;
 }
 
@@ -102,7 +102,7 @@
 }
 
 .skill-row {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--line);
   border-radius: 12px;
   padding: 0.7rem;
 }
@@ -154,17 +154,17 @@
 
 .meter {
   position: relative;
-  height: 8px;
+  height: 6px;
   border-radius: 999px;
   overflow: hidden;
-  background: #e2e8f0;
+  background: var(--line);
   margin-top: 0.55rem;
 }
 
 .fill {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, #0f3d63, #2563eb, #22c55e);
+  background: #1d4ed8;
 }
 
 .row-meta {
@@ -172,15 +172,15 @@
   display: flex;
   justify-content: space-between;
   font-size: 0.76rem;
-  color: #64748b;
+  color: var(--ink-500);
   font-weight: 600;
 }
 
 .cta-box {
   margin-top: 1.3rem;
-  border: 1px solid #dbe4ef;
+  border: 1px solid var(--line);
   border-radius: 18px;
-  background: linear-gradient(145deg, #0f3d63, #155e75);
+  background: var(--ink-950);
   color: #fff;
   text-align: center;
   padding: 1.8rem;
@@ -191,13 +191,13 @@
   }
 
   p {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.72);
     margin-bottom: 1rem;
   }
 
   .btn-primary {
     background: #fff;
-    color: #0f3d63;
+    color: var(--ink-950);
     box-shadow: none;
   }
 }

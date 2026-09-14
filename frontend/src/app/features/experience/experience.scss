@@ -84,11 +84,11 @@
 }
 
 .content {
-  border: 1px solid #d7e3f4;
+  border: 1px solid var(--line);
   border-radius: 18px;
-  background: #fff;
+  background: var(--card);
   padding: 1rem 1.05rem;
-  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.07);
+  box-shadow: 0 1px 2px rgba(10, 14, 23, 0.04);
 }
 
 .top-row {
@@ -110,7 +110,7 @@
 .company {
   margin-top: 0.35rem;
   margin-bottom: 0;
-  color: #334155;
+  color: var(--ink-700);
   font-weight: 600;
 }
 
@@ -125,7 +125,7 @@
 
 .dates {
   margin: 0;
-  color: #64748b;
+  color: var(--ink-500);
   font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
