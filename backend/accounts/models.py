@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from cloudinary.models import CloudinaryField 
+from cloudinary.models import CloudinaryField
+from portfolio_backend.encrypted_fields import EncryptedTextField
 
 class User(AbstractUser):
     """
@@ -25,8 +26,10 @@ class User(AbstractUser):
         invalidate=True,
         verbose_name="CV (PDF)",
     )
-    phone = models.CharField(max_length=20, blank=True, null=True, verbose_name="Téléphone")
-    location = models.CharField(max_length=100, blank=True, null=True, verbose_name="Localisation")
+    # Chiffrés au repos (Fernet) : jamais utilisés en recherche exacte, donc
+    # aucun impact sur les lookups. Voir portfolio_backend/encrypted_fields.py.
+    phone = EncryptedTextField(max_length=20, blank=True, null=True, verbose_name="Téléphone")
+    location = EncryptedTextField(max_length=100, blank=True, null=True, verbose_name="Localisation")
     
     # Réseaux sociaux
     github_url = models.URLField(blank=True, null=True, verbose_name="GitHub")

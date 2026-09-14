@@ -12,11 +12,12 @@ import { UserService } from '../../../core/services/user.service';
 import { User } from '../../../core/models/auth.model';
 import { environment } from '../../../../environments/environment';
 import { LanguageService, Lang } from '../../../core/services/language.service';
+import { IconComponent } from '../../../shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, IconComponent],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })

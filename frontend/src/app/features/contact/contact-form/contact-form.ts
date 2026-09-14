@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { LanguageService, Lang } from '../../../core/services/language.service';
+import { IconComponent } from '../../../shared/components/icon/icon.component';
 
 interface ContactData {
   name: string;
@@ -26,7 +27,7 @@ interface ContactCreateResponse {
 @Component({
   selector: 'app-contact-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, IconComponent],
   templateUrl: './contact-form.html',
   styleUrl: './contact-form.scss'
 })

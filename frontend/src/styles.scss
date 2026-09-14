@@ -814,7 +814,7 @@ a {
     justify-content: center;
     border-radius: 12px;
     background: #f1f2f5;
-    font-size: 1.4rem;
+    color: #1d4ed8;
     line-height: 1;
     margin-bottom: 1.1rem;
   }
@@ -1255,7 +1255,7 @@ html[data-theme="dark"] .what-card {
   h3 { color: #e6edf3; }
   p  { color: #8b949e; }
 
-  .what-icon { background: #21262d; }
+  .what-icon { background: #21262d; color: #58a6ff; }
 
   &:hover { border-color: #30363d; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); }
 }

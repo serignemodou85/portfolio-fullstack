@@ -66,6 +66,10 @@ load_env_file(BASE_DIR / '.env')
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = ensure_strong_secret_key(env_required('SECRET_KEY'))
 
+# Clé de chiffrement au repos pour les champs sensibles (téléphone, localisation...).
+# Génère-en une avec: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+FIELD_ENCRYPTION_KEY = env_required('FIELD_ENCRYPTION_KEY')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env_bool('DEBUG', False)
 DJANGO_ADMIN_ENABLED = env_bool('DJANGO_ADMIN_ENABLED', DEBUG)
