@@ -24,6 +24,10 @@ export class ToastService {
   }
 
   private add(type: ToastType, message: string): void {
+    // Plusieurs requêtes qui échouent ensemble ne doivent pas empiler le même message.
+    if (this._toasts.value.some(t => t.type === type && t.message === message)) {
+      return;
+    }
     const id = `${type}-${performance.now().toString(36)}`;
     this._toasts.next([...this._toasts.value, { id, type, message }]);
     setTimeout(() => this.dismiss(id), 4200);

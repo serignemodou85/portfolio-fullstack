@@ -84,7 +84,7 @@ input, select {
   font-family: inherit;
   background: #fff;
   color: #0f172a;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  transition: border-color var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
 
   &:focus {
     outline: none;
@@ -169,7 +169,7 @@ input, select {
   align-items: center;
   justify-content: center;
   gap: 0.38rem;
-  transition: all 0.16s ease;
+  transition: all var(--duration-fast) ease;
 }
 
 .btn:hover:not(:disabled) { transform: translateY(-1px); }

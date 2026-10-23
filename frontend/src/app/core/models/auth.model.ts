@@ -7,6 +7,24 @@ export interface TokenResponse {
   access: string;
 }
 
+/** Mot de passe correct mais 2FA active : échanger mfa_token + code sur /2fa/verify/. */
+export interface MfaChallenge {
+  mfa_required: true;
+  mfa_token: string;
+}
+
+export type LoginResponse = TokenResponse | MfaChallenge;
+
+export function isMfaChallenge(res: LoginResponse): res is MfaChallenge {
+  return (res as MfaChallenge).mfa_required === true;
+}
+
+export interface MfaSetupResponse {
+  otpauth_uri: string;
+  qr_code: string;
+  secret: string;
+}
+
 export interface User {
   id: number;
   username: string;
@@ -24,6 +42,7 @@ export interface User {
   linkedin_url?: string;
   twitter_url?: string;
   website_url?: string;
+  totp_enabled?: boolean;
 }
 
 export interface PasswordResetRequestPayload {

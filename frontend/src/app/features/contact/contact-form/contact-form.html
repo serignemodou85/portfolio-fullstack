@@ -13,6 +13,11 @@
         <h2 id="contact-form-title">{{ t('contact.form.title') }}</h2>
 
         <form (ngSubmit)="onSubmit(contactFormRef)" #contactFormRef="ngForm" novalidate>
+          <!-- Honeypot anti-spam : hors écran et ignoré par les lecteurs d'écran -->
+          <div class="hp-field" aria-hidden="true">
+            <label for="website">Website</label>
+            <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" [(ngModel)]="formData.website" />
+          </div>
           <div *ngIf="success" class="alert alert-success">
             {{ t('contact.form.success') }}
           </div>

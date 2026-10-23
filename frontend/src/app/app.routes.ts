@@ -7,35 +7,43 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    component: Home
+    component: Home,
+    data: { seo: 'home' }
   },
   {
     path: 'projects',
-    loadComponent: () => import('./features/projects/project-list/project-list').then(m => m.ProjectList)
+    loadComponent: () => import('./features/projects/project-list/project-list').then(m => m.ProjectList),
+    data: { seo: 'projects' }
   },
   {
     path: 'projects/:slug',
-    loadComponent: () => import('./features/projects/project-detail/project-detail').then(m => m.ProjectDetail)
+    loadComponent: () => import('./features/projects/project-detail/project-detail').then(m => m.ProjectDetail),
+    data: { seo: 'projects' }
   },
   {
     path: 'experience',
-    loadComponent: () => import('./features/experience/experience').then(m => m.Experience)
+    loadComponent: () => import('./features/experience/experience').then(m => m.Experience),
+    data: { seo: 'experience' }
   },
   {
     path: 'skills',
-    loadComponent: () => import('./features/skills/skills').then(m => m.Skills)
+    loadComponent: () => import('./features/skills/skills').then(m => m.Skills),
+    data: { seo: 'skills' }
   },
   {
     path: 'blog',
-    loadComponent: () => import('./features/blog/article-list/article-list').then(m => m.ArticleList)
+    loadComponent: () => import('./features/blog/article-list/article-list').then(m => m.ArticleList),
+    data: { seo: 'blog' }
   },
   {
     path: 'blog/:slug',
-    loadComponent: () => import('./features/blog/article-detail/article-detail').then(m => m.ArticleDetail)
+    loadComponent: () => import('./features/blog/article-detail/article-detail').then(m => m.ArticleDetail),
+    data: { seo: 'blog' }
   },
   {
     path: 'contact',
-    loadComponent: () => import('./features/contact/contact-form/contact-form').then(m => m.ContactForm)
+    loadComponent: () => import('./features/contact/contact-form/contact-form').then(m => m.ContactForm),
+    data: { seo: 'contact' }
   },
   {
     path: 'admin/login',
@@ -93,6 +101,10 @@ export const routes: Routes = [
       {
         path: 'profile',
         loadComponent: () => import('./features/admin/profile-admin/profile-admin').then(m => m.ProfileAdmin)
+      },
+      {
+        path: 'audit',
+        loadComponent: () => import('./features/admin/audit-log/audit-log').then(m => m.AuditLog)
       }
     ]
   },

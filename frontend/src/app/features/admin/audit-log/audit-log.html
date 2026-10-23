@@ -1,0 +1,81 @@
+<app-admin-shell>
+  <div class="admin-page">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Admin</p>
+        <h1>{{ lang.t('audit.title') }}</h1>
+        <p class="subtitle">{{ lang.t('audit.subtitle') }}</p>
+      </div>
+      <button class="btn btn-outline" type="button" (click)="load()" [disabled]="loading()">
+        <app-icon name="refresh" [size]="15"></app-icon>{{ lang.t('admin.btn.reload') }}
+      </button>
+    </header>
+
+    <section class="panel audit-panel">
+      <div class="table-tools">
+        <div class="field">
+          <label for="audit-action">{{ lang.t('audit.filter.action') }}</label>
+          <select id="audit-action" [(ngModel)]="actionFilter" (ngModelChange)="onFilterChange()">
+            <option value="">{{ lang.t('audit.filter.all') }}</option>
+            @for (a of actions; track a) {
+              <option [value]="a">{{ lang.t('audit.action.' + a) }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      @if (error()) {
+        <div class="empty-state">{{ lang.t('audit.load_error') }}</div>
+      } @else if (!loading() && !entries().length) {
+        <div class="empty-state">{{ lang.t('audit.empty') }}</div>
+      } @else {
+        <div class="table-wrap">
+          <table class="data-table" [class.is-loading]="loading()">
+            <thead>
+              <tr>
+                <th>{{ lang.t('audit.col.date') }}</th>
+                <th>{{ lang.t('audit.col.user') }}</th>
+                <th>{{ lang.t('audit.col.action') }}</th>
+                <th>{{ lang.t('audit.col.target') }}</th>
+                <th>{{ lang.t('audit.col.ip') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (entry of entries(); track entry.id) {
+                <tr [class.clickable]="hasChanges(entry)" (click)="toggle(entry)">
+                  <td class="nowrap">{{ entry.created_at | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+                  <td>{{ entry.username || '—' }}</td>
+                  <td><span class="audit-action" [attr.data-tone]="tone(entry.action)">{{ lang.t('audit.action.' + entry.action) }}</span></td>
+                  <td>
+                    <span class="audit-target">{{ target(entry) }}</span>
+                    @if (hasChanges(entry) && (entry.action === 'create' || entry.action === 'update')) {
+                      <span class="audit-count">{{ changeCount(entry) }} {{ lang.t('audit.changes') }}</span>
+                    }
+                  </td>
+                  <td class="nowrap mono">{{ entry.ip_address || '—' }}</td>
+                </tr>
+                @if (expanded() === entry.id) {
+                  <tr class="audit-detail">
+                    <td colspan="5"><pre>{{ entry.changes | json }}</pre></td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-footer">
+          <div class="pagination">
+            <button class="btn btn-outline btn-icon" type="button" (click)="load(page() - 1)" [disabled]="page() <= 1 || loading()" aria-label="Page précédente">
+              <app-icon name="chevron-left" [size]="16"></app-icon>
+            </button>
+            <span class="page-count">{{ page() }} / {{ pageCount() }}</span>
+            <button class="btn btn-outline btn-icon" type="button" (click)="load(page() + 1)" [disabled]="page() >= pageCount() || loading()" aria-label="Page suivante">
+              <app-icon name="chevron-right" [size]="16"></app-icon>
+            </button>
+          </div>
+        </div>
+      }
+    </section>
+  </div>
+</app-admin-shell>

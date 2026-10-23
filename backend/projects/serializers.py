@@ -16,7 +16,9 @@ class ProjectListSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'title', 'slug', 'description', 'thumbnail',
             'technologies', 'status', 'is_featured', 'start_date',
-            'created_at', 'updated_at', 'views'
+            'created_at', 'updated_at', 'views',
+            # Étude de cas : affichée pour le projet phare de l'accueil.
+            'problem', 'solution', 'impact',
         ]
 
     def get_thumbnail(self, obj):

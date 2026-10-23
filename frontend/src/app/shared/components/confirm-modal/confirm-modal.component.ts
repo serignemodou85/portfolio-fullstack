@@ -1,12 +1,13 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { IconComponent } from '../icon/icon.component';
 import { FormsModule } from '@angular/forms';
 import { ConfirmService, ConfirmConfig } from '../../../core/services/confirm.service';
 
 @Component({
   selector: 'app-confirm-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, IconComponent],
   templateUrl: './confirm-modal.component.html',
   styleUrl: './confirm-modal.component.scss'
 })

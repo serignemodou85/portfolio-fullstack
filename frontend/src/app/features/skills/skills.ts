@@ -7,13 +7,14 @@ import { takeUntil } from 'rxjs/operators';
 import { SkillService } from '../../core/services/skill.service';
 import { SkillCategoryWithSkills } from '../../core/models/skill.model';
 import { IconComponent } from '../../shared/components/icon/icon.component';
+import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { resolveIconFromKeyword } from '../../shared/utils/icon-keyword';
 import { LanguageService, Lang } from '../../core/services/language.service';
 
 @Component({
   selector: 'app-skills',
   standalone: true,
-  imports: [CommonModule, RouterLink, IconComponent],
+  imports: [CommonModule, RouterLink, IconComponent, RevealDirective],
   templateUrl: './skills.html',
   styleUrl: './skills.scss'
 })

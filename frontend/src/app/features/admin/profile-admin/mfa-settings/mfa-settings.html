@@ -1,0 +1,93 @@
+<section class="panel mfa-panel">
+  <div class="panel-head">
+    <h2>{{ lang.t('mfa.section') }}</h2>
+  </div>
+
+  <div class="mfa-row">
+    <span class="mfa-icon" [class.on]="enabled()">
+      <app-icon name="shield" [size]="20"></app-icon>
+    </span>
+    <div class="mfa-copy">
+      <p class="mfa-title">
+        {{ lang.t('mfa.title') }}
+        <span class="mfa-status" [class.on]="enabled()">
+          {{ enabled() ? lang.t('mfa.status.on') : lang.t('mfa.status.off') }}
+        </span>
+      </p>
+      <p class="mfa-desc">{{ lang.t('mfa.desc') }}</p>
+    </div>
+    @if (step() === 'idle') {
+      @if (enabled()) {
+        <button class="btn btn-outline" type="button" (click)="begin('disable')">{{ lang.t('mfa.disable') }}</button>
+      } @else {
+        <button class="btn btn-primary" type="button" (click)="startSetup()" [disabled]="busy()">{{ lang.t('mfa.enable') }}</button>
+      }
+    }
+  </div>
+
+  @if (step() === 'setup' && setup(); as data) {
+    <div class="mfa-setup">
+      <img class="mfa-qr" [src]="data.qr_code" alt="QR code 2FA" width="180" height="180" />
+      <div class="mfa-setup-form">
+        <p class="mfa-desc">{{ lang.t('mfa.scan') }}</p>
+        <p class="mfa-manual">
+          <span>{{ lang.t('mfa.manual') }}</span>
+          <code>{{ data.secret }}</code>
+        </p>
+        <form class="mfa-code-form" (ngSubmit)="confirmSetup()">
+          <input
+            class="mfa-code"
+            name="code"
+            [(ngModel)]="code"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            maxlength="6"
+            placeholder="123456"
+            [attr.aria-label]="lang.t('mfa.login.code')"
+          />
+          <button class="btn btn-primary" type="submit" [disabled]="busy() || code.trim().length < 6">{{ lang.t('mfa.confirm') }}</button>
+          <button class="btn btn-soft" type="button" (click)="reset()">{{ lang.t('mfa.cancel') }}</button>
+        </form>
+      </div>
+    </div>
+  }
+
+  @if (step() === 'disable') {
+    <form class="mfa-code-form mfa-disable" (ngSubmit)="confirmDisable()">
+      <p class="mfa-desc">{{ lang.t('mfa.disable_prompt') }}</p>
+      <input
+        class="mfa-code"
+        name="code"
+        [(ngModel)]="code"
+        autocomplete="one-time-code"
+        maxlength="9"
+        placeholder="123456"
+        [attr.aria-label]="lang.t('mfa.login.code')"
+      />
+      <button class="btn btn-danger" type="submit" [disabled]="busy() || !code.trim()">{{ lang.t('mfa.disable') }}</button>
+      <button class="btn btn-soft" type="button" (click)="reset()">{{ lang.t('mfa.cancel') }}</button>
+    </form>
+  }
+
+  @if (step() === 'backup') {
+    <div class="mfa-backup">
+      <p class="mfa-title">{{ lang.t('mfa.backup.title') }}</p>
+      <p class="mfa-desc">{{ lang.t('mfa.backup.desc') }}</p>
+      <ul class="mfa-codes">
+        @for (c of backupCodes(); track c) {
+          <li><code>{{ c }}</code></li>
+        }
+      </ul>
+      <div class="mfa-actions">
+        <button class="btn btn-soft" type="button" (click)="copyBackupCodes()">
+          <app-icon name="copy" [size]="15"></app-icon>{{ lang.t('mfa.backup.copy') }}
+        </button>
+        <button class="btn btn-primary" type="button" (click)="finish()">{{ lang.t('mfa.backup.done') }}</button>
+      </div>
+    </div>
+  }
+
+  @if (error()) {
+    <p class="mfa-error" role="alert">{{ error() }}</p>
+  }
+</section>

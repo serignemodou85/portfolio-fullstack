@@ -7,6 +7,8 @@ from django.utils.http import urlsafe_base64_decode
 
 from portfolio_backend.cloudinary_utils import safe_file_url as _safe_file_url, safe_raw_url as _safe_raw_url
 
+from .models import AuditLog
+
 User = get_user_model()
 
 
@@ -20,9 +22,9 @@ class UserSerializer(serializers.ModelSerializer):
             'id', 'username', 'email', 'first_name', 'last_name',
             'bio', 'profile_picture', 'cv_file', 'phone', 'location',
             'github_url', 'linkedin_url', 'twitter_url', 'website_url',
-            'date_joined', 'is_staff', 'is_superuser'
+            'date_joined', 'is_staff', 'is_superuser', 'totp_enabled'
         ]
-        read_only_fields = ['id', 'date_joined', 'is_staff', 'is_superuser']
+        read_only_fields = ['id', 'date_joined', 'is_staff', 'is_superuser', 'totp_enabled']
         extra_kwargs = {
             'profile_picture': {'required': False},
             'cv_file': {'required': False},
@@ -108,3 +110,15 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         validate_password(attrs['new_password'], user=user)
         attrs['user'] = user
         return attrs
+
+
+class AuditLogSerializer(serializers.ModelSerializer):
+    action_label = serializers.CharField(source='get_action_display', read_only=True)
+
+    class Meta:
+        model = AuditLog
+        fields = [
+            'id', 'username', 'action', 'action_label', 'model_name', 'object_id',
+            'object_repr', 'changes', 'ip_address', 'user_agent', 'created_at',
+        ]
+        read_only_fields = fields

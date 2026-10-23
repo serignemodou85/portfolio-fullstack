@@ -39,12 +39,12 @@
   border: 1px solid var(--line);
   background: var(--card);
   color: var(--ink-700);
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   padding: 0.45rem 0.86rem;
   font-weight: 700;
   font-size: 0.82rem;
   cursor: pointer;
-  transition: 0.22s ease;
+  transition: var(--duration-base) ease;
 
   &:hover,
   &.active {
@@ -75,7 +75,7 @@
   background: var(--card);
   overflow: hidden;
   box-shadow: 0 1px 2px rgba(10, 14, 23, 0.04);
-  transition: transform 0.26s ease, box-shadow 0.26s ease, border-color 0.26s ease;
+  transition: transform var(--duration-slow) ease, box-shadow var(--duration-slow) ease, border-color var(--duration-slow) ease;
   display: flex;
   flex-direction: column;
 
@@ -97,7 +97,7 @@
     display: block;
     object-fit: cover;
     object-position: center;
-    transition: transform 0.35s ease;
+    transition: transform var(--duration-slow) ease;
   }
 }
 
@@ -120,7 +120,7 @@
   top: 0.65rem;
   right: 0.65rem;
   padding: 0.26rem 0.56rem;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   font-size: 0.69rem;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -175,7 +175,7 @@
   border: 1px solid var(--line);
   background: var(--surface);
   padding: 0.22rem 0.5rem;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
 }
 
 .footer {

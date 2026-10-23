@@ -5,7 +5,7 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponseNotFound
 from django.views.static import serve
 from rest_framework.routers import DefaultRouter
-from accounts.views import UserViewSet
+from accounts.views import UserViewSet, AuditLogViewSet
 from accounts.views import dashboard_stats
 from accounts.auth_views import (
     CookieTokenObtainPairView,
@@ -13,6 +13,10 @@ from accounts.auth_views import (
     CookieLogoutView,
     PasswordResetRequestView,
     PasswordResetConfirmView,
+    MfaLoginVerifyView,
+    MfaSetupView,
+    MfaEnableView,
+    MfaDisableView,
 )
 from projects.views import ProjectViewSet
 from experience.views import ExperienceViewSet
@@ -67,6 +71,7 @@ router.register(r'blog/categories', CategoryViewSet, basename='category')
 router.register(r'blog/tags', TagViewSet, basename='tag')
 router.register(r'blog/articles', ArticleViewSet, basename='article')
 router.register(r'contact', ContactMessageViewSet, basename='contact')
+router.register(r'audit-logs', AuditLogViewSet, basename='audit-log')
 
 urlpatterns = [
     # Page d'accueil de l'API
@@ -82,6 +87,10 @@ urlpatterns = [
     path('api/auth/logout/', CookieLogoutView.as_view(), name='token_logout'),
     path('api/auth/password-reset/request/', PasswordResetRequestView.as_view(), name='password-reset-request'),
     path('api/auth/password-reset/confirm/', PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
+    path('api/auth/2fa/verify/', MfaLoginVerifyView.as_view(), name='mfa-verify'),
+    path('api/auth/2fa/setup/', MfaSetupView.as_view(), name='mfa-setup'),
+    path('api/auth/2fa/enable/', MfaEnableView.as_view(), name='mfa-enable'),
+    path('api/auth/2fa/disable/', MfaDisableView.as_view(), name='mfa-disable'),
     path('api/dashboard/stats/', dashboard_stats, name='dashboard-stats'),
     
     

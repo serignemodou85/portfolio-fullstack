@@ -210,7 +210,7 @@ $gray-50:  #f9fafb;
   color: $gray-900;
   font-size: 0.9rem;
   font-family: inherit;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  transition: border-color var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
 
   &::placeholder { color: $gray-400; }
 
@@ -233,7 +233,7 @@ $gray-50:  #f9fafb;
   display: flex;
   align-items: center;
   padding: 0;
-  transition: color 0.15s ease;
+  transition: color var(--duration-fast) ease;
 
   &:hover { color: $gray-700; }
 }
@@ -269,7 +269,7 @@ $gray-50:  #f9fafb;
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
-  transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  transition: background var(--duration-fast) ease, box-shadow var(--duration-fast) ease, transform var(--duration-fast) ease;
 
   &:hover:not(:disabled) {
     background: #3641f5;
@@ -298,4 +298,20 @@ $gray-50:  #f9fafb;
   .login-page { grid-template-columns: 1fr; }
   .login-brand { display: none; }
   .login-form-panel { padding: 2.5rem 1.5rem; min-height: 100vh; }
+}
+
+/* ── Étape 2FA ── */
+.mfa-code-input {
+  letter-spacing: 0.3em;
+  font-variant-numeric: tabular-nums;
+}
+
+.mfa-back {
+  margin-top: 0.9rem;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  font-family: inherit;
 }

@@ -8,11 +8,12 @@ import { AuthService } from '../../../core/services/auth';
 import { User } from '../../../core/models/auth.model';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
 import { LanguageService } from '../../../core/services/language.service';
+import { MfaSettings } from './mfa-settings/mfa-settings';
 
 @Component({
   selector: 'app-profile-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, AdminShell],
+  imports: [CommonModule, FormsModule, RouterLink, AdminShell, MfaSettings],
   templateUrl: './profile-admin.html',
   styleUrl: './profile-admin.scss'
 })

@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ArticleService } from '../services/article';
 import { ArticleDetail as ArticleDetailModel } from '../../../core/models/article.model';
+import { SeoService } from '../../../core/services/seo.service';
 
 @Component({
   selector: 'app-article-detail',
@@ -19,7 +20,8 @@ export class ArticleDetail implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private articleService: ArticleService
+    private articleService: ArticleService,
+    private seo: SeoService
   ) {}
 
   ngOnInit(): void {
@@ -33,6 +35,7 @@ export class ArticleDetail implements OnInit {
     this.articleService.getArticleBySlug(slug).subscribe({
       next: (article) => {
         this.article = article;
+        this.seo.setPage({ title: article.title, description: article.excerpt, image: article.featured_image, type: 'article' });
         this.loading = false;
       },
       error: (err) => {

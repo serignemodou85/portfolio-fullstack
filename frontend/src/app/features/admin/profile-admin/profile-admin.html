@@ -111,6 +111,8 @@
       <p *ngIf="success" class="success">{{ success }}</p>
     </section>
 
+    <app-mfa-settings *ngIf="!loading" [isEnabled]="currentUser?.totp_enabled"></app-mfa-settings>
+
     <ng-template #loadingState>
       <div class="panel">
         <div class="empty-state">{{ lang.t('admin.profile.loading') }}</div>

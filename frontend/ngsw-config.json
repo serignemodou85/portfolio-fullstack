@@ -1,0 +1,57 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "resources": {
+        "files": [
+          "/favicon.ico",
+          "/index.html",
+          "/manifest.webmanifest",
+          "/*.css",
+          "/*.js"
+        ]
+      }
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/**",
+          "/icons/**",
+          "/og-image.png",
+          "/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"
+        ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "api-public-content",
+      "urls": [
+        "https://portfolio-fullstack-acg1.onrender.com/api/projects/**",
+        "https://portfolio-fullstack-acg1.onrender.com/api/experiences/**",
+        "https://portfolio-fullstack-acg1.onrender.com/api/skills/**",
+        "https://portfolio-fullstack-acg1.onrender.com/api/skill-categories/**",
+        "https://portfolio-fullstack-acg1.onrender.com/api/blog/**",
+        "https://portfolio-fullstack-acg1.onrender.com/api/users/public_profile/"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 50,
+        "maxAge": "1d",
+        "timeout": "4s"
+      }
+    }
+  ],
+  "navigationUrls": [
+    "/**",
+    "!/**/*.*",
+    "!/**/*__*",
+    "!/**/*__*/**"
+  ]
+}

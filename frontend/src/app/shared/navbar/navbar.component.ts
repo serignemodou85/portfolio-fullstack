@@ -7,11 +7,12 @@ import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth';
 import { ThemeService } from '../../core/services/theme.service';
 import { LanguageService, Lang } from '../../core/services/language.service';
+import { IconComponent } from '../components/icon/icon.component';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink, RouterLinkActive, IconComponent],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })

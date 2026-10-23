@@ -58,7 +58,7 @@
     color: var(--ink-700);
     border: 1px solid var(--line);
     background: var(--surface);
-    border-radius: 999px;
+    border-radius: var(--radius-full);
     padding: 0.22rem 0.58rem;
   }
 }
@@ -72,7 +72,7 @@
 
 .status-badge {
   padding: 0.3rem 0.62rem;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -140,7 +140,7 @@
   border: 1px solid var(--line);
   background: var(--surface);
   color: var(--ink-700);
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   padding: 0.24rem 0.56rem;
   font-size: 0.75rem;
   font-weight: 700;
@@ -157,7 +157,7 @@
     object-fit: cover;
     border-radius: 12px;
     border: 1px solid var(--line);
-    transition: transform 0.26s ease;
+    transition: transform var(--duration-slow) ease;
 
     &:hover {
       transform: translateY(-3px);

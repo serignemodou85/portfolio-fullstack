@@ -44,3 +44,6 @@ Thumbs.db
 # DOCS / OUTILS
 # ========================================
 backend/backup*.json
+
+# Documents personnels de référence (ne jamais versionner)
+/modoufalldocboutique.pdf

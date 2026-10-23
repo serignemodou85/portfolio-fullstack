@@ -41,7 +41,7 @@
   padding-top: 0.72rem;
 
   span {
-    border-radius: 999px;
+    border-radius: var(--radius-full);
     padding: 0.26rem 0.62rem;
     font-size: 0.7rem;
     font-weight: 700;
@@ -138,7 +138,7 @@
   border: 1px solid #bfdbfe;
   background: #eff6ff;
   color: #1d4ed8;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   padding: 0.28rem 0.6rem;
   font-size: 0.74rem;
   font-weight: 700;

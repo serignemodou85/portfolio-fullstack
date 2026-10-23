@@ -2,7 +2,7 @@
   position: fixed;
   top: 1.25rem;
   right: 1.25rem;
-  z-index: 9999;
+  z-index: var(--z-toast);
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
@@ -80,7 +80,7 @@
   opacity: 0.5;
   border-radius: 5px;
   padding: 0;
-  transition: opacity 0.15s ease, background 0.15s ease;
+  transition: opacity var(--duration-fast) ease, background var(--duration-fast) ease;
 
   &:hover { opacity: 1; background: rgba(0,0,0,0.07); }
 }

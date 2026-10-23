@@ -1,0 +1,43 @@
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <a routerLink="/" class="footer-logo">
+        <span class="footer-mark">MF</span>
+        <span>Modou Fall</span>
+      </a>
+      <p class="footer-tagline">{{ lang.t('footer.tagline') }}</p>
+    </div>
+
+    <nav class="footer-col" [attr.aria-label]="lang.t('footer.nav')">
+      <p class="footer-heading">{{ lang.t('footer.nav') }}</p>
+      <ul>
+        @for (link of links; track link.path) {
+          <li><a [routerLink]="link.path">{{ lang.t(link.key) }}</a></li>
+        }
+      </ul>
+    </nav>
+
+    <div class="footer-col">
+      <p class="footer-heading">{{ lang.t('footer.contact') }}</p>
+      <ul>
+        <li>
+          <a href="mailto:modou2000f@gmail.com"><app-icon name="mail" [size]="15"></app-icon>modou2000f&#64;gmail.com</a>
+        </li>
+        <li>
+          <a href="https://www.linkedin.com/in/modou-fall-a81a27260" target="_blank" rel="noopener"><app-icon name="linkedin" [size]="15"></app-icon>LinkedIn</a>
+        </li>
+        <li>
+          <a href="https://github.com/serignemodou85" target="_blank" rel="noopener"><app-icon name="github" [size]="15"></app-icon>GitHub</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container footer-bottom">
+    <p>© {{ year }} Modou Fall. {{ lang.t('footer.rights') }}</p>
+    <button type="button" class="footer-top" (click)="scrollTop()">
+      {{ lang.t('footer.top') }}
+      <app-icon name="arrow-up" [size]="14"></app-icon>
+    </button>
+  </div>
+</footer>

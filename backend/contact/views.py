@@ -16,8 +16,11 @@ from .email_utils import (
     send_client_acknowledgement,
     send_manual_reply,
 )
+from accounts.audit import client_ip
 from .models import ContactMessage
 from .serializers import ContactMessageSerializer, ContactMessageCreateSerializer
+
+HONEYPOT_FIELD = 'website'
 
 
 class ContactMessageViewSet(viewsets.ModelViewSet):
@@ -51,16 +54,16 @@ class ContactMessageViewSet(viewsets.ModelViewSet):
         """
         Enregistre l'IP de l'expediteur + envoie les notifications email.
         """
+        # Honeypot : champ caché aux humains, rempli par les bots. On répond comme
+        # si tout allait bien pour ne pas leur apprendre qu'ils ont été repérés.
+        if (request.data.get(HONEYPOT_FIELD) or '').strip():
+            logger.info('contact honeypot triggered')
+            return Response({'detail': 'Message envoyé.'}, status=status.HTTP_201_CREATED)
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        if x_forwarded_for:
-            ip = x_forwarded_for.split(',')[0]
-        else:
-            ip = request.META.get('REMOTE_ADDR')
-
-        contact_message = serializer.save(ip_address=ip)
+        contact_message = serializer.save(ip_address=client_ip(request))
 
         notification_errors = []
         warning_codes = []

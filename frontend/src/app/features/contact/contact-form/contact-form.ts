@@ -16,6 +16,8 @@ interface ContactData {
   subject: string;
   mission_type?: string;
   message: string;
+  /** Honeypot : invisible pour un humain, rempli par les robots (filtré côté serveur). */
+  website?: string;
 }
 
 interface ContactCreateResponse {
@@ -38,7 +40,8 @@ export class ContactForm implements OnDestroy {
     phone: '',
     subject: '',
     mission_type: '',
-    message: ''
+    message: '',
+    website: ''
   };
 
   loading = false;
@@ -101,7 +104,8 @@ export class ContactForm implements OnDestroy {
       phone: '',
       subject: '',
       mission_type: '',
-      message: ''
+      message: '',
+      website: ''
     };
   }
 }

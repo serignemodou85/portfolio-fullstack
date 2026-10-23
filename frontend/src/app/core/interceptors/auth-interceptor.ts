@@ -22,12 +22,16 @@ function addAuth(req: HttpRequest<unknown>, token: string | null): HttpRequest<u
   return req.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
 }
 
+// Endpoints d'auth "anonymes" : ils transportent le cookie de refresh et un 401 y est
+// une réponse normale (mauvais mot de passe, session expirée), pas un signal de refresh.
+// Les endpoints de gestion 2FA (/auth/2fa/setup|enable|disable) restent authentifiés normalement.
+const SESSION_ENDPOINT = /\/auth\/(login|refresh|logout|2fa\/verify|password-reset)\//;
+
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
-  const isAuthEndpoint = req.url.includes('/auth/');
+  const isAuthEndpoint = SESSION_ENDPOINT.test(req.url);
   const publicRead = isPublicReadRequest(req.url, req.method);
 
-  // Ajouter credentials sur les endpoints auth (login, refresh, logout transportent le cookie)
   let outgoing = isAuthEndpoint ? req.clone({ withCredentials: true }) : req;
   if (!publicRead) {
     outgoing = addAuth(outgoing, authService.getAccessToken());

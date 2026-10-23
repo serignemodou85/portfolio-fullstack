@@ -11,10 +11,27 @@ from django.conf import settings
 from projects.models import Project
 from blog.models import Article
 from contact.models import ContactMessage
-from .serializers import UserSerializer, UserPublicSerializer, RegisterSerializer
+from .models import AuditLog
+from .serializers import UserSerializer, UserPublicSerializer, RegisterSerializer, AuditLogSerializer
 
 
 User = get_user_model()
+
+
+class AuditLogViewSet(viewsets.ReadOnlyModelViewSet):
+    """Journal d'audit en lecture seule, réservé à l'admin. Filtres : ?action=, ?model_name=."""
+    serializer_class = AuditLogSerializer
+    permission_classes = [IsAdminUser]
+
+    def get_queryset(self):
+        qs = AuditLog.objects.all()
+        action_filter = self.request.query_params.get('action')
+        model_filter = self.request.query_params.get('model_name')
+        if action_filter:
+            qs = qs.filter(action=action_filter)
+        if model_filter:
+            qs = qs.filter(model_name=model_filter)
+        return qs
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()

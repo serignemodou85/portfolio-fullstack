@@ -1,4 +1,6 @@
+<!-- ── Hero ─────────────────────────────────────────────────────────────── -->
 <section class="home-hero">
+  <div class="hero-bg" aria-hidden="true"></div>
   <div class="container hero-grid">
     <div class="hero-copy fade-up stagger-1">
       <span class="avail-badge">
@@ -9,113 +11,126 @@
       <h1>{{ t('home.h1') }}</h1>
       <p class="lead">{{ t('home.lead') }}</p>
 
-      <div class="quick-badges">
-        <span class="badge-pill">Python</span>
-        <span class="badge-pill">Machine Learning</span>
-        <span class="badge-pill">Django REST</span>
-        <span class="badge-pill">Angular</span>
-        <span class="badge-pill">SQL</span>
-        <span class="badge-pill">Spark</span>
-        <span class="badge-pill">Docker</span>
-        <span class="badge-pill">Airflow</span>
-      </div>
-
       <div class="hero-actions">
-        <a routerLink="/projects" class="btn btn-primary">{{ t('home.cta.work') }}</a>
+        <a routerLink="/projects" class="btn btn-primary">
+          {{ t('home.cta.work') }}
+          <app-icon name="arrow-right" [size]="16"></app-icon>
+        </a>
         <a routerLink="/contact" class="btn btn-outline">{{ t('home.cta.discuss') }}</a>
-        <a *ngIf="profile?.cv_file; else staticCv"
-           [href]="profile!.cv_file" target="_blank" rel="noopener"
-           class="btn btn-soft">{{ t('home.cta.cv') }}</a>
-        <ng-template #staticCv>
-          <a href="assets/documents/cvModouFall.pdf" target="_blank" class="btn btn-soft">{{ t('home.cta.cv') }}</a>
-        </ng-template>
+        <a [href]="profile?.cv_file || 'assets/documents/cvModouFall.pdf'" target="_blank" rel="noopener" class="btn btn-ghost">
+          <app-icon name="download" [size]="16"></app-icon>
+          {{ t('home.cta.cv') }}
+        </a>
       </div>
 
-      <div class="hero-metrics">
-        <article>
-          <p class="metric-value">{{ featuredProjects.length }}+</p>
-          <p class="metric-label">{{ t('home.metric.projects') }}</p>
-        </article>
-        <article>
-          <p class="metric-value">{{ featuredArticles.length }}+</p>
-          <p class="metric-label">{{ t('home.metric.articles') }}</p>
-        </article>
-        <article>
-          <p class="metric-value">End-to-End</p>
-          <p class="metric-label">{{ t('home.metric.e2e') }}</p>
-        </article>
-      </div>
+      @if (current) {
+        <p class="hero-current">
+          <span class="hero-current-icon"><app-icon name="graduation" [size]="16"></app-icon></span>
+          <span>
+            <strong>{{ t('home.current') }}</strong>
+            {{ current.title }} · {{ current.company }}
+          </span>
+        </p>
+      }
     </div>
 
-    <div class="hero-visual fade-up stagger-2">
-      <div class="visual-card">
+    <!-- Signature visuelle : la chaîne data de bout en bout -->
+    <div class="pipeline-card fade-up stagger-2">
+      <div class="pipeline-head">
         <img
+          class="pipeline-avatar"
           [src]="getProfileImageUrl(profile?.profile_picture)"
           alt="Modou Fall"
-          loading="lazy"
+          width="44"
+          height="44"
           decoding="async"
           (error)="onProfileError($event)"
         />
+        <div>
+          <p class="pipeline-name">Modou Fall</p>
+          <p class="pipeline-role">{{ t('home.pipe.title') }}</p>
+        </div>
+        <span class="pipeline-status"><span class="avail-dot"></span>{{ t('home.pipe.status') }}</span>
       </div>
-      <p class="visual-caption">
-        <span>Data Pipeline</span>
-        <span>API + Dashboard</span>
-      </p>
+
+      <ol class="pipeline-steps">
+        @for (step of pipeline; track step.key; let i = $index; let last = $last) {
+          <li class="pipeline-step" [style.--i]="i">
+            <span class="step-node"><app-icon [name]="step.icon" [size]="18"></app-icon></span>
+            <span class="step-copy">
+              <span class="step-title">{{ t('home.pipe.' + step.key) }}</span>
+              <span class="step-sub">{{ t('home.pipe.' + step.key + '.sub') }}</span>
+            </span>
+            <span class="step-index">0{{ i + 1 }}</span>
+            @if (!last) {
+              <span class="step-link" aria-hidden="true"><span class="step-pulse"></span></span>
+            }
+          </li>
+        }
+      </ol>
     </div>
   </div>
+
+  @if (stats.length) {
+    <div class="container">
+      <dl class="hero-stats fade-up stagger-3">
+        @for (s of stats; track s.labelKey) {
+          <div class="stat">
+            <dt>{{ t(s.labelKey) }}</dt>
+            <dd>{{ s.value }}</dd>
+          </div>
+        }
+      </dl>
+    </div>
+  }
 </section>
 
+<!-- ── Expertise (bento) ────────────────────────────────────────────────── -->
 <section class="section section-what">
   <div class="container">
-    <div class="section-head fade-up">
+    <div class="section-head" appReveal>
       <div>
         <p class="eyebrow">{{ t('home.what.eyebrow') }}</p>
         <h2>{{ t('home.what.title') }}</h2>
       </div>
     </div>
 
-    <div class="what-grid">
-      <div class="what-card fade-up stagger-1">
-        <div class="what-icon"><app-icon name="chart" [size]="22"></app-icon></div>
-        <h3>{{ t('what.data.title') }}</h3>
-        <p>{{ t('what.data.desc') }}</p>
-      </div>
-      <div class="what-card fade-up stagger-2">
-        <div class="what-icon"><app-icon name="cpu" [size]="22"></app-icon></div>
-        <h3>{{ t('what.ml.title') }}</h3>
-        <p>{{ t('what.ml.desc') }}</p>
-      </div>
-      <div class="what-card fade-up stagger-3">
-        <div class="what-icon"><app-icon name="server" [size]="22"></app-icon></div>
-        <h3>{{ t('what.backend.title') }}</h3>
-        <p>{{ t('what.backend.desc') }}</p>
-      </div>
-      <div class="what-card fade-up stagger-4">
-        <div class="what-icon"><app-icon name="monitor" [size]="22"></app-icon></div>
-        <h3>{{ t('what.frontend.title') }}</h3>
-        <p>{{ t('what.frontend.desc') }}</p>
-      </div>
+    <div class="bento">
+      @for (item of expertise; track item.key; let i = $index) {
+        <article class="bento-card" [class.bento-main]="i === 0" appReveal [revealDelay]="i * 60">
+          <div class="what-icon"><app-icon [name]="item.icon" [size]="22"></app-icon></div>
+          <h3>{{ t('what.' + item.key + '.title') }}</h3>
+          <p>{{ t('what.' + item.key + '.desc') }}</p>
+          <ul class="bento-stack">
+            @for (tech of item.stack; track tech) {
+              <li>{{ tech }}</li>
+            }
+          </ul>
+        </article>
+      }
     </div>
   </div>
 </section>
 
+<!-- ── Projets : étude de cas phare + autres ────────────────────────────── -->
 <section class="section section-projects">
   <div class="container">
-    <div class="section-head fade-up">
+    <div class="section-head" appReveal>
       <div>
         <p class="eyebrow">{{ t('home.projects.eyebrow') }}</p>
         <h2>{{ t('home.projects.title') }}</h2>
       </div>
-      <a routerLink="/projects" class="btn btn-outline">{{ t('home.projects.all') }}</a>
+      <a routerLink="/projects" class="btn btn-outline">
+        {{ t('home.projects.all') }}
+        <app-icon name="arrow-right" [size]="15"></app-icon>
+      </a>
     </div>
 
-    <div *ngIf="loading" class="loading">
-      <div class="spinner"></div>
-    </div>
-
-    <div class="card-grid" *ngIf="!loading">
-      <article class="project-card fade-up" *ngFor="let project of featuredProjects">
-        <div class="card-media">
+    @if (loading) {
+      <div class="case-skeleton" aria-hidden="true"></div>
+    } @else if (featured; as project) {
+      <article class="case-card" appReveal>
+        <a class="case-media" [routerLink]="['/projects', project.slug]" tabindex="-1" aria-hidden="true">
           <img
             [src]="getImageUrl(project.thumbnail)"
             [alt]="project.title"
@@ -123,65 +138,151 @@
             decoding="async"
             (error)="onImageError($event)"
           />
-          <span
-            class="status-badge"
-            [class.completed]="project.status === 'completed'"
-            [class.progress]="project.status === 'in_progress'"
-            [class.archived]="project.status === 'archived'"
-          >
-            {{ project.status === 'completed' ? t('status.completed') : (project.status === 'in_progress' ? t('status.in_progress') : t('status.archived')) }}
-          </span>
-        </div>
-        <div class="card-body">
+        </a>
+        <div class="case-body">
+          <p class="case-kicker">
+            <span class="case-tag">{{ t('home.case.featured') }}</span>
+            <span
+              class="status-badge"
+              [class.completed]="project.status === 'completed'"
+              [class.progress]="project.status === 'in_progress'"
+            >
+              {{ project.status === 'completed' ? t('status.completed') : t('status.in_progress') }}
+            </span>
+          </p>
           <h3>{{ project.title }}</h3>
-          <p>{{ project.description }}</p>
-          <div class="tags">
-            <span *ngFor="let tech of project.technologies.split(',') | slice:0:4">{{ tech.trim() }}</span>
-          </div>
-          <div class="card-actions">
-            <a [routerLink]="['/projects', project.slug]" class="btn btn-soft">{{ t('home.project.detail') }}</a>
-          </div>
+          <p class="case-desc">{{ project.description }}</p>
+
+          @if (hasCaseStudy) {
+            <dl class="case-steps">
+              @if (project.problem) {
+                <div><dt>{{ t('home.case.problem') }}</dt><dd>{{ project.problem }}</dd></div>
+              }
+              @if (project.solution) {
+                <div><dt>{{ t('home.case.solution') }}</dt><dd>{{ project.solution }}</dd></div>
+              }
+              @if (project.impact) {
+                <div class="case-impact"><dt>{{ t('home.case.impact') }}</dt><dd>{{ project.impact }}</dd></div>
+              }
+            </dl>
+          }
+
+          <ul class="tags">
+            @for (tech of techList(project); track tech) {
+              <li>{{ tech }}</li>
+            }
+          </ul>
+          <a [routerLink]="['/projects', project.slug]" class="btn btn-primary case-cta">
+            {{ hasCaseStudy ? t('home.case.read') : t('home.project.detail') }}
+            <app-icon name="arrow-right" [size]="16"></app-icon>
+          </a>
         </div>
       </article>
-    </div>
+
+      @if (otherProjects.length) {
+        <div class="card-grid other-projects">
+          @for (p of otherProjects; track p.id; let i = $index) {
+            <article class="project-card" appReveal [revealDelay]="i * 60">
+              <a class="card-media" [routerLink]="['/projects', p.slug]" tabindex="-1" aria-hidden="true">
+                <img [src]="getImageUrl(p.thumbnail)" [alt]="p.title" loading="lazy" decoding="async" (error)="onImageError($event)" />
+              </a>
+              <div class="card-body">
+                <h3><a [routerLink]="['/projects', p.slug]">{{ p.title }}</a></h3>
+                <p>{{ p.description }}</p>
+                <ul class="tags">
+                  @for (tech of techList(p, 3); track tech) {
+                    <li>{{ tech }}</li>
+                  }
+                </ul>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    } @else {
+      <div class="empty-state">{{ t('home.projects.empty') }}</div>
+    }
   </div>
 </section>
 
-<section class="section section-articles">
-  <div class="container">
-    <div class="section-head fade-up">
-      <div>
-        <p class="eyebrow">{{ t('home.articles.eyebrow') }}</p>
-        <h2>{{ t('home.articles.title') }}</h2>
+<!-- ── Certifications ──────────────────────────────────────────────────── -->
+@if (certifications.length) {
+  <section class="section section-certs">
+    <div class="container">
+      <div class="section-head" appReveal>
+        <div>
+          <p class="eyebrow">{{ t('home.certs.eyebrow') }}</p>
+          <h2>{{ t('home.certs.title') }}</h2>
+        </div>
+        <a routerLink="/experience" class="btn btn-outline">
+          {{ t('home.certs.all') }}
+          <app-icon name="arrow-right" [size]="15"></app-icon>
+        </a>
       </div>
-      <a routerLink="/blog" class="btn btn-outline">{{ t('home.articles.blog') }}</a>
-    </div>
 
-    <div class="article-grid" *ngIf="featuredArticles.length; else noArticles">
-      <article class="article-card fade-up" *ngFor="let article of featuredArticles">
-        <img [src]="article.featured_image" [alt]="article.title" />
-        <div class="article-body">
-          <span class="article-meta">{{ article.reading_time }} {{ t('home.articles.min') }}</span>
-          <h3>{{ article.title }}</h3>
-          <p>{{ article.excerpt }}</p>
-          <a [routerLink]="['/blog', article.slug]" class="read-link">{{ t('home.articles.read') }}</a>
+      <ul class="issuers" appReveal>
+        @for (issuer of issuers; track issuer.name) {
+          <li>
+            <span class="issuer-mark">{{ initials(issuer.name) }}</span>
+            <span class="issuer-name">{{ issuer.name }}</span>
+            <span class="issuer-count">×{{ issuer.count }}</span>
+          </li>
+        }
+      </ul>
+
+      <div class="cert-grid">
+        @for (cert of certifications | slice: 0 : 6; track cert.id; let i = $index) {
+          <article class="cert-card" appReveal [revealDelay]="i * 50">
+            <span class="cert-icon"><app-icon name="award" [size]="18"></app-icon></span>
+            <div class="cert-copy">
+              <h3>{{ cert.title }}</h3>
+              <p>{{ cert.company }} · {{ monthYear(cert.start_date) }}</p>
+            </div>
+            @if (cert.certificate_file) {
+              <a class="cert-link" [href]="cert.certificate_file" target="_blank" rel="noopener" [attr.aria-label]="t('home.certs.view') + ' : ' + cert.title">
+                <app-icon name="external-link" [size]="16"></app-icon>
+              </a>
+            }
+          </article>
+        }
+      </div>
+    </div>
+  </section>
+}
+
+<!-- ── Articles (masqué tant qu'il n'y en a pas) ───────────────────────── -->
+@if (featuredArticles.length) {
+  <section class="section section-articles">
+    <div class="container">
+      <div class="section-head" appReveal>
+        <div>
+          <p class="eyebrow">{{ t('home.articles.eyebrow') }}</p>
+          <h2>{{ t('home.articles.title') }}</h2>
         </div>
-      </article>
+        <a routerLink="/blog" class="btn btn-outline">{{ t('home.articles.blog') }}</a>
+      </div>
+
+      <div class="article-grid">
+        @for (article of featuredArticles; track article.slug; let i = $index) {
+          <article class="article-card" appReveal [revealDelay]="i * 60">
+            <img [src]="article.featured_image" [alt]="article.title" loading="lazy" decoding="async" />
+            <div class="article-body">
+              <span class="article-meta">{{ article.reading_time }} {{ t('home.articles.min') }}</span>
+              <h3>{{ article.title }}</h3>
+              <p>{{ article.excerpt }}</p>
+              <a [routerLink]="['/blog', article.slug]" class="read-link">{{ t('home.articles.read') }}</a>
+            </div>
+          </article>
+        }
+      </div>
     </div>
+  </section>
+}
 
-    <ng-template #noArticles>
-      <div class="empty-state">{{ t('home.articles.empty') }}</div>
-    </ng-template>
-  </div>
-</section>
-
+<!-- ── Appel à l'action ────────────────────────────────────────────────── -->
 <section class="section section-cta">
   <div class="container">
-    <div class="cta-box fade-up">
-      <span class="avail-badge cta-avail-badge">
-        <span class="avail-dot"></span>
-        {{ t('home.available') }}
-      </span>
+    <div class="cta-box" appReveal>
       <h2>{{ t('home.cta2.title') }}</h2>
       <p>{{ t('home.cta2.text') }}</p>
       <div class="cta-actions">

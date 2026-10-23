@@ -29,7 +29,11 @@ export interface ProjectBase {
   views?: number;
 }
 
-export interface ProjectList extends ProjectBase {}
+export interface ProjectList extends ProjectBase {
+  problem?: string;
+  solution?: string;
+  impact?: string;
+}
 
 export interface ProjectDetail extends ProjectBase {
   full_description?: string;

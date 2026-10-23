@@ -1,7 +1,7 @@
 # accounts/admin.py
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User
+from .models import AuditLog, User
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
@@ -40,3 +40,15 @@ class UserAdmin(BaseUserAdmin):
     )
     
     readonly_fields = ['date_joined', 'last_login']
+
+@admin.register(AuditLog)
+class AuditLogAdmin(admin.ModelAdmin):
+    list_display = ['created_at', 'username', 'action', 'model_name', 'object_repr', 'ip_address']
+    list_filter = ['action', 'model_name']
+    search_fields = ['username', 'object_repr']
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False

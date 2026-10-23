@@ -90,7 +90,7 @@ input, select, textarea {
   font-family: inherit;
   background: #fff;
   color: #0f172a;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  transition: border-color var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
 
   &:focus {
     outline: none;
@@ -163,7 +163,7 @@ textarea { resize: vertical; }
 .badge {
   display: inline-block;
   padding: 0.2rem 0.5rem;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   font-size: 0.72rem;
   background: #eef2ff;
   color: #1e3a8a;
@@ -186,7 +186,7 @@ textarea { resize: vertical; }
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  transition: all 0.16s ease;
+  transition: all var(--duration-fast) ease;
 }
 
 .btn:hover:not(:disabled) { transform: translateY(-1px); }

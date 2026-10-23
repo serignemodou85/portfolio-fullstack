@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { ProjectService } from '../services/project';
 import { ProjectDetail as ProjectDetailModel } from '../../../core/models/project.model';
 import { LanguageService } from '../../../core/services/language.service';
+import { SeoService } from '../../../core/services/seo.service';
 
 @Component({
   selector: 'app-project-detail',
@@ -24,7 +25,8 @@ export class ProjectDetail implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService,
-    private langService: LanguageService
+    private langService: LanguageService,
+    private seo: SeoService
   ) {}
 
   ngOnInit(): void {
@@ -52,6 +54,7 @@ export class ProjectDetail implements OnInit, OnDestroy {
           return;
         }
         this.project = project;
+        this.seo.setPage({ title: project.title, description: project.description, image: project.thumbnail });
         this.loading = false;
       },
       error: (err) => {
