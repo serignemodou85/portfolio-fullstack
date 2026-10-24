@@ -1,5 +1,5 @@
 // src/app/features/projects/services/project.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -18,11 +18,11 @@ interface PaginatedResponse<T> {
   providedIn: 'root'
 })
 export class ProjectService {
+  private http = inject(HttpClient);
+
   private apiUrl = `${environment.apiUrl}/projects/`;
   private cache = new Map<string, { ts: number; data: ProjectList[] }>();
-  private cacheTtlMs = 600_000; // 10 min
-
-  constructor(private http: HttpClient) {}
+  private cacheTtlMs = 600_000;
 
   getProjects(filters?: { status?: string; is_featured?: boolean; page?: number; page_size?: number }): Observable<ProjectList[]> {
     const cacheKey = JSON.stringify(filters || {});
@@ -61,10 +61,6 @@ export class ProjectService {
 
   createProject(project: FormData): Observable<ProjectDetail> {
     return this.http.post<ProjectDetail>(this.apiUrl, project);
-  }
-
-  updateProject(slug: string, project: FormData): Observable<ProjectDetail> {
-    return this.http.put<ProjectDetail>(`${this.apiUrl}${slug}/`, project);
   }
 
   partialUpdateProject(slug: string, project: FormData): Observable<ProjectDetail> {

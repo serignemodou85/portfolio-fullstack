@@ -24,12 +24,15 @@ def safe_file_url(request, file_field):
 
 
 def safe_raw_url(file_field) -> str | None:
-    """URL correcte pour les fichiers raw Cloudinary (PDF, certificats, CV).
+    """URL d'un CloudinaryField (PDF, certificats, CV).
 
-    CloudinaryField stocke en base : raw/upload/v{version}/{public_id}.{format}
+    CloudinaryField stocke en base : {resource_type}/upload/v{version}/{public_id}.{format}
     str(field) retourne uniquement le public_id — sans version ni extension.
-    On lit les attributs du CloudinaryResource pour reconstruire l'URL complète
-    avec la vraie version et le bon format, évitant le placeholder v1 erroné.
+    On lit les attributs du CloudinaryResource pour reconstruire l'URL complète.
+
+    Le resource_type vient de la valeur stockée, jamais d'une constante : un fichier
+    envoyé en "image" (ex. PDF uploadé du temps de l'ancien ImageField) n'existe pas
+    sous /raw/upload/ et y renverrait 404.
     """
     if not file_field:
         return None
@@ -39,7 +42,7 @@ def safe_raw_url(file_field) -> str | None:
             return None
 
         kwargs: dict = {
-            'resource_type': 'raw',
+            'resource_type': getattr(file_field, 'resource_type', None) or 'raw',
             'type': getattr(file_field, 'type', None) or 'upload',
             'secure': True,
             'force_version': False,

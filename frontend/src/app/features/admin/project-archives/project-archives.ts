@@ -1,98 +1,68 @@
-﻿import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+﻿import { Component, OnInit, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ProjectService } from '../../projects/services/project';
 import { ProjectList } from '../../../core/models/project.model';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
+import { PagerComponent } from '../../../shared/components/pager/pager.component';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
 import { LanguageService } from '../../../core/services/language.service';
-import { environment } from '../../../../environments/environment';
+import { byDate, byText, tableState } from '../../../core/utils/table-state';
+
+type SortKey = 'updated_desc' | 'updated_asc' | 'title_asc' | 'title_desc';
 
 @Component({
   selector: 'app-project-archives',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, IconComponent, AdminShell],
+  imports: [DatePipe, FormsModule, RouterLink, IconComponent, AdminShell, PagerComponent],
   templateUrl: './project-archives.html',
   styleUrl: './project-archives.scss'
 })
 export class ProjectArchives implements OnInit {
-  archivedProjects: ProjectList[] = [];
-  loading = true;
-  error: string | null = null;
-  pageSize = 5;
-  pageSizeOptions = [4, 5, 10, 20];
-  page = 1;
-  searchTerm = '';
-  sortKey: 'updated_desc' | 'updated_asc' | 'title_asc' | 'title_desc' = 'updated_desc';
-  readonly placeholderImage = 'assets/placeholders/project.svg';
-  private readonly mediaBase = environment.apiUrl.replace(/\/api\/?$/, '');
+  private projectService = inject(ProjectService);
+  private toastService = inject(ToastService);
+  private confirmService = inject(ConfirmService);
+  lang = inject(LanguageService);
 
-  constructor(
-    private projectService: ProjectService,
-    private toastService: ToastService,
-    private confirmService: ConfirmService,
-    public lang: LanguageService
-  ) {}
+  readonly placeholderImage = 'assets/placeholders/project.svg';
+  readonly archivedProjects = signal<ProjectList[]>([]);
+  readonly loading = signal(true);
+  readonly error = signal(false);
+
+  readonly table = tableState<ProjectList, SortKey>(this.archivedProjects, {
+    sort: 'updated_desc',
+    searchIn: p => [p.title, p.description, p.technologies],
+    compare: sort => ({
+      updated_desc: byDate<ProjectList>(p => p.updated_at, -1),
+      updated_asc: byDate<ProjectList>(p => p.updated_at, 1),
+      title_asc: byText<ProjectList>(p => p.title, 1),
+      title_desc: byText<ProjectList>(p => p.title, -1),
+    })[sort],
+  });
 
   ngOnInit(): void {
     this.loadArchivedProjects();
   }
 
   loadArchivedProjects(): void {
-    this.loading = true;
-    this.error = null;
-
+    this.loading.set(true);
+    this.error.set(false);
     this.projectService.getProjects({ status: 'archived', page_size: 1000 }).subscribe({
       next: (projects) => {
-        this.archivedProjects = projects;
-        this.syncPage();
-        this.loading = false;
+        this.archivedProjects.set(projects);
+        this.loading.set(false);
       },
-      error: (err) => {
-        console.error('Erreur chargement archives:', err);
-        this.error = 'Impossible de charger les projets archives.';
-        this.loading = false;
+      error: () => {
+        this.error.set(true);
+        this.loading.set(false);
       }
     });
   }
 
-  get pagedArchives(): ProjectList[] {
-    this.syncPage();
-    return this.paginate(this.processedArchives, this.page);
-  }
-
-  get totalPages(): number {
-    return Math.max(1, Math.ceil(this.processedArchives.length / this.pageSize));
-  }
-
-  setPage(page: number): void {
-    this.page = this.clampPage(page, this.totalPages);
-  }
-
-  setPageSize(size: number): void {
-    this.pageSize = size;
-    this.syncPage();
-  }
-
-  get processedArchives(): ProjectList[] {
-    const query = this.searchTerm.trim().toLowerCase();
-    let items = this.archivedProjects;
-    if (query) {
-      items = items.filter((project) =>
-        [project.title, project.description, project.technologies]
-          .filter(Boolean)
-          .some((v) => String(v).toLowerCase().includes(query))
-      );
-    }
-    return this.sortArchives(items);
-  }
-
   restoreProject(project: ProjectList): void {
-    if (!project.slug) return;
-
     this.confirmService.confirm({
       title: 'Restaurer le projet',
       message: `Restaurer "${project.title}" dans les projets actifs ?`,
@@ -100,94 +70,41 @@ export class ProjectArchives implements OnInit {
       danger: false
     }).subscribe(confirmed => {
       if (!confirmed) return;
-      this.projectService.restoreProject(project.slug!).subscribe({
+      this.projectService.restoreProject(project.slug).subscribe({
         next: () => {
-          this.archivedProjects = this.archivedProjects.filter((item) => item.slug !== project.slug);
-          this.syncPage();
+          this.removeLocally(project);
           this.toastService.success('Projet restauré.');
         },
-        error: (err) => {
-          console.error('Erreur restauration projet:', err);
-          this.toastService.error('La restauration a échoué.');
-        }
+        error: () => this.toastService.error('La restauration a échoué.')
       });
     });
   }
 
   deletePermanently(project: ProjectList): void {
-    if (!project.slug) return;
-
     this.confirmService.confirm({
       title: 'Suppression définitive',
       message: `Supprimer définitivement "${project.title}" ? Il sera effacé de la base de données, sans possibilité de récupération.`,
       confirmLabel: 'Supprimer définitivement'
     }).subscribe(confirmed => {
       if (!confirmed) return;
-      this.projectService.deleteProject(project.slug!).subscribe({
+      this.projectService.deleteProject(project.slug).subscribe({
         next: () => {
-          this.archivedProjects = this.archivedProjects.filter((item) => item.slug !== project.slug);
-          this.syncPage();
+          this.removeLocally(project);
           this.toastService.success('Projet supprimé définitivement.');
         },
-        error: (err) => {
-          console.error('Erreur suppression définitive projet:', err);
-          this.toastService.error('La suppression définitive a échoué.');
-        }
+        error: () => this.toastService.error('La suppression définitive a échoué.')
       });
     });
   }
 
-  private paginate<T>(items: T[], page: number): T[] {
-    const start = (page - 1) * this.pageSize;
-    return items.slice(start, start + this.pageSize);
-  }
-
-  private clampPage(page: number, total: number): number {
-    return Math.min(Math.max(page, 1), total);
-  }
-
-  private syncPage(): void {
-    this.page = this.clampPage(this.page, this.totalPages);
-  }
-
-  private sortArchives(items: ProjectList[]): ProjectList[] {
-    return [...items].sort((a, b) => {
-      if (this.sortKey === 'title_asc') {
-        return a.title.localeCompare(b.title);
-      }
-      if (this.sortKey === 'title_desc') {
-        return b.title.localeCompare(a.title);
-      }
-      const dateA = new Date(a.updated_at || '').getTime();
-      const dateB = new Date(b.updated_at || '').getTime();
-      if (this.sortKey === 'updated_asc') {
-        return dateA - dateB;
-      }
-      return dateB - dateA;
-    });
-  }
-
-  trackByProject(index: number, item: ProjectList): string {
-    return item.slug || `${index}`;
-  }
-
-  getImageUrl(url?: string | null): string {
-    if (!url) {
-      return this.placeholderImage;
-    }
-    if (url.startsWith('http')) {
-      return url;
-    }
-    if (url.startsWith('/')) {
-      return `${this.mediaBase}${url}`;
-    }
-    return url;
-  }
-
   onImageError(event: Event): void {
     const img = event.target as HTMLImageElement;
-    if (img && img.src !== this.placeholderImage) {
+    if (img && !img.src.endsWith(this.placeholderImage)) {
       img.src = this.placeholderImage;
     }
+  }
+
+  private removeLocally(project: ProjectList): void {
+    this.archivedProjects.update(list => list.filter(item => item.slug !== project.slug));
   }
 }

@@ -1,5 +1,5 @@
 // src/app/core/services/skill.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
@@ -11,12 +11,12 @@ import { PaginatedResponse } from '../models/paginated-response.model';
   providedIn: 'root'
 })
 export class SkillService {
+  private http = inject(HttpClient);
+
   private categoriesUrl = `${environment.apiUrl}/skill-categories`;
   private skillsUrl = `${environment.apiUrl}/skills`;
   private withSkillsCache: { ts: number; data: SkillCategoryWithSkills[] } | null = null;
-  private readonly cacheTtlMs = 600_000; // 10 min
-
-  constructor(private http: HttpClient) {}
+  private readonly cacheTtlMs = 600_000;
 
   getCategories(options?: { page?: number; page_size?: number }): Observable<SkillCategory[]> {
     let params = new HttpParams();

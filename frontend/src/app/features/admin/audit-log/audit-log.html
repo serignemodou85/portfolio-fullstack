@@ -2,7 +2,7 @@
   <div class="admin-page">
     <header class="page-header">
       <div>
-        <p class="eyebrow">Admin</p>
+        <p class="eyebrow">{{ lang.t('admin.eyebrow.security') }}</p>
         <h1>{{ lang.t('audit.title') }}</h1>
         <p class="subtitle">{{ lang.t('audit.subtitle') }}</p>
       </div>
@@ -45,7 +45,7 @@
                 <tr [class.clickable]="hasChanges(entry)" (click)="toggle(entry)">
                   <td class="nowrap">{{ entry.created_at | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
                   <td>{{ entry.username || '—' }}</td>
-                  <td><span class="audit-action" [attr.data-tone]="tone(entry.action)">{{ lang.t('audit.action.' + entry.action) }}</span></td>
+                  <td><span class="badge" [class]="'badge badge-' + tone(entry.action)">{{ lang.t('audit.action.' + entry.action) }}</span></td>
                   <td>
                     <span class="audit-target">{{ target(entry) }}</span>
                     @if (hasChanges(entry) && (entry.action === 'create' || entry.action === 'update')) {

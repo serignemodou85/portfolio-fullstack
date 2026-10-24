@@ -1,6 +1,5 @@
 // src/app/features/admin/skills-admin/skills-admin.ts
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { SkillService } from '../../../core/services/skill.service';
@@ -8,67 +7,73 @@ import { SkillCategory, SkillItem } from '../../../core/models/skill.model';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { ICON_SUGGESTIONS, resolveIconFromKeyword } from '../../../shared/utils/icon-keyword';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
+import { PagerComponent } from '../../../shared/components/pager/pager.component';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { apiErrorMessage } from '../../../core/utils/api-error';
+import { byText, tableState } from '../../../core/utils/table-state';
+
+type CategorySort = 'name_asc' | 'name_desc' | 'order_asc';
+type SkillSort = 'name_asc' | 'name_desc' | 'order_asc' | 'proficiency_desc';
+
+interface SkillFormModel {
+  name: string;
+  category: number | null;
+  proficiency: 1 | 2 | 3 | 4;
+  percentage: number;
+  icon: string;
+  years_of_experience: number;
+  order: number;
+}
+
+const byOrder = (a: { order?: number }, b: { order?: number }) => (a.order ?? 0) - (b.order ?? 0);
 
 @Component({
   selector: 'app-skills-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, IconComponent, AdminShell],
+  imports: [FormsModule, RouterLink, IconComponent, AdminShell, PagerComponent],
   templateUrl: './skills-admin.html',
   styleUrl: './skills-admin.scss'
 })
 export class SkillsAdmin implements OnInit {
+  private skillService = inject(SkillService);
+  private toastService = inject(ToastService);
+  private confirmService = inject(ConfirmService);
+  lang = inject(LanguageService);
+
   readonly iconSuggestions = ICON_SUGGESTIONS;
-  categories: SkillCategory[] = [];
-  skills: SkillItem[] = [];
-  error: string | null = null;
-  pageSize = 5;
-  pageSizeOptions = [4, 5, 10, 20];
-  categoryPage = 1;
-  skillPage = 1;
-  categorySearch = '';
-  skillSearch = '';
-  categorySort: 'name_asc' | 'name_desc' | 'order_asc' = 'order_asc';
-  skillSort: 'name_asc' | 'name_desc' | 'order_asc' | 'proficiency_desc' = 'order_asc';
+  readonly levels = [1, 2, 3, 4] as const;
+  readonly categories = signal<SkillCategory[]>([]);
+  readonly skills = signal<SkillItem[]>([]);
+  readonly error = signal<string | null>(null);
+  readonly editingCategoryId = signal<number | null>(null);
+  readonly editingSkillId = signal<number | null>(null);
 
-  editingCategoryId: number | null = null;
-  categoryForm: {
-    name: string;
-    icon: string;
-    order: number;
-  } = {
-    name: '',
-    icon: '',
-    order: 0
-  };
+  /** Modèles des formulaires (template-driven, liés par ngModel). */
+  categoryForm = { name: '', icon: '', order: 0 };
+  skillForm: SkillFormModel = this.emptySkill();
 
-  editingSkillId: number | null = null;
-  skillForm: {
-    name: string;
-    category: number | null;
-    proficiency: 1 | 2 | 3 | 4;
-    percentage: number;
-    icon: string;
-    years_of_experience: number;
-    order: number;
-  } = {
-    name: '',
-    category: null,
-    proficiency: 2,
-    percentage: 50,
-    icon: '',
-    years_of_experience: 0,
-    order: 0
-  };
+  readonly categoryTable = tableState<SkillCategory, CategorySort>(this.categories, {
+    sort: 'order_asc',
+    searchIn: c => [c.name, c.icon],
+    compare: sort => ({
+      order_asc: byOrder,
+      name_asc: byText<SkillCategory>(c => c.name, 1),
+      name_desc: byText<SkillCategory>(c => c.name, -1),
+    })[sort],
+  });
 
-  constructor(
-    private skillService: SkillService,
-    private toastService: ToastService,
-    private confirmService: ConfirmService,
-    public lang: LanguageService
-  ) {}
+  readonly skillTable = tableState<SkillItem, SkillSort>(this.skills, {
+    sort: 'order_asc',
+    searchIn: s => [s.name, s.icon, s.category_name],
+    compare: sort => ({
+      order_asc: byOrder,
+      name_asc: byText<SkillItem>(s => s.name, 1),
+      name_desc: byText<SkillItem>(s => s.name, -1),
+      proficiency_desc: (a: SkillItem, b: SkillItem) => (b.proficiency ?? 0) - (a.proficiency ?? 0),
+    })[sort],
+  });
 
   ngOnInit(): void {
     this.loadAll();
@@ -77,94 +82,36 @@ export class SkillsAdmin implements OnInit {
   loadAll(): void {
     this.skillService.getCategories({ page_size: 1000 }).subscribe({
       next: (items) => {
-        this.categories = items;
-        this.syncCategoryPage();
-        if (!this.skillForm.category && items.length && items[0].id) {
+        this.categories.set(items);
+        if (!this.skillForm.category && items[0]?.id) {
           this.skillForm.category = items[0].id;
         }
       },
-      error: () => (this.error = 'Erreur chargement categories.')
+      error: () => this.error.set('Erreur de chargement des catégories.')
     });
     this.skillService.getSkills({ page_size: 1000 }).subscribe({
-      next: (items) => {
-        this.skills = items;
-        this.syncSkillPage();
-      },
-      error: () => (this.error = 'Erreur chargement skills.')
+      next: (items) => this.skills.set(items),
+      error: () => this.error.set('Erreur de chargement des compétences.')
     });
   }
 
-  get pagedCategories(): SkillCategory[] {
-    this.syncCategoryPage();
-    return this.paginate(this.processedCategories, this.categoryPage);
-  }
-
-  get pagedSkills(): SkillItem[] {
-    this.syncSkillPage();
-    return this.paginate(this.processedSkills, this.skillPage);
-  }
-
-  get categoryTotalPages(): number {
-    return Math.max(1, Math.ceil(this.processedCategories.length / this.pageSize));
-  }
-
-  get skillTotalPages(): number {
-    return Math.max(1, Math.ceil(this.processedSkills.length / this.pageSize));
-  }
-
-  setCategoryPage(page: number): void {
-    this.categoryPage = this.clampPage(page, this.categoryTotalPages);
-  }
-
-  setSkillPage(page: number): void {
-    this.skillPage = this.clampPage(page, this.skillTotalPages);
-  }
-
-  setPageSize(size: number): void {
-    this.pageSize = size;
-    this.syncCategoryPage();
-    this.syncSkillPage();
-  }
-
-  get processedCategories(): SkillCategory[] {
-    const query = this.categorySearch.trim().toLowerCase();
-    let items = this.categories;
-    if (query) {
-      items = items.filter((cat) =>
-        [cat.name, cat.icon].filter(Boolean).some((value) => String(value).toLowerCase().includes(query))
-      );
-    }
-    return this.sortCategories(items);
-  }
-
-  get processedSkills(): SkillItem[] {
-    const query = this.skillSearch.trim().toLowerCase();
-    let items = this.skills;
-    if (query) {
-      items = items.filter((skill) =>
-        [skill.name, skill.icon, skill.category_name]
-          .filter(Boolean)
-          .some((value) => String(value).toLowerCase().includes(query))
-      );
-    }
-    return this.sortSkills(items);
-  }
+  // ── Catégories ───────────────────────────────────────────────────────────
 
   submitCategory(): void {
     if (!this.categoryForm.icon.trim()) {
-      this.categoryForm.icon = this.suggestIcon(this.categoryForm.name);
+      this.categoryForm.icon = resolveIconFromKeyword(this.categoryForm.name);
     }
+    const id = this.editingCategoryId();
     const payload: Partial<SkillCategory> = { ...this.categoryForm };
-    const request$ = this.editingCategoryId
-      ? this.skillService.updateCategory(this.editingCategoryId, payload)
-      : this.skillService.createCategory(payload);
+    const request$ = id ? this.skillService.updateCategory(id, payload) : this.skillService.createCategory(payload);
 
     request$.subscribe({
       next: () => {
+        this.toastService.success(id ? 'Catégorie mise à jour.' : 'Catégorie créée.');
         this.resetCategory();
         this.loadAll();
       },
-      error: () => (this.error = 'Erreur sauvegarde categorie.')
+      error: (err) => this.error.set(apiErrorMessage(err, 'Erreur lors de la sauvegarde de la catégorie.'))
     });
   }
 
@@ -172,58 +119,69 @@ export class SkillsAdmin implements OnInit {
     if (!cat.id) {
       return;
     }
-    this.editingCategoryId = cat.id;
-    this.categoryForm = {
-      name: cat.name,
-      icon: cat.icon || '',
-      order: cat.order
-    };
+    this.editingCategoryId.set(cat.id);
+    this.categoryForm = { name: cat.name, icon: cat.icon || '', order: cat.order };
   }
 
-  deleteCategory(id: number): void {
-    const cat = this.categories.find(c => c.id === id);
+  deleteCategory(cat: SkillCategory): void {
+    if (!cat.id) {
+      return;
+    }
     this.confirmService.confirm({
       title: 'Supprimer la catégorie',
-      message: `Supprimer "${cat?.name ?? 'cette catégorie'}" ? Les compétences associées seront aussi supprimées.`,
+      message: `Supprimer "${cat.name}" ? Les compétences associées seront aussi supprimées.`,
       confirmLabel: 'Supprimer'
     }).subscribe(confirmed => {
       if (!confirmed) return;
-      this.skillService.deleteCategory(id).subscribe({
+      this.skillService.deleteCategory(cat.id!).subscribe({
         next: () => { this.toastService.success('Catégorie supprimée.'); this.loadAll(); },
-        error: () => this.toastService.error('Erreur suppression catégorie.')
+        error: () => this.toastService.error('Erreur lors de la suppression de la catégorie.')
       });
     });
   }
 
   resetCategory(): void {
-    this.editingCategoryId = null;
+    this.editingCategoryId.set(null);
     this.categoryForm = { name: '', icon: '', order: 0 };
   }
 
+  onCategoryNameInput(): void {
+    if (!this.categoryForm.icon.trim()) {
+      this.categoryForm.icon = resolveIconFromKeyword(this.categoryForm.name);
+    }
+  }
+
+  normalizeCategoryIcon(): void {
+    this.categoryForm.icon = resolveIconFromKeyword(this.categoryForm.icon || this.categoryForm.name);
+  }
+
+  iconPreview(value?: string, fallback?: string): string {
+    return resolveIconFromKeyword(value || fallback || '');
+  }
+
+  // ── Compétences ──────────────────────────────────────────────────────────
+
   submitSkill(): void {
     if (!this.skillForm.category) {
-      this.error = 'Creez ou selectionnez une categorie avant d ajouter une competence.';
+      this.error.set('Créez ou sélectionnez une catégorie avant d\'ajouter une compétence.');
       return;
     }
-    const payload: Partial<SkillItem> = {
-      ...this.skillForm,
-      category: this.skillForm.category
-    };
-    const request$ = this.editingSkillId
-      ? this.skillService.updateSkill(this.editingSkillId, payload)
-      : this.skillService.createSkill(payload);
+    const id = this.editingSkillId();
+    const payload = { ...this.skillForm, category: this.skillForm.category } as Partial<SkillItem>;
+    const request$ = id ? this.skillService.updateSkill(id, payload) : this.skillService.createSkill(payload);
 
     request$.subscribe({
       next: () => {
+        this.toastService.success(id ? 'Compétence mise à jour.' : 'Compétence ajoutée.');
         this.resetSkill();
         this.loadAll();
       },
-      error: () => (this.error = 'Erreur sauvegarde skill.')
+      error: (err) => this.error.set(apiErrorMessage(err, 'Erreur lors de la sauvegarde de la compétence.'))
     });
   }
 
   editSkill(skill: SkillItem): void {
-    this.editingSkillId = skill.id;
+    this.editingSkillId.set(skill.id);
     this.skillForm = {
       name: skill.name,
       category: skill.category,
@@ -235,105 +193,37 @@ export class SkillsAdmin implements OnInit {
     };
   }
 
-  deleteSkill(id: number): void {
-    const skill = this.skills.find(s => s.id === id);
+  deleteSkill(skill: SkillItem): void {
     this.confirmService.confirm({
       title: 'Supprimer la compétence',
-      message: `Supprimer "${skill?.name ?? 'cette compétence'}" ?`,
+      message: `Supprimer "${skill.name}" ?`,
       confirmLabel: 'Supprimer'
     }).subscribe(confirmed => {
       if (!confirmed) return;
-      this.skillService.deleteSkill(id).subscribe({
-        next: () => { this.toastService.success('Compétence supprimée.'); this.loadAll(); },
-        error: () => this.toastService.error('Erreur suppression compétence.')
+      this.skillService.deleteSkill(skill.id).subscribe({
+        next: () => {
+          this.toastService.success('Compétence supprimée.');
+          this.skills.update(list => list.filter(s => s.id !== skill.id));
+        },
+        error: () => this.toastService.error('Erreur lors de la suppression de la compétence.')
       });
     });
   }
 
   resetSkill(): void {
-    this.editingSkillId = null;
-    this.skillForm = {
+    this.editingSkillId.set(null);
+    this.skillForm = this.emptySkill();
+  }
+
+  private emptySkill(): SkillFormModel {
+    return {
       name: '',
-      category: this.categories[0]?.id || null,
+      category: this.categories()[0]?.id ?? null,
       proficiency: 2,
       percentage: 50,
       icon: '',
       years_of_experience: 0,
       order: 0
     };
-  }
-
-  onCategoryNameInput(): void {
-    if (!this.categoryForm.icon.trim()) {
-      this.categoryForm.icon = this.suggestIcon(this.categoryForm.name);
-    }
-  }
-
-  normalizeCategoryIcon(): void {
-    this.categoryForm.icon = this.suggestIcon(this.categoryForm.icon || this.categoryForm.name);
-  }
-
-  useSuggestedIcon(icon: string): void {
-    this.categoryForm.icon = icon;
-  }
-
-  getCategoryIconPreview(value?: string, fallback?: string): string {
-    return resolveIconFromKeyword(value || fallback || '');
-  }
-
-  private suggestIcon(keyword: string): string {
-    return resolveIconFromKeyword(keyword);
-  }
-
-  private paginate<T>(items: T[], page: number): T[] {
-    const start = (page - 1) * this.pageSize;
-    return items.slice(start, start + this.pageSize);
-  }
-
-  private clampPage(page: number, total: number): number {
-    return Math.min(Math.max(page, 1), total);
-  }
-
-  private syncCategoryPage(): void {
-    this.categoryPage = this.clampPage(this.categoryPage, this.categoryTotalPages);
-  }
-
-  private syncSkillPage(): void {
-    this.skillPage = this.clampPage(this.skillPage, this.skillTotalPages);
-  }
-
-  private sortCategories(items: SkillCategory[]): SkillCategory[] {
-    return [...items].sort((a, b) => {
-      if (this.categorySort === 'name_asc') {
-        return a.name.localeCompare(b.name);
-      }
-      if (this.categorySort === 'name_desc') {
-        return b.name.localeCompare(a.name);
-      }
-      return (a.order ?? 0) - (b.order ?? 0);
-    });
-  }
-
-  private sortSkills(items: SkillItem[]): SkillItem[] {
-    return [...items].sort((a, b) => {
-      if (this.skillSort === 'name_asc') {
-        return a.name.localeCompare(b.name);
-      }
-      if (this.skillSort === 'name_desc') {
-        return b.name.localeCompare(a.name);
-      }
-      if (this.skillSort === 'proficiency_desc') {
-        return (b.proficiency ?? 0) - (a.proficiency ?? 0);
-      }
-      return (a.order ?? 0) - (b.order ?? 0);
-    });
-  }
-
-  trackByCategory(index: number, item: SkillCategory): number {
-    return item.id ?? index;
-  }
-
-  trackBySkill(index: number, item: SkillItem): number {
-    return item.id ?? index;
   }
 }

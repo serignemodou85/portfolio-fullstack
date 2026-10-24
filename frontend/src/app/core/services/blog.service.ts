@@ -1,5 +1,5 @@
 // src/app/core/services/blog.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -11,11 +11,11 @@ import { BlogCategory, BlogTag } from '../models/blog.model';
   providedIn: 'root'
 })
 export class BlogService {
+  private http = inject(HttpClient);
+
   private categoriesUrl = `${environment.apiUrl}/blog/categories`;
   private tagsUrl = `${environment.apiUrl}/blog/tags`;
   private articlesUrl = `${environment.apiUrl}/blog/articles`;
-
-  constructor(private http: HttpClient) {}
 
   getCategories(options?: { page?: number; page_size?: number }): Observable<BlogCategory[]> {
     let params = new HttpParams();
@@ -86,10 +86,6 @@ export class BlogService {
 
   createArticle(payload: FormData): Observable<ArticleDetail> {
     return this.http.post<ArticleDetail>(`${this.articlesUrl}/`, payload);
-  }
-
-  updateArticle(slug: string, payload: FormData): Observable<ArticleDetail> {
-    return this.http.put<ArticleDetail>(`${this.articlesUrl}/${slug}/`, payload);
   }
 
   partialUpdateArticle(slug: string, payload: FormData): Observable<ArticleDetail> {

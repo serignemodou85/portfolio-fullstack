@@ -1,47 +1,66 @@
-<section class="skills-page">
+<section class="page-hero">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="container page-hero-inner fade-up">
+    <div>
+      <p class="eyebrow">{{ t('skills.eyebrow') }}</p>
+      <h1>{{ t('skills.title') }}</h1>
+      <p class="lead">{{ t('skills.subtitle') }}</p>
+    </div>
+    <a routerLink="/contact" class="btn btn-outline">
+      {{ t('skills.cta') }}
+      <app-icon name="arrow-right" [size]="15"></app-icon>
+    </a>
+  </div>
+</section>
+
+<section class="section skills-page">
   <div class="container">
-    <header class="page-head fade-up">
-      <div>
-        <p class="eyebrow">{{ t('skills.eyebrow') }}</p>
-        <h1>{{ t('skills.title') }}</h1>
-        <p>{{ t('skills.subtitle') }}</p>
+    @if (loading()) {
+      <div class="skills-grid">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="card-skeleton" aria-hidden="true"></div>
+        }
       </div>
-      <a routerLink="/contact" class="btn btn-outline">{{ t('skills.cta') }}</a>
-    </header>
+    } @else if (error()) {
+      <div class="error-card">{{ t('skills.error') }}</div>
+    } @else {
+      <div class="skills-grid">
+        @for (category of categories(); track category.id; let i = $index) {
+          <article class="skill-card" appReveal [revealDelay]="(i % 3) * 50">
+            <div class="skill-card-head">
+              <div>
+                <span class="category-icon-badge">
+                  <app-icon [name]="getCategoryIcon(category.icon, category.name)" [size]="18"></app-icon>
+                </span>
+                <h2>{{ category.name }}</h2>
+              </div>
+              <span class="count">{{ category.skills.length }} {{ t('skills.count') }}</span>
+            </div>
 
-    <div *ngIf="loading" class="loading">
-      <div class="spinner"></div>
-      <p>{{ t('skills.loading') }}</p>
-    </div>
+            <ul class="skill-list">
+              @for (skill of category.skills; track skill.id) {
+                <li class="skill-row">
+                  <span class="name">{{ skill.name }}</span>
+                  <span class="row-meta">{{ yearsLabel(skill.years_of_experience) }}</span>
+                  <span class="level" [class]="proficiencyClass(skill.proficiency)">{{ skill.proficiency_display || skill.proficiency }}</span>
+                </li>
+              }
+            </ul>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</section>
 
-    <div *ngIf="error" class="error-card">{{ error }}</div>
-
-    <div class="skills-grid" *ngIf="!loading && !error">
-      <article class="skill-card" *ngFor="let category of categories; let i = index" appReveal [revealDelay]="i * 50">
-        <div class="skill-card-head">
-          <div>
-            <span class="category-icon-badge">
-              <app-icon [name]="getCategoryIcon(category.icon, category.name)" [size]="18"></app-icon>
-            </span>
-            <h2>{{ category.name }}</h2>
-          </div>
-          <span class="count">{{ category.skills.length }} {{ t('skills.count') }}</span>
-        </div>
-
-        <ul class="skill-list">
-          <li class="skill-row" *ngFor="let skill of category.skills">
-            <span class="name">{{ skill.name }}</span>
-            <span class="row-meta" *ngIf="skill.years_of_experience > 0">{{ skill.years_of_experience }} {{ t('skills.years') }}</span>
-            <span class="level" [class]="proficiencyClass(skill.proficiency)">{{ skill.proficiency_display || skill.proficiency }}</span>
-          </li>
-        </ul>
-      </article>
-    </div>
-
-    <section class="cta-box fade-up">
+<section class="section section-cta">
+  <div class="container">
+    <div class="cta-box" appReveal>
       <h2>{{ t('skills.cta2.title') }}</h2>
       <p>{{ t('skills.cta2.text') }}</p>
-      <a routerLink="/contact" class="btn btn-primary">{{ t('skills.cta2.btn') }}</a>
-    </section>
+      <div class="cta-actions">
+        <a routerLink="/contact" class="btn btn-primary">{{ t('skills.cta2.btn') }}</a>
+      </div>
+    </div>
   </div>
 </section>

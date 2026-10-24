@@ -2,121 +2,120 @@
   <div class="admin-page">
     <header class="page-header">
       <div>
-        <p class="eyebrow">Admin profile</p>
+        <p class="eyebrow">{{ lang.t('admin.eyebrow.account') }}</p>
         <h1>{{ lang.t('admin.profile.title') }}</h1>
         <p class="subtitle">{{ lang.t('admin.profile.subtitle') }}</p>
       </div>
       <a routerLink="/admin/dashboard" class="btn btn-outline">{{ lang.t('admin.blog.back') }}</a>
     </header>
 
-    <section class="panel" *ngIf="!loading; else loadingState">
-      <div class="panel-head">
-        <h2>{{ lang.t('admin.profile.public_info') }}</h2>
-      </div>
-
-      <form (ngSubmit)="submit()">
-        <div class="profile-grid">
-          <div class="profile-card">
-            <div class="avatar">
-              <img *ngIf="previewUrl; else placeholder" [src]="previewUrl" alt="Profil" />
-              <ng-template #placeholder>
-                <div class="avatar-placeholder">{{ lang.t('admin.profile.photo') }}</div>
-              </ng-template>
-            </div>
-            <label class="btn btn-soft" for="profile_image">{{ lang.t('admin.profile.change_photo') }}</label>
-            <input id="profile_image" type="file" accept="image/*" (change)="onImageSelected($event)" />
-            <p class="hint">{{ lang.t('admin.profile.photo_hint') }}</p>
-          </div>
-
-          <div class="profile-form">
-            <div class="grid two">
-              <div class="field">
-                <label for="first_name">{{ lang.t('admin.field.first_name') }}</label>
-                <input id="first_name" type="text" [(ngModel)]="formData.first_name" name="first_name" autocomplete="given-name" />
-              </div>
-              <div class="field">
-                <label for="last_name">{{ lang.t('admin.field.last_name') }}</label>
-                <input id="last_name" type="text" [(ngModel)]="formData.last_name" name="last_name" autocomplete="family-name" />
-              </div>
-            </div>
-
-            <div class="grid two">
-              <div class="field">
-                <label for="email">{{ lang.t('admin.field.email') }}</label>
-                <input id="email" type="email" [(ngModel)]="formData.email" name="email" autocomplete="email" />
-              </div>
-              <div class="field">
-                <label for="phone">{{ lang.t('admin.field.phone') }}</label>
-                <input id="phone" type="text" [(ngModel)]="formData.phone" name="phone" autocomplete="tel" />
-              </div>
-            </div>
-
-            <div class="grid two">
-              <div class="field">
-                <label for="location">{{ lang.t('admin.field.location') }}</label>
-                <input id="location" type="text" [(ngModel)]="formData.location" name="location" autocomplete="address-level2" />
-              </div>
-              <div class="field">
-                <label for="website">{{ lang.t('admin.field.website') }}</label>
-                <input id="website" type="url" [(ngModel)]="formData.website_url" name="website_url" autocomplete="url" />
-              </div>
-            </div>
-
-            <div class="field">
-              <label for="bio">{{ lang.t('admin.field.bio') }}</label>
-              <textarea id="bio" rows="3" [(ngModel)]="formData.bio" name="bio" autocomplete="off"></textarea>
-            </div>
-
-            <div class="grid two">
-              <div class="field">
-                <label for="github">GitHub</label>
-                <input id="github" type="url" [(ngModel)]="formData.github_url" name="github_url" autocomplete="url" />
-              </div>
-              <div class="field">
-                <label for="linkedin">LinkedIn</label>
-                <input id="linkedin" type="url" [(ngModel)]="formData.linkedin_url" name="linkedin_url" autocomplete="url" />
-              </div>
-            </div>
-
-            <div class="grid two">
-              <div class="field">
-                <label for="twitter">Twitter</label>
-                <input id="twitter" type="url" [(ngModel)]="formData.twitter_url" name="twitter_url" autocomplete="url" />
-              </div>
-            </div>
-
-            <div class="cv-section">
-              <p class="field-label">{{ lang.t('admin.profile.cv') }}</p>
-              <div class="cv-row">
-                <label class="btn btn-soft" for="cv_file">
-                  {{ cvName ? cvName : lang.t('admin.profile.cv_choose') }}
-                </label>
-                <input id="cv_file" type="file" accept=".pdf,application/pdf" (change)="onCvSelected($event)" />
-                <a *ngIf="currentCvUrl" [href]="currentCvUrl" target="_blank" rel="noopener" class="btn btn-outline">
-                  {{ lang.t('admin.profile.cv_view') }}
-                </a>
-                <span *ngIf="!currentCvUrl && !cvName" class="hint">{{ lang.t('admin.profile.cv_empty') }}</span>
-              </div>
-            </div>
-
-            <div class="actions">
-              <button class="btn btn-primary" type="submit" [disabled]="saving">{{ lang.t('admin.form.save') }}</button>
-              <button class="btn btn-soft" type="button" (click)="loadProfile()">{{ lang.t('admin.btn.reload') }}</button>
-            </div>
-          </div>
+    @if (!loading()) {
+      <section class="panel">
+        <div class="panel-head">
+          <h2>{{ lang.t('admin.profile.public_info') }}</h2>
         </div>
-      </form>
-
-      <p *ngIf="error" class="error">{{ error }}</p>
-      <p *ngIf="success" class="success">{{ success }}</p>
-    </section>
-
-    <app-mfa-settings *ngIf="!loading" [isEnabled]="currentUser?.totp_enabled"></app-mfa-settings>
-
-    <ng-template #loadingState>
+        <form (ngSubmit)="submit()">
+          <div class="profile-grid">
+            <div class="profile-card">
+              <div class="avatar">
+                @if (previewUrl(); as previewUrl) {
+                  <img [src]="previewUrl" alt="Profil" />
+                } @else {
+                  <div class="avatar-placeholder">{{ lang.t('admin.profile.photo') }}</div>
+                }
+              </div>
+              <label class="btn btn-soft" for="profile_image">{{ lang.t('admin.profile.change_photo') }}</label>
+              <input id="profile_image" type="file" accept="image/*" (change)="onImageSelected($event)" />
+              <p class="hint">{{ lang.t('admin.profile.photo_hint') }}</p>
+            </div>
+            <div class="profile-form">
+              <div class="grid two">
+                <div class="field">
+                  <label for="first_name">{{ lang.t('admin.field.first_name') }}</label>
+                  <input id="first_name" type="text" [(ngModel)]="formData.first_name" name="first_name" autocomplete="given-name" />
+                </div>
+                <div class="field">
+                  <label for="last_name">{{ lang.t('admin.field.last_name') }}</label>
+                  <input id="last_name" type="text" [(ngModel)]="formData.last_name" name="last_name" autocomplete="family-name" />
+                </div>
+              </div>
+              <div class="grid two">
+                <div class="field">
+                  <label for="email">{{ lang.t('admin.field.email') }}</label>
+                  <input id="email" type="email" [(ngModel)]="formData.email" name="email" autocomplete="email" />
+                </div>
+                <div class="field">
+                  <label for="phone">{{ lang.t('admin.field.phone') }}</label>
+                  <input id="phone" type="text" [(ngModel)]="formData.phone" name="phone" autocomplete="tel" />
+                </div>
+              </div>
+              <div class="grid two">
+                <div class="field">
+                  <label for="location">{{ lang.t('admin.field.location') }}</label>
+                  <input id="location" type="text" [(ngModel)]="formData.location" name="location" autocomplete="address-level2" />
+                </div>
+                <div class="field">
+                  <label for="website">{{ lang.t('admin.field.website') }}</label>
+                  <input id="website" type="url" [(ngModel)]="formData.website_url" name="website_url" autocomplete="url" />
+                </div>
+              </div>
+              <div class="field">
+                <label for="bio">{{ lang.t('admin.field.bio') }}</label>
+                <textarea id="bio" rows="3" [(ngModel)]="formData.bio" name="bio" autocomplete="off"></textarea>
+              </div>
+              <div class="grid two">
+                <div class="field">
+                  <label for="github">GitHub</label>
+                  <input id="github" type="url" [(ngModel)]="formData.github_url" name="github_url" autocomplete="url" />
+                </div>
+                <div class="field">
+                  <label for="linkedin">LinkedIn</label>
+                  <input id="linkedin" type="url" [(ngModel)]="formData.linkedin_url" name="linkedin_url" autocomplete="url" />
+                </div>
+              </div>
+              <div class="grid two">
+                <div class="field">
+                  <label for="twitter">Twitter</label>
+                  <input id="twitter" type="url" [(ngModel)]="formData.twitter_url" name="twitter_url" autocomplete="url" />
+                </div>
+              </div>
+              <div class="cv-section">
+                <p class="field-label">{{ lang.t('admin.profile.cv') }}</p>
+                <div class="cv-row">
+                  <label class="btn btn-soft" for="cv_file">
+                    {{ cvName() || lang.t('admin.profile.cv_choose') }}
+                  </label>
+                  <input id="cv_file" type="file" accept=".pdf,application/pdf" (change)="onCvSelected($event)" />
+                  @if (currentCvUrl(); as currentCvUrl) {
+                    <a [href]="currentCvUrl" target="_blank" rel="noopener" class="btn btn-outline">
+                      {{ lang.t('admin.profile.cv_view') }}
+                    </a>
+                  }
+                  @if (!currentCvUrl() && !cvName()) {
+                    <span class="hint">{{ lang.t('admin.profile.cv_empty') }}</span>
+                  }
+                </div>
+              </div>
+              <div class="actions">
+                <button class="btn btn-primary" type="submit" [disabled]="saving()">{{ lang.t('admin.form.save') }}</button>
+                <button class="btn btn-soft" type="button" (click)="loadProfile()">{{ lang.t('admin.btn.reload') }}</button>
+              </div>
+            </div>
+          </div>
+        </form>
+        @if (error(); as error) {
+          <div class="alert alert-error" role="alert">{{ error }}</div>
+        }
+      </section>
+    } @else {
       <div class="panel">
         <div class="empty-state">{{ lang.t('admin.profile.loading') }}</div>
       </div>
-    </ng-template>
+    }
+
+    @if (!loading()) {
+      <app-mfa-settings [isEnabled]="currentUser()?.totp_enabled"></app-mfa-settings>
+    }
+
   </div>
 </app-admin-shell>

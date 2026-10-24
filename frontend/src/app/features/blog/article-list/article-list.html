@@ -1,57 +1,60 @@
-<section class="blog-page">
+<section class="page-hero">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="container page-hero-inner fade-up">
+    <div>
+      <p class="eyebrow">{{ t('blog.eyebrow') }}</p>
+      <h1>{{ t('blog.title') }}</h1>
+      <p class="lead">{{ t('blog.subtitle') }}</p>
+    </div>
+    <a routerLink="/contact" class="btn btn-outline">
+      {{ t('blog.cta') }}
+      <app-icon name="arrow-right" [size]="15"></app-icon>
+    </a>
+  </div>
+</section>
+
+<section class="section blog-page">
   <div class="container">
-    <header class="page-head fade-up">
-      <div>
-        <p class="eyebrow">{{ t('blog.eyebrow') }}</p>
-        <h1>{{ t('blog.title') }}</h1>
-        <p>{{ t('blog.subtitle') }}</p>
+    @if (loading()) {
+      <div class="card-grid">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="card-skeleton" aria-hidden="true"></div>
+        }
       </div>
-      <a routerLink="/contact" class="btn btn-outline">{{ t('blog.cta') }}</a>
-    </header>
-
-    <div *ngIf="loading" class="loading">
-      <div class="spinner"></div>
-      <p>{{ t('blog.loading') }}</p>
-    </div>
-
-    <div *ngIf="error" class="error-card">{{ error }}</div>
-
-    <div class="articles-grid" *ngIf="!loading && !error">
-      <article class="article-card fade-up" *ngFor="let article of articles">
-        <div class="media">
-          <img [src]="article.featured_image" [alt]="article.title" />
-          <span class="category">{{ article.category_name || t('blog.general') }}</span>
-        </div>
-
-        <div class="body">
-          <div class="meta-row">
-            <span>{{ article.published_at | date:'dd/MM/yyyy' }}</span>
-            <span>{{ article.reading_time }} {{ t('blog.min') }}</span>
-            <span>{{ article.views_count }} {{ t('blog.views') }}</span>
-          </div>
-
-          <h2>
-            <a [routerLink]="['/blog', article.slug]">{{ article.title }}</a>
-          </h2>
-
-          <p class="excerpt">{{ article.excerpt }}</p>
-
-          <div class="tags" *ngIf="article.tags.length">
-            <span *ngFor="let tag of article.tags">#{{ tag.name }}</span>
-          </div>
-
-          <div class="footer">
-            <span class="status-badge" [class.published]="article.status === 'published'" [class.archived]="article.status === 'archived'">
-              {{ getStatusLabel(article.status) }}
-            </span>
-            <a [routerLink]="['/blog', article.slug]" class="btn btn-soft">{{ t('blog.read') }}</a>
-          </div>
-        </div>
-      </article>
-    </div>
-
-    <div *ngIf="!loading && !error && articles.length === 0" class="empty-state">
-      {{ t('blog.empty') }}
-    </div>
+    } @else if (error()) {
+      <div class="error-card">{{ t('blog.error') }}</div>
+    } @else if (articles().length) {
+      <div class="card-grid">
+        @for (article of articles(); track article.slug; let i = $index) {
+          <article class="project-card" appReveal [revealDelay]="(i % 3) * 60">
+            <a class="card-media" [routerLink]="['/blog', article.slug]" tabindex="-1" aria-hidden="true">
+              <img [src]="article.featured_image" [alt]="article.title" loading="lazy" decoding="async" />
+            </a>
+            <div class="card-body">
+              <p class="card-kicker">
+                <span class="post-category">{{ article.category_name || t('blog.general') }}</span>
+                <span>{{ article.published_at | date: 'dd/MM/yyyy' }}</span>
+                <span>· {{ article.reading_time }} {{ t('blog.min') }}</span>
+              </p>
+              <h3><a [routerLink]="['/blog', article.slug]">{{ article.title }}</a></h3>
+              <p>{{ article.excerpt }}</p>
+              @if (article.tags.length) {
+                <ul class="tags">
+                  @for (tag of article.tags; track tag.name) {
+                    <li>#{{ tag.name }}</li>
+                  }
+                </ul>
+              }
+              <a class="card-link" [routerLink]="['/blog', article.slug]">
+                {{ t('blog.read') }}
+                <app-icon name="arrow-right" [size]="15"></app-icon>
+              </a>
+            </div>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">{{ t('blog.empty') }}</div>
+    }
   </div>
 </section>

@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
+import { Observable } from 'rxjs';
 
 export interface ConfirmConfig {
   title?: string;
@@ -16,7 +16,9 @@ export interface ConfirmConfig {
 export class ConfirmService {
   private resolveRef: ((val: any) => void) | null = null;
 
-  readonly state$ = new BehaviorSubject<ConfirmConfig | null>(null);
+  private readonly _state = signal<ConfirmConfig | null>(null);
+  /** Boîte de dialogue ouverte (null = fermée). */
+  readonly state = this._state.asReadonly();
 
   confirm(config: ConfirmConfig): Observable<boolean> {
     return new Observable(observer => {
@@ -25,7 +27,7 @@ export class ConfirmService {
         observer.next(val);
         observer.complete();
       };
-      this.state$.next(config);
+      this._state.set(config);
     });
   }
 
@@ -36,21 +38,21 @@ export class ConfirmService {
         observer.next(val);
         observer.complete();
       };
-      this.state$.next({ ...config, withInput: true });
+      this._state.set({ ...config, withInput: true });
     });
   }
 
   accept(inputValue?: string): void {
     const resolve = this.resolveRef;
     this.resolveRef = null;
-    this.state$.next(null);
+    this._state.set(null);
     if (resolve) resolve(inputValue !== undefined ? inputValue : true);
   }
 
   cancel(): void {
     const resolve = this.resolveRef;
     this.resolveRef = null;
-    this.state$.next(null);
+    this._state.set(null);
     if (resolve) resolve(false);
   }
 }

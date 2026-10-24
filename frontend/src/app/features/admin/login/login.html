@@ -37,101 +37,105 @@
   <div class="login-form-panel">
     <div class="login-form-inner">
 
-      <div class="login-header" *ngIf="!mfaToken">
-        <h1>Connexion</h1>
-        <p>Entrez vos identifiants pour accéder au dashboard</p>
-      </div>
-      <div class="login-header" *ngIf="mfaToken">
-        <h1>{{ lang.t('mfa.login.title') }}</h1>
-        <p>{{ lang.t('mfa.login.subtitle') }}</p>
-      </div>
-
-      <div *ngIf="error" class="alert-error" role="alert">
-        <app-icon name="alert" [size]="16"></app-icon>
-        {{ error }}
+      <div class="login-header">
+        @if (mfaToken()) {
+          <h1>{{ lang.t('mfa.login.title') }}</h1>
+          <p>{{ lang.t('mfa.login.subtitle') }}</p>
+        } @else {
+          <h1>Connexion</h1>
+          <p>Entrez vos identifiants pour accéder au dashboard</p>
+        }
       </div>
 
-      <form *ngIf="!mfaToken" (ngSubmit)="onSubmit()" #loginForm="ngForm" novalidate class="login-form">
+      @if (error(); as error) {
+        <div class="alert-error" role="alert">
+          <app-icon name="alert" [size]="16"></app-icon>
+          {{ error }}
+        </div>
+      }
 
-        <div class="field-group">
-          <label for="username" class="field-label">Nom d'utilisateur</label>
-          <div class="field-input-wrap">
-            <app-icon class="field-icon" name="user" [size]="18"></app-icon>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              class="field-input"
-              [(ngModel)]="credentials.username"
-              required
-              autocomplete="username"
-              placeholder="votre username"
-              [disabled]="loading"
-            />
+      @if (!mfaToken()) {
+        <form (ngSubmit)="onSubmit()" #loginForm="ngForm" novalidate class="login-form">
+          <div class="field-group">
+            <label for="username" class="field-label">Nom d'utilisateur</label>
+            <div class="field-input-wrap">
+              <app-icon class="field-icon" name="user" [size]="18"></app-icon>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                class="field-input"
+                [(ngModel)]="credentials.username"
+                required
+                autocomplete="username"
+                placeholder="votre username"
+                [disabled]="loading()"
+                />
+            </div>
           </div>
-        </div>
-
-        <div class="field-group">
-          <label for="password" class="field-label">Mot de passe</label>
-          <div class="field-input-wrap">
-            <app-icon class="field-icon" name="lock" [size]="18"></app-icon>
-            <input
-              [type]="showPassword ? 'text' : 'password'"
-              id="password"
-              name="password"
-              class="field-input"
-              [(ngModel)]="credentials.password"
-              required
-              autocomplete="current-password"
-              placeholder="••••••••"
-              [disabled]="loading"
-            />
-            <button type="button" class="pwd-toggle" (click)="showPassword = !showPassword" [attr.aria-label]="showPassword ? 'Masquer' : 'Afficher'">
-              <app-icon *ngIf="!showPassword" name="eye" [size]="17"></app-icon>
-              <app-icon *ngIf="showPassword" name="eye-off" [size]="17"></app-icon>
-            </button>
+          <div class="field-group">
+            <label for="password" class="field-label">Mot de passe</label>
+            <div class="field-input-wrap">
+              <app-icon class="field-icon" name="lock" [size]="18"></app-icon>
+              <input
+                [type]="showPassword() ? 'text' : 'password'"
+                id="password"
+                name="password"
+                class="field-input"
+                [(ngModel)]="credentials.password"
+                required
+                autocomplete="current-password"
+                placeholder="••••••••"
+                [disabled]="loading()"
+                />
+              <button type="button" class="pwd-toggle" (click)="showPassword.set(!showPassword())" [attr.aria-label]="showPassword() ? 'Masquer' : 'Afficher'">
+                <app-icon [name]="showPassword() ? 'eye-off' : 'eye'" [size]="17"></app-icon>
+              </button>
+            </div>
           </div>
-        </div>
-
-        <div class="form-row">
-          <a routerLink="/admin/reset-password" class="forgot-link">Mot de passe oublié ?</a>
-        </div>
-
-        <button type="submit" class="btn-submit" [disabled]="!loginForm.valid || loading">
-          <span class="spinner" *ngIf="loading"></span>
-          {{ loading ? 'Connexion...' : 'Se connecter' }}
-        </button>
-
-      </form>
-
-      <form *ngIf="mfaToken" (ngSubmit)="onVerifyMfa()" novalidate class="login-form">
-        <div class="field-group">
-          <label for="mfa-code" class="field-label">{{ lang.t('mfa.login.code') }}</label>
-          <div class="field-input-wrap">
-            <app-icon class="field-icon" name="shield" [size]="18"></app-icon>
-            <input
-              #mfaInput
-              type="text"
-              id="mfa-code"
-              name="mfaCode"
-              class="field-input mfa-code-input"
-              [(ngModel)]="mfaCode"
-              required
-              inputmode="numeric"
-              autocomplete="one-time-code"
-              maxlength="9"
-              placeholder="123 456"
-              [disabled]="loading"
-            />
+          <div class="form-row">
+            <a routerLink="/admin/reset-password" class="forgot-link">Mot de passe oublié ?</a>
           </div>
-        </div>
+          <button type="submit" class="btn-submit" [disabled]="!loginForm.valid || loading()">
+            @if (loading()) {
+              <span class="spinner"></span>
+            }
+            {{ loading() ? 'Connexion...' : 'Se connecter' }}
+          </button>
+        </form>
+      }
 
-        <button type="submit" class="btn-submit" [disabled]="!mfaCode.trim() || loading">
-          <span class="spinner" *ngIf="loading"></span>
-          {{ loading ? lang.t('mfa.login.verifying') : lang.t('mfa.login.verify') }}
-        </button>
-        <button type="button" class="forgot-link mfa-back" (click)="cancelMfa()">{{ lang.t('mfa.login.back') }}</button>
-      </form>
+      @if (mfaToken()) {
+        <form (ngSubmit)="onVerifyMfa()" novalidate class="login-form">
+          <div class="field-group">
+            <label for="mfa-code" class="field-label">{{ lang.t('mfa.login.code') }}</label>
+            <div class="field-input-wrap">
+              <app-icon class="field-icon" name="shield" [size]="18"></app-icon>
+              <input
+                #mfaInput
+                type="text"
+                id="mfa-code"
+                name="mfaCode"
+                class="field-input mfa-code-input"
+                [(ngModel)]="mfaCode"
+                required
+                inputmode="numeric"
+                autocomplete="one-time-code"
+                maxlength="9"
+                placeholder="123 456"
+                [disabled]="loading()"
+                />
+            </div>
+          </div>
+          <button type="submit" class="btn-submit" [disabled]="!mfaCode().trim() || loading()">
+            @if (loading()) {
+              <span class="spinner"></span>
+            }
+            {{ loading() ? lang.t('mfa.login.verifying') : lang.t('mfa.login.verify') }}
+          </button>
+          <button type="button" class="forgot-link mfa-back" (click)="cancelMfa()">{{ lang.t('mfa.login.back') }}</button>
+        </form>
+      }
     </div>
   </div>
 

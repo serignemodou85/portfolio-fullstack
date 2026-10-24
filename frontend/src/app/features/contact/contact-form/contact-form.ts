@@ -1,12 +1,10 @@
 // src/app/features/contact/contact-form/contact-form.ts
-import { Component, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule, NgForm } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
-import { LanguageService, Lang } from '../../../core/services/language.service';
+import { LanguageService } from '../../../core/services/language.service';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 
 interface ContactData {
@@ -29,11 +27,15 @@ interface ContactCreateResponse {
 @Component({
   selector: 'app-contact-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconComponent],
+  imports: [FormsModule, IconComponent],
   templateUrl: './contact-form.html',
   styleUrl: './contact-form.scss'
 })
-export class ContactForm implements OnDestroy {
+export class ContactForm {
+  private http = inject(HttpClient);
+  private destroyRef = inject(DestroyRef);
+  readonly lang = inject(LanguageService);
+
   formData: ContactData = {
     name: '',
     email: '',
@@ -44,55 +46,38 @@ export class ContactForm implements OnDestroy {
     website: ''
   };
 
-  loading = false;
-  success = false;
-  error: string | null = null;
-  warning: string | null = null;
-  lang: Lang = 'fr';
-  private destroy$ = new Subject<void>();
-
-  constructor(
-    private http: HttpClient,
-    private langService: LanguageService
-  ) {
-    this.langService.lang$.pipe(takeUntil(this.destroy$)).subscribe(l => this.lang = l);
-  }
+  readonly loading = signal(false);
+  readonly success = signal(false);
+  readonly error = signal(false);
+  readonly warning = signal<string | null>(null);
 
   t(key: string): string {
-    return this.langService.t(key);
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    return this.lang.t(key);
   }
 
   onSubmit(form: NgForm): void {
-    // Empêche l'envoi si le formulaire est invalide et marque tous les champs comme \"touchés\"
+    // Empêche l'envoi si le formulaire est invalide et marque tous les champs comme « touchés »
     if (form.invalid) {
       Object.values(form.controls).forEach(control => control.markAsTouched());
       return;
     }
 
-    this.loading = true;
-    this.success = false;
-    this.error = null;
-    this.warning = null;
+    this.loading.set(true);
+    this.success.set(false);
+    this.error.set(false);
+    this.warning.set(null);
 
-    this.http.post<ContactCreateResponse>(`${environment.apiUrl}/contact/`, this.formData).pipe(takeUntil(this.destroy$)).subscribe({
+    this.http.post<ContactCreateResponse>(`${environment.apiUrl}/contact/`, this.formData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
-        this.success = true;
-        if (response?.email_warning) {
-          this.warning = response.email_warning;
-        }
-        this.loading = false;
+        this.success.set(true);
+        this.warning.set(response?.email_warning || null);
+        this.loading.set(false);
         this.resetForm();
         form.resetForm();
       },
-      error: (err) => {
-        this.error = 'Une erreur est survenue lors de l’envoi. Merci de réessayer ou de me contacter directement par email.';
-        this.loading = false;
-        console.error(err);
+      error: () => {
+        this.error.set(true);
+        this.loading.set(false);
       }
     });
   }

@@ -1,5 +1,5 @@
 // src/app/core/services/dashboard.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -19,9 +19,9 @@ export interface DashboardStats {
   providedIn: 'root'
 })
 export class DashboardService {
-  private API_URL = `${environment.apiUrl}/dashboard/stats/`; // Endpoint Django REST
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private API_URL = `${environment.apiUrl}/dashboard/stats/`;
 
   /**
    * Récupère les stats du dashboard depuis Django

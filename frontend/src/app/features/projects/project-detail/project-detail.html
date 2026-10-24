@@ -1,107 +1,154 @@
-<div *ngIf="loading" class="loading">
-  <div class="spinner"></div>
-  <p>Chargement du projet...</p>
-</div>
-
-<div *ngIf="error" class="error-page">
-  <h1>{{ error }}</h1>
-  <a routerLink="/projects" class="btn btn-outline">Retour aux projets</a>
-</div>
-
-<div *ngIf="project && !loading" class="project-detail">
-  <header class="hero">
-    <div class="container hero-content fade-up">
-      <a routerLink="/projects" class="back-link">Retour aux projets</a>
-      <div class="hero-top">
-        <h1>{{ project.title }}</h1>
-        <span class="status-badge" [class.completed]="project.status === 'completed'" [class.progress]="project.status === 'in_progress'" [class.archived]="project.status === 'archived'">
-          {{ getStatusLabel(project.status) }}
-        </span>
-      </div>
-      <p class="lead">{{ project.description }}</p>
-      <div class="meta">
-        <span>{{ project.start_date | date:'MMMM yyyy' }}</span>
-        <span *ngIf="project.end_date">{{ project.end_date | date:'MMMM yyyy' }}</span>
-      </div>
-      <div class="actions">
-        <a *ngIf="project.github_url" [href]="project.github_url" target="_blank" class="btn btn-soft">GitHub</a>
-        <a *ngIf="project.live_url" [href]="project.live_url" target="_blank" class="btn btn-primary">Demo live</a>
-      </div>
-    </div>
-  </header>
-
-  <section class="cover">
+@if (loading()) {
+  <div class="container detail-loading" aria-busy="true">
+    <div class="skeleton-line w-30"></div>
+    <div class="skeleton-line w-70 tall"></div>
+    <div class="skeleton-line w-50"></div>
+    <div class="card-skeleton"></div>
+  </div>
+} @else if (notFound()) {
+  <section class="page-hero not-found">
     <div class="container">
-      <img
-        [src]="getImageUrl(project.thumbnail)"
-        [alt]="project.title"
-        loading="lazy"
-        decoding="async"
-        (error)="onImageError($event)"
-      />
+      <p class="eyebrow">404</p>
+      <h1>{{ t('project.notfound') }}</h1>
+      <p class="lead">{{ t('project.notfound.text') }}</p>
+      <a routerLink="/projects" class="btn btn-primary">
+        <app-icon name="arrow-left" [size]="16"></app-icon>
+        {{ t('project.back') }}
+      </a>
     </div>
   </section>
+} @else if (project(); as p) {
+  <article class="project-detail">
+    <header class="page-hero">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="container fade-up">
+        <a routerLink="/projects" class="back-link">
+          <app-icon name="arrow-left" [size]="15"></app-icon>
+          {{ t('project.back') }}
+        </a>
 
-  <section class="content container">
-    <article class="panel fade-up">
-      <h2>Technologies</h2>
-      <div class="tech-grid">
-        <span class="tech-badge" *ngFor="let tech of project.technologies.split(',')">{{ tech.trim() }}</span>
+        <div class="detail-head">
+          <div class="detail-copy">
+            <p class="detail-kicker">
+              <span class="status-badge" [class.completed]="p.status === 'completed'" [class.progress]="p.status === 'in_progress'">
+                {{ t('status.' + p.status) }}
+              </span>
+              @if (p.is_featured) {
+                <span class="case-tag">{{ t('home.case.featured') }}</span>
+              }
+            </p>
+            <h1>{{ p.title }}</h1>
+            <p class="lead">{{ p.description }}</p>
+            <div class="hero-actions">
+              @if (p.live_url) {
+                <a [href]="p.live_url" target="_blank" rel="noopener" class="btn btn-primary">
+                  {{ t('project.demo') }}
+                  <app-icon name="external-link" [size]="15"></app-icon>
+                </a>
+              }
+              @if (p.github_url) {
+                <a [href]="p.github_url" target="_blank" rel="noopener" class="btn btn-outline">
+                  <app-icon name="github" [size]="16"></app-icon>
+                  {{ t('project.code') }}
+                </a>
+              }
+            </div>
+          </div>
+
+          <!-- Fiche projet : l'essentiel en un coup d'œil -->
+          <dl class="fact-sheet">
+            @if (period(p)) {
+              <div>
+                <dt><app-icon name="calendar" [size]="14"></app-icon>{{ t('project.period') }}</dt>
+                <dd>{{ period(p) }}</dd>
+              </div>
+            }
+            <div>
+              <dt><app-icon name="check-circle" [size]="14"></app-icon>{{ t('project.status') }}</dt>
+              <dd>{{ t('status.' + p.status) }}</dd>
+            </div>
+            @if (p.views) {
+              <div>
+                <dt><app-icon name="eye" [size]="14"></app-icon>{{ t('project.views') }}</dt>
+                <dd>{{ p.views }}</dd>
+              </div>
+            }
+            @if (technologies().length) {
+              <div class="fact-stack">
+                <dt><app-icon name="code" [size]="14"></app-icon>{{ t('project.stack') }}</dt>
+                <dd>
+                  <ul class="tags">
+                    @for (tech of technologies(); track tech) {
+                      <li>{{ tech }}</li>
+                    }
+                  </ul>
+                </dd>
+              </div>
+            }
+          </dl>
+        </div>
       </div>
-    </article>
+    </header>
 
-    <article class="panel fade-up" *ngIf="project.full_description">
-      <h2>A propos du projet</h2>
-      <p class="description">{{ project.full_description }}</p>
-    </article>
+    <div class="container detail-body">
+      <figure class="cover" appReveal>
+        <img
+          [src]="p.thumbnail || placeholderImage"
+          [alt]="p.title"
+          decoding="async"
+          fetchpriority="high"
+          (error)="onImageError($event)"
+        />
+      </figure>
 
-    <!-- Blocs étude de cas (seulement si remplis) -->
-    <article class="panel fade-up" *ngIf="project.context || project.problem || project.solution || project.impact">
-      <div class="case-study">
-        <div class="case-step" *ngIf="project.context">
-          <div class="case-num">01</div>
-          <div class="case-body">
-            <h3 class="case-title">{{ t('project.context') }}</h3>
-            <p>{{ project.context }}</p>
+      @if (caseSteps().length) {
+        <section class="detail-section" appReveal>
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">{{ t('project.case') }}</p>
+              <h2>{{ p.title }}</h2>
+            </div>
           </div>
-        </div>
-        <div class="case-step" *ngIf="project.problem">
-          <div class="case-num">02</div>
-          <div class="case-body">
-            <h3 class="case-title">{{ t('project.problem') }}</h3>
-            <p>{{ project.problem }}</p>
+          <ol class="case-grid">
+            @for (step of caseSteps(); track step.key; let i = $index) {
+              <li class="case-block" [class.is-impact]="step.key === 'impact'">
+                <span class="case-num">0{{ i + 1 }}</span>
+                <h3>{{ t('project.' + step.key) }}</h3>
+                <p>{{ step.text }}</p>
+              </li>
+            }
+          </ol>
+        </section>
+      }
+
+      @if (p.full_description) {
+        <section class="detail-section about" appReveal>
+          <p class="eyebrow">{{ t('project.about') }}</p>
+          <div class="prose">{{ p.full_description }}</div>
+        </section>
+      }
+
+      @if (gallery().length) {
+        <section class="detail-section" appReveal>
+          <p class="eyebrow">{{ t('project.gallery') }}</p>
+          <div class="gallery">
+            @for (src of gallery(); track src; let i = $index) {
+              <a [href]="src" target="_blank" rel="noopener" class="gallery-item">
+                <img [src]="src" [alt]="t('project.screenshot') + ' ' + (i + 1) + ' — ' + p.title" loading="lazy" decoding="async" />
+              </a>
+            }
           </div>
-        </div>
-        <div class="case-step" *ngIf="project.solution">
-          <div class="case-num">03</div>
-          <div class="case-body">
-            <h3 class="case-title">{{ t('project.solution') }}</h3>
-            <p>{{ project.solution }}</p>
-          </div>
-        </div>
-        <div class="case-step" *ngIf="project.impact">
-          <div class="case-num">04</div>
-          <div class="case-body">
-            <h3 class="case-title">{{ t('project.impact') }}</h3>
-            <p>{{ project.impact }}</p>
-          </div>
+        </section>
+      }
+
+      <div class="cta-box" appReveal>
+        <h2>{{ t('project.cta.text') }}</h2>
+        <p>{{ t('exp.cta2.text') }}</p>
+        <div class="cta-actions">
+          <a routerLink="/contact" class="btn btn-primary">{{ t('project.cta.btn') }}</a>
+          <a routerLink="/projects" class="btn btn-outline">{{ t('project.back') }}</a>
         </div>
       </div>
-    </article>
-
-    <article class="panel fade-up" *ngIf="project.image_1 || project.image_2 || project.image_3">
-      <h2>Galerie</h2>
-      <div class="gallery">
-        <img *ngIf="project.image_1" [src]="project.image_1" alt="capture 1" />
-        <img *ngIf="project.image_2" [src]="project.image_2" alt="capture 2" />
-        <img *ngIf="project.image_3" [src]="project.image_3" alt="capture 3" />
-      </div>
-    </article>
-
-    <!-- CTA bas de page -->
-    <div class="project-cta fade-up">
-      <p>{{ t('project.cta.text') }}</p>
-      <a routerLink="/contact" class="btn btn-primary">{{ t('project.cta.btn') }}</a>
     </div>
-  </section>
-</div>
+  </article>
+}

@@ -157,7 +157,7 @@ describe('ConfirmModalComponent — Tests utilisateur', () => {
     });
     fixture.detectChanges();
 
-    fixture.componentInstance.inputValue = '';
+    fixture.componentInstance.inputValue.set('');
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
 
     expect(resolved).toBe(false);

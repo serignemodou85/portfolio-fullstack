@@ -216,3 +216,22 @@ class SecurityHeadersTests(BaseAPITest):
         self.assertIn("frame-ancestors 'none'", response['Content-Security-Policy'])
         self.assertIn('camera=()', response['Permissions-Policy'])
         self.assertEqual(response['X-Content-Type-Options'], 'nosniff')
+
+
+class AuditFileFieldTests(BaseAPITest):
+    """Régression : un champ fichier vide ne doit pas faire échouer la modification."""
+
+    def test_admin_can_update_project_with_empty_optional_images(self):
+        from datetime import date
+        from projects.models import Project
+
+        admin = make_admin()
+        project = Project.objects.create(
+            title='P', slug='p', description='d', technologies='Django',
+            thumbnail='projects/thumbnails/x.jpg', start_date=date(2025, 1, 1), created_by=admin,
+        )
+        self.bearer(self.login().data['access'])
+        response = self.client.patch(f'/api/projects/{project.slug}/', {'title': 'P2'}, format='json')
+        self.assertEqual(response.status_code, 200)
+        entry = AuditLog.objects.get(action='update', model_name='projects.Project')
+        self.assertEqual(entry.changes['title'], {'old': 'P', 'new': 'P2'})

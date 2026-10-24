@@ -104,6 +104,7 @@ INSTALLED_APPS = [
     'skills',
     'blog',
     'contact',
+    'testimonials',
 ]
 
 MIDDLEWARE = [
@@ -404,6 +405,13 @@ CONTACT_AUTO_REPLY_ENABLED = env_bool('CONTACT_AUTO_REPLY_ENABLED', True)
 
 # URL frontend utilisee dans les emails (liens reset password).
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:4200')
+
+# URL publique du site (sitemap.xml). Par défaut, celle du frontend.
+SITE_URL = os.getenv('SITE_URL', FRONTEND_URL)
+
+# Activité GitHub affichée sur l'accueil. Le jeton est optionnel (relève la limite de 60 req/h).
+GITHUB_USERNAME = os.getenv('GITHUB_USERNAME', 'serignemodou85')
+GITHUB_TOKEN = os.getenv('GITHUB_TOKEN', '').strip()
 
 # ========================================
 # SÉCURITÉ COMPTE / RGPD

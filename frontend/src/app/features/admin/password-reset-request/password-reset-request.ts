@@ -1,41 +1,40 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth';
+import { apiErrorMessage } from '../../../core/utils/api-error';
 
 @Component({
   selector: 'app-password-reset-request',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink],
   templateUrl: './password-reset-request.html',
   styleUrl: './password-reset-request.scss'
 })
 export class PasswordResetRequest {
-  email = '';
-  loading = false;
-  error: string | null = null;
-  successMessage: string | null = null;
+  private authService = inject(AuthService);
 
-  constructor(private authService: AuthService) {}
+  readonly email = signal('');
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
+  readonly successMessage = signal<string | null>(null);
 
   onSubmit(): void {
-    if (this.loading || !this.email) {
+    if (this.loading() || !this.email()) {
       return;
     }
+    this.loading.set(true);
+    this.error.set(null);
+    this.successMessage.set(null);
 
-    this.loading = true;
-    this.error = null;
-    this.successMessage = null;
-
-    this.authService.requestPasswordReset({ email: this.email }).subscribe({
+    this.authService.requestPasswordReset({ email: this.email() }).subscribe({
       next: (res) => {
-        this.successMessage = res?.detail || 'Si ce compte existe, un email a été envoyé.';
-        this.loading = false;
+        this.successMessage.set(res?.detail || 'Si ce compte existe, un email a été envoyé.');
+        this.loading.set(false);
       },
       error: (err) => {
-        this.error = err?.error?.detail || "Impossible d'envoyer la demande pour le moment.";
-        this.loading = false;
+        this.error.set(apiErrorMessage(err, 'Impossible d\'envoyer la demande pour le moment.'));
+        this.loading.set(false);
       }
     });
   }

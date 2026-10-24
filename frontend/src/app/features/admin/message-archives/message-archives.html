@@ -1,14 +1,15 @@
 <app-admin-shell>
-  <div class="archives-page">
+  <div class="admin-page">
     <header class="page-header">
       <div>
-        <p class="eyebrow">Admin messages</p>
+        <p class="eyebrow">{{ lang.t('admin.eyebrow.messages') }}</p>
         <h1>{{ lang.t('admin.msg_archives.title') }}</h1>
         <p class="subtitle">{{ lang.t('admin.msg_archives.subtitle') }}</p>
       </div>
       <div class="header-actions">
-        <a routerLink="/admin/dashboard" class="btn btn-outline btn-back">
-          <app-icon name="arrow-right" [size]="16"></app-icon>
+        <a routerLink="/admin/dashboard" class="btn btn-outline">
+          <app-icon name="arrow-left" [size]="16"></app-icon>
+          {{ lang.t('admin.back_dashboard') }}
         </a>
       </div>
     </header>
@@ -16,88 +17,81 @@
     <section class="panel">
       <div class="panel-head">
         <h2>{{ lang.t('admin.msg_archives.list') }}</h2>
-        <span class="panel-meta">{{ processedMessages.length }} message(s)</span>
+        <span class="panel-meta">{{ table.processed().length }} message(s)</span>
       </div>
 
-      <div *ngIf="loading" class="loading-state">{{ lang.t('admin.blog.loading') }}</div>
-      <div *ngIf="error" class="error-state">{{ error }}</div>
-
-      <div class="table-wrap" *ngIf="!loading && !error && processedMessages.length; else emptyState">
-        <div class="table-tools">
-          <div class="field inline">
-            <label for="archive_message_search">{{ lang.t('admin.field.search') }}</label>
-            <input id="archive_message_search" type="search" [(ngModel)]="searchTerm" name="archive_message_search" [placeholder]="lang.t('admin.ph.message_search')" />
+      @if (loading()) {
+        <div class="loading-state">{{ lang.t('admin.blog.loading') }}</div>
+      } @else if (error()) {
+        <div class="error-state">Impossible de charger les messages archivés.</div>
+      } @else if (!archivedMessages().length) {
+        <div class="empty-state">{{ lang.t('admin.msg_archives.empty') }}</div>
+      } @else {
+        <div class="table-wrap">
+          <div class="table-tools">
+            <div class="field inline">
+              <label for="archive_message_search">{{ lang.t('admin.field.search') }}</label>
+              <input id="archive_message_search" type="search" [(ngModel)]="table.query" name="archive_message_search" [placeholder]="lang.t('admin.ph.message_search')" />
+            </div>
+            <div class="field inline">
+              <label for="archive_message_sort">{{ lang.t('admin.field.sort') }}</label>
+              <select id="archive_message_sort" [(ngModel)]="table.sort" name="archive_message_sort">
+                <option value="date_desc">{{ lang.t('admin.sort.date_desc') }}</option>
+                <option value="date_asc">{{ lang.t('admin.sort.date_asc') }}</option>
+                <option value="name_asc">{{ lang.t('admin.sort.name_asc') }}</option>
+                <option value="name_desc">{{ lang.t('admin.sort.name_desc') }}</option>
+              </select>
+            </div>
+            <div class="field inline">
+              <label for="archive_message_page_size">{{ lang.t('admin.field.per_page') }}</label>
+              <select id="archive_message_page_size" [(ngModel)]="table.pageSize" name="archive_message_page_size">
+                @for (size of table.pageSizeOptions; track size) {
+                  <option [ngValue]="size">{{ size }}</option>
+                }
+              </select>
+            </div>
           </div>
-          <div class="field inline">
-            <label for="archive_message_sort">{{ lang.t('admin.field.sort') }}</label>
-            <select id="archive_message_sort" [(ngModel)]="sortKey" name="archive_message_sort">
-              <option value="date_desc">{{ lang.t('admin.sort.date_desc') }}</option>
-              <option value="date_asc">{{ lang.t('admin.sort.date_asc') }}</option>
-              <option value="name_asc">{{ lang.t('admin.sort.name_asc') }}</option>
-              <option value="name_desc">{{ lang.t('admin.sort.name_desc') }}</option>
-            </select>
-          </div>
-          <div class="field inline">
-            <label for="archive_message_page_size">{{ lang.t('admin.field.per_page') }}</label>
-            <select id="archive_message_page_size" [(ngModel)]="pageSize" name="archive_message_page_size" (ngModelChange)="setPageSize($event)">
-              <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
-            </select>
-          </div>
+          <table class="archive-table">
+            <thead>
+              <tr>
+                <th>{{ lang.t('admin.th.contact') }}</th>
+                <th>{{ lang.t('admin.th.subject') }}</th>
+                <th>{{ lang.t('admin.th.date') }}</th>
+                <th>{{ lang.t('admin.th.actions') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (message of table.paged(); track message.id) {
+                <tr>
+                  <td>
+                    <div class="contact-cell">
+                      <p class="project-name">{{ message.name }}</p>
+                      <p class="project-desc">{{ message.email }}</p>
+                    </div>
+                  </td>
+                  <td>
+                    <p class="project-desc">{{ message.subject }}</p>
+                  </td>
+                  <td>{{ message.created_at | date: 'dd/MM/yyyy HH:mm' }}</td>
+                  <td>
+                    <div class="row-actions">
+                      <button type="button" class="btn btn-icon btn-soft" (click)="restoreMessage(message)" [title]="lang.t('admin.action.restore')">
+                        <app-icon name="refresh" [size]="16"></app-icon>
+                      </button>
+                      <button type="button" class="btn btn-icon btn-danger" (click)="deleteMessage(message)" [title]="lang.t('admin.action.delete_perm')">
+                        <app-icon name="trash" [size]="16"></app-icon>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              } @empty {
+                <tr><td colspan="4" class="empty-cell">{{ lang.t('admin.empty.search') }}</td></tr>
+              }
+            </tbody>
+          </table>
         </div>
-
-        <table class="archive-table">
-          <thead>
-            <tr>
-              <th>{{ lang.t('admin.th.contact') }}</th>
-              <th>{{ lang.t('admin.th.subject') }}</th>
-              <th>{{ lang.t('admin.th.date') }}</th>
-              <th>{{ lang.t('admin.th.actions') }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let message of pagedMessages; trackBy: trackByMessage">
-              <td>
-                <div class="contact-cell">
-                  <p class="project-name">{{ message.name }}</p>
-                  <p class="project-desc">{{ message.email }}</p>
-                </div>
-              </td>
-              <td>
-                <p class="project-desc">{{ message.subject }}</p>
-              </td>
-              <td>{{ message.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
-              <td>
-                <div class="row-actions">
-                  <button type="button" class="btn btn-soft" (click)="restoreMessage(message)" [title]="lang.t('admin.action.restore')">
-                    <app-icon name="check" [size]="16"></app-icon>
-                  </button>
-                  <button type="button" class="btn btn-danger" (click)="deleteMessage(message)" [title]="lang.t('admin.action.delete_perm')">
-                    <app-icon name="trash" [size]="16"></app-icon>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <ng-template #emptyState>
-        <div class="empty-state" *ngIf="!loading && !error">{{ lang.t('admin.msg_archives.empty') }}</div>
-      </ng-template>
-
-      <div class="table-footer" *ngIf="!loading && !error && totalPages > 1">
-        <div class="pagination">
-          <button type="button" class="btn btn-icon btn-soft" (click)="setPage(page - 1)" [disabled]="page === 1">
-            <span class="icon-rotate">
-              <app-icon name="arrow-right" [size]="14"></app-icon>
-            </span>
-          </button>
-          <span class="page-count">{{ lang.t('admin.pagination.page') }} {{ page }} / {{ totalPages }}</span>
-          <button type="button" class="btn btn-icon btn-soft" (click)="setPage(page + 1)" [disabled]="page === totalPages">
-            <app-icon name="arrow-right" [size]="14"></app-icon>
-          </button>
-        </div>
-      </div>
+        <app-pager [table]="table"></app-pager>
+      }
     </section>
   </div>
 </app-admin-shell>

@@ -1,6 +1,10 @@
-<main class="main-content">
-  <app-navbar *ngIf="showNavbar"></app-navbar>
+@if (isPublic()) {
+  <app-navbar></app-navbar>
+}
+<main id="main" class="main-content">
   <router-outlet></router-outlet>
-  <app-footer *ngIf="showNavbar"></app-footer>
 </main>
+@if (isPublic()) {
+  <app-footer></app-footer>
+}
 <app-toast></app-toast>

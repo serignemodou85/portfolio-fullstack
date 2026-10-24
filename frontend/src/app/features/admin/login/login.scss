@@ -28,7 +28,7 @@ $gray-50:  #f9fafb;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding: 3rem;
+  padding: var(--space-12);
 }
 
 .brand-inner {
@@ -37,7 +37,7 @@ $gray-50:  #f9fafb;
   max-width: 360px;
   display: flex;
   flex-direction: column;
-  gap: 1.4rem;
+  gap: var(--space-6);
 }
 
 .brand-logo {
@@ -76,12 +76,12 @@ $gray-50:  #f9fafb;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: var(--space-3);
 
   li {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: var(--space-3);
     color: rgba(255, 255, 255, 0.7);
     font-size: 0.88rem;
   }
@@ -111,7 +111,7 @@ $gray-50:  #f9fafb;
   height: 280px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+  gap: var(--space-6);
 
   span {
     width: 10px;
@@ -128,7 +128,7 @@ $gray-50:  #f9fafb;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3rem 2.5rem;
+  padding: var(--space-12) var(--space-10);
 }
 
 .login-form-inner {
@@ -137,10 +137,10 @@ $gray-50:  #f9fafb;
 }
 
 .login-header {
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-8);
 
   h1 {
-    margin: 0 0 0.4rem;
+    margin: 0 0 var(--space-2);
     font-size: 1.8rem;
     font-weight: 800;
     color: $gray-900;
@@ -157,10 +157,10 @@ $gray-50:  #f9fafb;
 .alert-error {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.85rem 1rem;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
   border-radius: 10px;
-  margin-bottom: 1.2rem;
+  margin-bottom: var(--space-5);
   background: #fef3f2;
   color: #b42318;
   border: 1px solid #fecdca;
@@ -171,13 +171,13 @@ $gray-50:  #f9fafb;
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
+  gap: var(--space-4);
 }
 
 .field-group {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: var(--space-2);
 }
 
 .field-label {
@@ -203,7 +203,7 @@ $gray-50:  #f9fafb;
 
 .field-input {
   width: 100%;
-  padding: 0.8rem 1rem 0.8rem 2.75rem;
+  padding: var(--space-3) var(--space-4) var(--space-3) 2.75rem;
   border-radius: 10px;
   border: 1px solid $gray-200;
   background: #fff;
@@ -241,7 +241,7 @@ $gray-50:  #f9fafb;
 .form-row {
   display: flex;
   justify-content: flex-end;
-  margin-top: -0.3rem;
+  margin-top: calc(-1 * var(--space-1));
 }
 
 .forgot-link {
@@ -255,8 +255,8 @@ $gray-50:  #f9fafb;
 
 .btn-submit {
   width: 100%;
-  margin-top: 0.4rem;
-  padding: 0.9rem 1rem;
+  margin-top: var(--space-2);
+  padding: var(--space-4) var(--space-4);
   border: none;
   border-radius: 10px;
   background: $brand-500;
@@ -268,7 +268,7 @@ $gray-50:  #f9fafb;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
   transition: background var(--duration-fast) ease, box-shadow var(--duration-fast) ease, transform var(--duration-fast) ease;
 
   &:hover:not(:disabled) {
@@ -307,7 +307,7 @@ $gray-50:  #f9fafb;
 }
 
 .mfa-back {
-  margin-top: 0.9rem;
+  margin-top: var(--space-4);
   width: 100%;
   background: none;
   border: none;

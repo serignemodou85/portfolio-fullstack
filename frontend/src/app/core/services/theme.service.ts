@@ -1,23 +1,30 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
   private readonly KEY = 'theme';
-  isDark = false;
+  private readonly _dark = signal(ThemeService.initial());
+
+  /** Thème sombre actif (signal). */
+  readonly isDark = this._dark.asReadonly();
 
   constructor() {
-    const saved = localStorage.getItem(this.KEY);
-    this.isDark = saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
     this.apply();
   }
 
   toggle(): void {
-    this.isDark = !this.isDark;
-    localStorage.setItem(this.KEY, this.isDark ? 'dark' : 'light');
+    this._dark.update(dark => !dark);
+    try { localStorage.setItem(this.KEY, this._dark() ? 'dark' : 'light'); } catch { /* stockage indisponible */ }
     this.apply();
   }
 
   private apply(): void {
-    document.documentElement.setAttribute('data-theme', this.isDark ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', this._dark() ? 'dark' : 'light');
+  }
+
+  private static initial(): boolean {
+    let saved: string | null = null;
+    try { saved = localStorage.getItem('theme'); } catch { /* stockage indisponible */ }
+    return saved === 'dark' || (!saved && !!window.matchMedia?.('(prefers-color-scheme: dark)').matches);
   }
 }

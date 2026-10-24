@@ -17,18 +17,18 @@
           <app-icon name="arrow-right" [size]="16"></app-icon>
         </a>
         <a routerLink="/contact" class="btn btn-outline">{{ t('home.cta.discuss') }}</a>
-        <a [href]="profile?.cv_file || 'assets/documents/cvModouFall.pdf'" target="_blank" rel="noopener" class="btn btn-ghost">
+        <a [href]="profile()?.cv_file || 'assets/documents/cvModouFall.pdf'" target="_blank" rel="noopener" class="btn btn-ghost">
           <app-icon name="download" [size]="16"></app-icon>
           {{ t('home.cta.cv') }}
         </a>
       </div>
 
-      @if (current) {
+      @if (current(); as cur) {
         <p class="hero-current">
           <span class="hero-current-icon"><app-icon name="graduation" [size]="16"></app-icon></span>
           <span>
             <strong>{{ t('home.current') }}</strong>
-            {{ current.title }} · {{ current.company }}
+            {{ cur.title }} · {{ cur.company }}
           </span>
         </p>
       }
@@ -39,7 +39,7 @@
       <div class="pipeline-head">
         <img
           class="pipeline-avatar"
-          [src]="getProfileImageUrl(profile?.profile_picture)"
+          [src]="getProfileImageUrl(profile()?.profile_picture)"
           alt="Modou Fall"
           width="44"
           height="44"
@@ -71,10 +71,10 @@
     </div>
   </div>
 
-  @if (stats.length) {
+  @if (stats().length) {
     <div class="container">
       <dl class="hero-stats fade-up stagger-3">
-        @for (s of stats; track s.labelKey) {
+        @for (s of stats(); track s.labelKey) {
           <div class="stat">
             <dt>{{ t(s.labelKey) }}</dt>
             <dd>{{ s.value }}</dd>
@@ -126,9 +126,9 @@
       </a>
     </div>
 
-    @if (loading) {
+    @if (loading()) {
       <div class="case-skeleton" aria-hidden="true"></div>
-    } @else if (featured; as project) {
+    } @else if (featured(); as project) {
       <article class="case-card" appReveal>
         <a class="case-media" [routerLink]="['/projects', project.slug]" tabindex="-1" aria-hidden="true">
           <img
@@ -153,7 +153,7 @@
           <h3>{{ project.title }}</h3>
           <p class="case-desc">{{ project.description }}</p>
 
-          @if (hasCaseStudy) {
+          @if (hasCaseStudy()) {
             <dl class="case-steps">
               @if (project.problem) {
                 <div><dt>{{ t('home.case.problem') }}</dt><dd>{{ project.problem }}</dd></div>
@@ -173,15 +173,15 @@
             }
           </ul>
           <a [routerLink]="['/projects', project.slug]" class="btn btn-primary case-cta">
-            {{ hasCaseStudy ? t('home.case.read') : t('home.project.detail') }}
+            {{ hasCaseStudy() ? t('home.case.read') : t('home.project.detail') }}
             <app-icon name="arrow-right" [size]="16"></app-icon>
           </a>
         </div>
       </article>
 
-      @if (otherProjects.length) {
+      @if (otherProjects().length) {
         <div class="card-grid other-projects">
-          @for (p of otherProjects; track p.id; let i = $index) {
+          @for (p of otherProjects(); track p.id; let i = $index) {
             <article class="project-card" appReveal [revealDelay]="i * 60">
               <a class="card-media" [routerLink]="['/projects', p.slug]" tabindex="-1" aria-hidden="true">
                 <img [src]="getImageUrl(p.thumbnail)" [alt]="p.title" loading="lazy" decoding="async" (error)="onImageError($event)" />
@@ -206,7 +206,7 @@
 </section>
 
 <!-- ── Certifications ──────────────────────────────────────────────────── -->
-@if (certifications.length) {
+@if (certifications().length) {
   <section class="section section-certs">
     <div class="container">
       <div class="section-head" appReveal>
@@ -221,7 +221,7 @@
       </div>
 
       <ul class="issuers" appReveal>
-        @for (issuer of issuers; track issuer.name) {
+        @for (issuer of issuers(); track issuer.name) {
           <li>
             <span class="issuer-mark">{{ initials(issuer.name) }}</span>
             <span class="issuer-name">{{ issuer.name }}</span>
@@ -231,7 +231,7 @@
       </ul>
 
       <div class="cert-grid">
-        @for (cert of certifications | slice: 0 : 6; track cert.id; let i = $index) {
+        @for (cert of certifications().slice(0, 6); track cert.id; let i = $index) {
           <article class="cert-card" appReveal [revealDelay]="i * 50">
             <span class="cert-icon"><app-icon name="award" [size]="18"></app-icon></span>
             <div class="cert-copy">
@@ -250,8 +250,91 @@
   </section>
 }
 
+<!-- ── Témoignages (masqué tant qu'il n'y en a pas) ────────────────────── -->
+@if (testimonials().length) {
+  <section class="section section-tst">
+    <div class="container">
+      <div class="section-head" appReveal>
+        <div>
+          <p class="eyebrow">{{ t('home.tst.eyebrow') }}</p>
+          <h2>{{ t('home.tst.title') }}</h2>
+        </div>
+      </div>
+
+      <div class="tst-grid">
+        @for (item of testimonials(); track item.id; let i = $index) {
+          <figure class="tst-card" appReveal [revealDelay]="i * 60">
+            <app-icon class="tst-mark" name="quote" [size]="22"></app-icon>
+            <blockquote>{{ item.content }}</blockquote>
+            <figcaption>
+              @if (item.avatar) {
+                <img class="tst-avatar" [src]="item.avatar" [alt]="item.author_name" width="40" height="40" loading="lazy" />
+              } @else {
+                <span class="tst-avatar">{{ initials(item.author_name) }}</span>
+              }
+              <span class="tst-who">
+                <strong>{{ item.author_name }}</strong>
+                <span>{{ item.author_role }}{{ item.author_role && item.company ? ' · ' : '' }}{{ item.company }}</span>
+              </span>
+              @if (item.linkedin_url) {
+                <a class="tst-link" [href]="item.linkedin_url" target="_blank" rel="noopener" [attr.aria-label]="'LinkedIn — ' + item.author_name">
+                  <app-icon name="linkedin" [size]="16"></app-icon>
+                </a>
+              }
+            </figcaption>
+          </figure>
+        }
+      </div>
+    </div>
+  </section>
+}
+
+<!-- ── Activité GitHub (masquée si l'API ne renvoie rien) ──────────────── -->
+@if (repos().length) {
+  <section class="section section-gh">
+    <div class="container">
+      <div class="section-head" appReveal>
+        <div>
+          <p class="eyebrow">{{ t('home.gh.eyebrow') }}</p>
+          <h2>{{ t('home.gh.title') }}</h2>
+        </div>
+        <a [href]="'https://github.com/' + ghUser()" target="_blank" rel="noopener" class="btn btn-outline">
+          <app-icon name="github" [size]="16"></app-icon>
+          {{ t('home.gh.profile') }}
+        </a>
+      </div>
+
+      <div class="gh-grid">
+        @for (repo of repos(); track repo.name; let i = $index) {
+          <a class="gh-card" [href]="repo.url" target="_blank" rel="noopener" appReveal [revealDelay]="(i % 3) * 50">
+            <span class="gh-name">
+              <app-icon name="code" [size]="16"></app-icon>
+              {{ repo.name }}
+            </span>
+            @if (repo.description) {
+              <span class="gh-desc">{{ repo.description }}</span>
+            }
+            <span class="gh-meta">
+              @if (repo.language) {
+                <span class="gh-lang"><span class="gh-dot"></span>{{ repo.language }}</span>
+              }
+              @if (repo.stars) {
+                <span><app-icon name="star" [size]="13"></app-icon>{{ repo.stars }}</span>
+              }
+              @if (repo.forks) {
+                <span><app-icon name="fork" [size]="13"></app-icon>{{ repo.forks }}</span>
+              }
+              <span class="gh-updated">{{ t('home.gh.updated') }} {{ monthYear(repo.pushed_at) }}</span>
+            </span>
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+}
+
 <!-- ── Articles (masqué tant qu'il n'y en a pas) ───────────────────────── -->
-@if (featuredArticles.length) {
+@if (featuredArticles().length) {
   <section class="section section-articles">
     <div class="container">
       <div class="section-head" appReveal>
@@ -263,7 +346,7 @@
       </div>
 
       <div class="article-grid">
-        @for (article of featuredArticles; track article.slug; let i = $index) {
+        @for (article of featuredArticles(); track article.slug; let i = $index) {
           <article class="article-card" appReveal [revealDelay]="i * 60">
             <img [src]="article.featured_image" [alt]="article.title" loading="lazy" decoding="async" />
             <div class="article-body">

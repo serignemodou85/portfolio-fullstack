@@ -1,9 +1,7 @@
 // src/app/features/home/home/home.ts
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { ProjectService } from '../../projects/services/project';
 import { ArticleService } from '../../blog/services/article';
 import { ProjectList } from '../../../core/models/project.model';
@@ -12,9 +10,10 @@ import { ExperienceItem } from '../../../core/models/experience.model';
 import { UserService } from '../../../core/services/user.service';
 import { ExperienceService } from '../../../core/services/experience.service';
 import { SkillService } from '../../../core/services/skill.service';
+import { GithubRepo, Testimonial, TestimonialService } from '../../../core/services/testimonial.service';
 import { User } from '../../../core/models/auth.model';
 import { environment } from '../../../../environments/environment';
-import { LanguageService, Lang } from '../../../core/services/language.service';
+import { LanguageService } from '../../../core/services/language.service';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { RevealDirective } from '../../../shared/directives/reveal.directive';
 
@@ -32,22 +31,32 @@ interface Expertise {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, IconComponent, RevealDirective],
+  imports: [RouterLink, IconComponent, RevealDirective],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
-export class Home implements OnInit, OnDestroy {
-  projects: ProjectList[] = [];
-  featuredArticles: ArticleList[] = [];
-  certifications: ExperienceItem[] = [];
-  current: ExperienceItem | null = null;
-  skillsCount = 0;
-  profile: User | null = null;
-  loading = true;
-  lang: Lang = 'fr';
+export class Home implements OnInit {
+  private projectService = inject(ProjectService);
+  private articleService = inject(ArticleService);
+  private userService = inject(UserService);
+  private experienceService = inject(ExperienceService);
+  private skillService = inject(SkillService);
+  private testimonialService = inject(TestimonialService);
+  private destroyRef = inject(DestroyRef);
+  readonly lang = inject(LanguageService);
+
+  readonly projects = signal<ProjectList[]>([]);
+  readonly featuredArticles = signal<ArticleList[]>([]);
+  readonly certifications = signal<ExperienceItem[]>([]);
+  readonly current = signal<ExperienceItem | null>(null);
+  readonly skillsCount = signal(0);
+  readonly profile = signal<User | null>(null);
+  readonly testimonials = signal<Testimonial[]>([]);
+  readonly repos = signal<GithubRepo[]>([]);
+  readonly ghUser = signal('');
+  readonly loading = signal(true);
   readonly placeholderImage = 'assets/placeholders/project.svg';
   readonly profileFallback = 'assets/images/cv.jpg';
-  private destroy$ = new Subject<void>();
 
   // Étapes réelles de ta chaîne data, avec les outils présents dans tes compétences.
   readonly pipeline = [
@@ -64,19 +73,38 @@ export class Home implements OnInit, OnDestroy {
     { key: 'frontend', icon: 'monitor', stack: ['Angular', 'Power BI', 'Tableau', 'Streamlit'] },
   ];
 
-  constructor(
-    private projectService: ProjectService,
-    private articleService: ArticleService,
-    private userService: UserService,
-    private experienceService: ExperienceService,
-    private skillService: SkillService,
-    private langService: LanguageService
-  ) {
-    this.langService.lang$.pipe(takeUntil(this.destroy$)).subscribe(l => this.lang = l);
-  }
+  /** Projet phare : le premier mis en avant, sinon le plus récent. */
+  readonly featured = computed(() => this.projects().find(p => p.is_featured) ?? this.projects()[0] ?? null);
+
+  readonly otherProjects = computed(() => {
+    const featured = this.featured();
+    return this.projects().filter(p => p !== featured).slice(0, 3);
+  });
+
+  readonly hasCaseStudy = computed(() => {
+    const f = this.featured();
+    return !!(f && (f.problem || f.solution || f.impact));
+  });
+
+  /** Seuls les chiffres réels et non nuls sont affichés : jamais de "0+". */
+  readonly stats = computed<Stat[]>(() => [
+    { value: this.projects().length, labelKey: 'home.stat.projects' },
+    { value: this.certifications().length, labelKey: 'home.stat.certs' },
+    { value: this.skillsCount(), labelKey: 'home.stat.skills' },
+    { value: this.featuredArticles().length, labelKey: 'home.stat.articles' },
+  ].filter(s => s.value > 0));
+
+  /** Certifications regroupées par organisme, pour la ligne de logos. */
+  readonly issuers = computed(() => {
+    const counts = new Map<string, number>();
+    for (const c of this.certifications()) {
+      counts.set(c.company, (counts.get(c.company) ?? 0) + 1);
+    }
+    return [...counts.entries()].map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count);
+  });
 
   t(key: string): string {
-    return this.langService.t(key);
+    return this.lang.t(key);
   }
 
   ngOnInit(): void {
@@ -85,45 +113,7 @@ export class Home implements OnInit, OnDestroy {
     this.loadExperiences();
     this.loadSkills();
     this.loadProfile();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  /** Projet phare : le premier mis en avant, sinon le plus récent. */
-  get featured(): ProjectList | null {
-    return this.projects.find(p => p.is_featured) ?? this.projects[0] ?? null;
-  }
-
-  get otherProjects(): ProjectList[] {
-    const featured = this.featured;
-    return this.projects.filter(p => p !== featured).slice(0, 3);
-  }
-
-  get hasCaseStudy(): boolean {
-    const f = this.featured;
-    return !!(f && (f.problem || f.solution || f.impact));
-  }
-
-  /** Seuls les chiffres réels et non nuls sont affichés : jamais de "0+". */
-  get stats(): Stat[] {
-    return [
-      { value: this.projects.length, labelKey: 'home.stat.projects' },
-      { value: this.certifications.length, labelKey: 'home.stat.certs' },
-      { value: this.skillsCount, labelKey: 'home.stat.skills' },
-      { value: this.featuredArticles.length, labelKey: 'home.stat.articles' },
-    ].filter(s => s.value > 0);
-  }
-
-  /** Certifications regroupées par organisme, pour la ligne de logos. */
-  get issuers(): { name: string; count: number }[] {
-    const counts = new Map<string, number>();
-    for (const c of this.certifications) {
-      counts.set(c.company, (counts.get(c.company) ?? 0) + 1);
-    }
-    return [...counts.entries()].map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count);
+    this.loadSocialProof();
   }
 
   techList(project: ProjectList, max = 5): string[] {
@@ -131,7 +121,7 @@ export class Home implements OnInit, OnDestroy {
   }
 
   monthYear(iso: string): string {
-    return new Date(iso).toLocaleDateString(this.lang === 'fr' ? 'fr-FR' : 'en-US', { month: 'short', year: 'numeric' });
+    return new Date(iso).toLocaleDateString(this.lang.lang() === 'fr' ? 'fr-FR' : 'en-US', { month: 'short', year: 'numeric' });
   }
 
   initials(name: string): string {
@@ -139,54 +129,66 @@ export class Home implements OnInit, OnDestroy {
   }
 
   private loadProjects(): void {
-    this.projectService.getProjects({ page_size: 50 }).pipe(takeUntil(this.destroy$)).subscribe({
+    this.projectService.getProjects({ page_size: 50 }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (projects) => {
         const list = Array.isArray(projects) ? projects.filter(p => p.status !== 'archived') : [];
         // Mis en avant d'abord, le reste dans l'ordre de l'API.
-        this.projects = [...list.filter(p => p.is_featured), ...list.filter(p => !p.is_featured)];
-        this.loading = false;
+        this.projects.set([...list.filter(p => p.is_featured), ...list.filter(p => !p.is_featured)]);
+        this.loading.set(false);
       },
-      error: () => {
-        this.projects = [];
-        this.loading = false;
-      }
+      error: () => this.loading.set(false)
     });
   }
 
   private loadArticles(): void {
-    this.articleService.getFeaturedArticles().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (articles) => { this.featuredArticles = Array.isArray(articles) ? articles : []; },
-      error: () => { this.featuredArticles = []; }
+    this.articleService.getFeaturedArticles().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (articles) => this.featuredArticles.set(Array.isArray(articles) ? articles : []),
+      error: () => this.featuredArticles.set([])
     });
   }
 
   private loadExperiences(): void {
-    this.experienceService.getExperiences({ page_size: 100 }).pipe(takeUntil(this.destroy$)).subscribe({
+    this.experienceService.getExperiences({ page_size: 100 }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (items) => {
         const list = Array.isArray(items) ? items : [];
-        this.certifications = list
+        this.certifications.set(list
           .filter(e => e.type === 'certification')
-          .sort((a, b) => b.start_date.localeCompare(a.start_date));
+          .sort((a, b) => b.start_date.localeCompare(a.start_date)));
         // Formation ou poste en cours le plus récent.
-        this.current = list
+        this.current.set(list
           .filter(e => e.is_current && e.type !== 'certification')
-          .sort((a, b) => b.start_date.localeCompare(a.start_date))[0] ?? null;
+          .sort((a, b) => b.start_date.localeCompare(a.start_date))[0] ?? null);
       },
-      error: () => { this.certifications = []; }
+      error: () => this.certifications.set([])
     });
   }
 
   private loadSkills(): void {
-    this.skillService.getCategoriesWithSkills().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (cats) => { this.skillsCount = (cats || []).reduce((n, c) => n + (c.skills?.length ?? 0), 0); },
-      error: () => { this.skillsCount = 0; }
+    this.skillService.getCategoriesWithSkills().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (cats) => this.skillsCount.set((cats || []).reduce((n, c) => n + (c.skills?.length ?? 0), 0)),
+      error: () => this.skillsCount.set(0)
     });
   }
 
   private loadProfile(): void {
-    this.userService.getPublicProfile().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (profile) => { this.profile = profile; },
-      error: () => { this.profile = null; }
+    this.userService.getPublicProfile().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (profile) => this.profile.set(profile),
+      error: () => this.profile.set(null)
+    });
+  }
+
+  /** Témoignages publiés et dépôts GitHub : sections masquées si vides ou en erreur. */
+  private loadSocialProof(): void {
+    this.testimonialService.list().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (items) => this.testimonials.set((items || []).filter(i => i.is_published)),
+      error: () => this.testimonials.set([])
+    });
+    this.testimonialService.githubRepos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (res) => {
+        this.ghUser.set(res?.username || '');
+        this.repos.set(res?.repos || []);
+      },
+      error: () => this.repos.set([])
     });
   }
 

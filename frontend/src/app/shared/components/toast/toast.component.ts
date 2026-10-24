@@ -1,19 +1,20 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { IconComponent } from '../icon/icon.component';
-import { ToastService, Toast } from '../../../core/services/toast.service';
+import { ToastService, ToastType } from '../../../core/services/toast.service';
 
 @Component({
   selector: 'app-toast',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [IconComponent],
   templateUrl: './toast.component.html',
   styleUrl: './toast.component.scss'
 })
 export class ToastComponent {
-  constructor(public toastService: ToastService) {}
-
-  trackByToast(_: number, toast: Toast): string {
-    return toast.id;
-  }
+  readonly toastService = inject(ToastService);
+  readonly icons: Record<ToastType, string> = {
+    success: 'check-circle',
+    error: 'alert',
+    info: 'info',
+    warning: 'warning',
+  };
 }

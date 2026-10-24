@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -16,9 +16,9 @@ interface PaginatedResponse<T> {
   providedIn: 'root'
 })
 export class ContactService {
-  private apiUrl = `${environment.apiUrl}/contact`;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private apiUrl = `${environment.apiUrl}/contact`;
 
   getMessages(options?: { page?: number; page_size?: number }): Observable<ContactMessage[]> {
     let params = new HttpParams();

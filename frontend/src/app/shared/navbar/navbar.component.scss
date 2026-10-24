@@ -12,13 +12,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: var(--space-3);
   color: #0f172a;
   text-decoration: none;
 }
@@ -56,14 +56,14 @@
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 1.2rem;
+  gap: var(--space-5);
 
   a {
     color: #334155;
     text-decoration: none;
     font-weight: 600;
     font-size: 0.92rem;
-    padding: 0.45rem 0.55rem;
+    padding: var(--space-2) var(--space-2);
     border-radius: 9px;
     transition: var(--duration-base) ease;
 
@@ -88,48 +88,10 @@
 .nav-ctrl-group {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  margin-left: 0.4rem;
-  padding-left: 0.8rem;
+  gap: var(--space-1);
+  margin-left: var(--space-2);
+  padding-left: var(--space-3);
   border-left: 1px solid #e5e7eb;
-}
-
-.nav-cta {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-
-  .btn {
-    border-radius: 10px;
-    padding: 0.58rem 0.95rem;
-    font-size: 0.85rem;
-    font-weight: 700;
-    text-decoration: none;
-    border: 1px solid transparent;
-  }
-
-  .btn-ghost {
-    background: #ffffff;
-    color: #334155;
-    border-color: #d0dce9;
-  }
-
-  .btn-primary {
-    background: linear-gradient(135deg, #1d4ed8, #2563eb);
-    color: #fff;
-  }
-
-  &.desktop {
-    @media (max-width: 980px) {
-      display: none;
-    }
-  }
-}
-
-.nav-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
 }
 
 .ctrl-btn {
@@ -237,14 +199,14 @@
 
 .mobile-menu-inner {
   display: grid;
-  gap: 0.35rem;
-  padding: 0.9rem 0 1rem;
+  gap: var(--space-1);
+  padding: var(--space-4) 0 var(--space-4);
 
   a {
     color: #334155;
     text-decoration: none;
     font-weight: 600;
-    padding: 0.65rem 0.7rem;
+    padding: var(--space-3) var(--space-3);
     border-radius: 10px;
 
     &:hover {
@@ -259,13 +221,13 @@
   }
 
   .btn {
-    margin-top: 0.45rem;
+    margin-top: var(--space-2);
     text-align: center;
   }
 }
 
 .mobile-ctrl-row {
   display: flex;
-  gap: 0.5rem;
-  padding: 0.4rem 0.7rem 0.2rem;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3) var(--space-1);
 }

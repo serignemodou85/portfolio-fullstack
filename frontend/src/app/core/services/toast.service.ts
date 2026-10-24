@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
 
@@ -11,8 +10,8 @@ export interface Toast {
 
 @Injectable({ providedIn: 'root' })
 export class ToastService {
-  private _toasts = new BehaviorSubject<Toast[]>([]);
-  readonly toasts$ = this._toasts.asObservable();
+  private readonly _toasts = signal<Toast[]>([]);
+  readonly toasts = this._toasts.asReadonly();
 
   success(message: string): void { this.add('success', message); }
   error(message: string): void   { this.add('error', message); }
@@ -20,16 +19,16 @@ export class ToastService {
   warning(message: string): void { this.add('warning', message); }
 
   dismiss(id: string): void {
-    this._toasts.next(this._toasts.value.filter(t => t.id !== id));
+    this._toasts.update(list => list.filter(t => t.id !== id));
   }
 
   private add(type: ToastType, message: string): void {
     // Plusieurs requêtes qui échouent ensemble ne doivent pas empiler le même message.
-    if (this._toasts.value.some(t => t.type === type && t.message === message)) {
+    if (this._toasts().some(t => t.type === type && t.message === message)) {
       return;
     }
     const id = `${type}-${performance.now().toString(36)}`;
-    this._toasts.next([...this._toasts.value, { id, type, message }]);
+    this._toasts.update(list => [...list, { id, type, message }]);
     setTimeout(() => this.dismiss(id), 4200);
   }
 }

@@ -1,5 +1,5 @@
 // src/app/core/services/experience.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, EMPTY, of } from 'rxjs';
 import { expand, map, reduce, switchMap } from 'rxjs/operators';
@@ -11,11 +11,11 @@ import { PaginatedResponse } from '../models/paginated-response.model';
   providedIn: 'root'
 })
 export class ExperienceService {
+  private http = inject(HttpClient);
+
   private apiUrl = `${environment.apiUrl}/experiences`;
   private cache = new Map<string, { ts: number; data: ExperienceItem[] }>();
-  private cacheTtlMs = 600_000; // 10 min
-
-  constructor(private http: HttpClient) {}
+  private cacheTtlMs = 600_000;
 
   getExperiences(options?: { page?: number; page_size?: number }): Observable<ExperienceItem[]> {
     const cacheKey = JSON.stringify(options || {});

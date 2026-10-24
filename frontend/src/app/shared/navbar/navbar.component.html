@@ -17,22 +17,21 @@
       <a routerLink="/contact" routerLinkActive="active">{{ t('nav.contact') }}</a>
 
       <div class="nav-ctrl-group">
-        <button class="ctrl-btn" (click)="langService.toggle()" [attr.aria-label]="lang === 'fr' ? 'Switch to English' : 'Passer en français'">
-          {{ lang === 'fr' ? 'EN' : 'FR' }}
+        <button class="ctrl-btn" (click)="langService.toggle()" [attr.aria-label]="langService.lang() === 'fr' ? 'Switch to English' : 'Passer en français'">
+          {{ langService.lang() === 'fr' ? 'EN' : 'FR' }}
         </button>
-        <button class="ctrl-btn" (click)="theme.toggle()" [attr.aria-label]="theme.isDark ? 'Mode clair' : 'Mode sombre'">
-          <app-icon *ngIf="theme.isDark" name="sun" [size]="15"></app-icon>
-          <app-icon *ngIf="!theme.isDark" name="moon" [size]="15"></app-icon>
+        <button class="ctrl-btn" (click)="theme.toggle()" [attr.aria-label]="theme.isDark() ? 'Mode clair' : 'Mode sombre'">
+          <app-icon [name]="theme.isDark() ? 'sun' : 'moon'" [size]="15"></app-icon>
         </button>
       </div>
     </div>
 
     <button class="mobile-menu-btn" (click)="toggleMobileMenu()" aria-label="Menu principal">
-      <span [class.open]="mobileMenuOpen"></span>
+      <span [class.open]="mobileMenuOpen()"></span>
     </button>
   </div>
 
-  <div class="mobile-menu" [class.open]="mobileMenuOpen">
+  <div class="mobile-menu" [class.open]="mobileMenuOpen()">
     <div class="container mobile-menu-inner">
       <a routerLink="/" (click)="toggleMobileMenu()" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ t('nav.home') }}</a>
       <a routerLink="/projects" (click)="toggleMobileMenu()" routerLinkActive="active">{{ t('nav.projects') }}</a>
@@ -41,10 +40,9 @@
       <a routerLink="/blog" (click)="toggleMobileMenu()" routerLinkActive="active">{{ t('nav.blog') }}</a>
       <a routerLink="/contact" (click)="toggleMobileMenu()" routerLinkActive="active">{{ t('nav.contact') }}</a>
       <div class="mobile-ctrl-row">
-        <button class="ctrl-btn" (click)="langService.toggle()">{{ lang === 'fr' ? 'EN' : 'FR' }}</button>
+        <button class="ctrl-btn" (click)="langService.toggle()">{{ langService.lang() === 'fr' ? 'EN' : 'FR' }}</button>
         <button class="ctrl-btn" (click)="theme.toggle()">
-          <app-icon *ngIf="theme.isDark" name="sun" [size]="15"></app-icon>
-          <app-icon *ngIf="!theme.isDark" name="moon" [size]="15"></app-icon>
+          <app-icon [name]="theme.isDark() ? 'sun' : 'moon'" [size]="15"></app-icon>
         </button>
       </div>
     </div>

@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 export type Lang = 'fr' | 'en';
 
@@ -17,25 +17,13 @@ const T: Record<string, Record<Lang, string>> = {
   'home.eyebrow':          { fr: 'Data Engineer · ML · Full-Stack',                                  en: 'Data Engineer · ML · Full-Stack'                                 },
   'home.h1':               { fr: 'Je transforme vos données en solutions métier',                    en: 'I turn your data into business solutions'                        },
   'home.lead':             { fr: 'De la collecte à l\'interface, je conçois des systèmes data robustes et des applications web production-ready.', en: 'From data pipelines to user interfaces, I build robust data systems and production-ready web apps.' },
-  'home.cta.hire':         { fr: 'Me contacter',                                                     en: 'Hire me'                                                         },
   'home.cta.work':         { fr: 'Voir mes projets',                                                 en: 'View my work'                                                    },
   'home.cta.cv':           { fr: 'Télécharger CV',                                                   en: 'Download CV'                                                     },
   'home.cta.discuss':      { fr: 'Démarrer une discussion',                                          en: 'Start a discussion'                                              },
-  'home.metric.projects':  { fr: 'projets mis en avant',                                             en: 'featured projects'                                               },
-  'home.metric.articles':  { fr: 'articles techniques',                                              en: 'technical articles'                                              },
-  'home.metric.e2e':       { fr: 'approche delivery',                                                en: 'delivery approach'                                               },
 
   // ── Home "Ce que je fais" section ────────────────────────────────────────────
   'home.what.eyebrow':           { fr: 'Expertise',                                           en: 'Expertise'                                                       },
   'home.what.title':             { fr: 'Ce que je fais',                                      en: 'What I do'                                                       },
-  'home.what.de.title':          { fr: 'Data Engineering',                                    en: 'Data Engineering'                                                },
-  'home.what.de.text':           { fr: 'Pipelines ETL/ELT, Apache Spark, SQL avancé, orchestration Airflow et entrepôts de données cloud.', en: 'ETL/ELT pipelines, Apache Spark, advanced SQL, Airflow orchestration and cloud data warehouses.' },
-  'home.what.ml.title':          { fr: 'Machine Learning',                                    en: 'Machine Learning'                                                },
-  'home.what.ml.text':           { fr: 'Modèles prédictifs, MLflow, scikit-learn, feature engineering et mise en production de modèles.', en: 'Predictive models, MLflow, scikit-learn, feature engineering and model deployment.' },
-  'home.what.backend.title':     { fr: 'Backend & API',                                       en: 'Backend & API'                                                   },
-  'home.what.backend.text':      { fr: 'Django REST Framework, FastAPI, microservices, authentification JWT et intégration de bases de données.', en: 'Django REST Framework, FastAPI, microservices, JWT authentication and database integration.' },
-  'home.what.frontend.title':    { fr: 'Frontend & Dashboards',                               en: 'Frontend & Dashboards'                                           },
-  'home.what.frontend.text':     { fr: 'Applications Angular standalone, visualisation de données interactives et interfaces responsives.', en: 'Angular standalone apps, interactive data visualization and responsive interfaces.' },
 
   // ── What cards (short descriptions for home) ──────────────────────────────────
   'what.data.title':    { fr: 'Data Engineering',          en: 'Data Engineering'          },
@@ -55,7 +43,6 @@ const T: Record<string, Record<Lang, string>> = {
   'home.articles.title':    { fr: 'Articles en avant',            en: 'Featured articles'        },
   'home.articles.blog':     { fr: 'Voir le blog',                 en: 'View the blog'            },
   'home.articles.read':     { fr: 'Lire l\'article',              en: 'Read article'             },
-  'home.articles.empty':    { fr: 'Aucun article mis en avant pour le moment.', en: 'No featured articles yet.' },
   'home.articles.min':      { fr: 'min',                          en: 'min'                      },
 
   // ── Home project card ─────────────────────────────────────────────────────────
@@ -67,20 +54,14 @@ const T: Record<string, Record<Lang, string>> = {
   'home.cta2.btn':     { fr: 'Planifier un échange',                                                          en: 'Schedule a call'                                                        },
 
   // ── Sections (shared) ─────────────────────────────────────────────────────────
-  'section.projects': { fr: 'Projets récents',   en: 'Recent Projects'  },
-  'section.articles': { fr: 'Articles récents',  en: 'Recent Articles'  },
   'section.seeAll':   { fr: 'Voir tout',          en: 'See all'          },
 
   // ── Shared CTA box ────────────────────────────────────────────────────────────
-  'cta.title':   { fr: 'Travaillons ensemble',                              en: "Let's work together"                                   },
-  'cta.text':    { fr: 'Je suis disponible pour des missions freelance.',   en: 'I am available for freelance missions.'                 },
-  'cta.btn':     { fr: 'Démarrer un projet',                                en: 'Start a project'                                       },
 
   // ── Shared status labels ──────────────────────────────────────────────────────
   'status.completed':   { fr: 'Terminé',   en: 'Completed'    },
   'status.in_progress': { fr: 'En cours',  en: 'In progress'  },
   'status.archived':    { fr: 'Archivé',   en: 'Archived'     },
-  'status.loading':     { fr: 'Chargement...', en: 'Loading...' },
 
   // ── Projects page ─────────────────────────────────────────────────────────────
   'projects.eyebrow':         { fr: 'Portfolio',                               en: 'Portfolio'                           },
@@ -92,6 +73,11 @@ const T: Record<string, Record<Lang, string>> = {
   'projects.loading':         { fr: 'Chargement des projets...',               en: 'Loading projects...'                 },
   'projects.view':            { fr: 'Voir le projet',                          en: 'View project'                        },
   'projects.empty':           { fr: 'Aucun projet ne correspond au filtre actuel.', en: 'No projects match the current filter.' },
+  'projects.subtitle': { fr: 'Applications web, pipelines data et projets d’IA : du besoin métier à la mise en production.', en: 'Web apps, data pipelines and AI projects: from business need to production.' },
+  'projects.search': { fr: 'Rechercher un projet ou une techno…', en: 'Search a project or a technology…' },
+  'projects.error': { fr: 'Impossible de charger les projets. Réessayez dans un instant.', en: 'Could not load projects. Please try again shortly.' },
+  'projects.count': { fr: 'projets', en: 'projects' },
+  'projects.reset': { fr: 'Réinitialiser', en: 'Reset' },
 
   // ── Experience page ───────────────────────────────────────────────────────────
   'exp.eyebrow':              { fr: 'Parcours',                                en: 'Career path'                         },
@@ -118,6 +104,11 @@ const T: Record<string, Record<Lang, string>> = {
   'exp.page':                 { fr: 'Page',                                    en: 'Page'                                },
   'exp.of':                   { fr: '/',                                       en: 'of'                                  },
   'exp.empty':                { fr: 'Aucun élément pour ce filtre.',           en: 'No items for this filter.'           },
+  'exp.error': { fr: 'Impossible de charger le parcours. Réessayez dans un instant.', en: 'Could not load the career path. Please try again shortly.' },
+  'exp.more': { fr: 'Afficher plus', en: 'Show more' },
+  'exp.duration.month': { fr: 'mois', en: 'mo' },
+  'exp.duration.year': { fr: 'an', en: 'yr' },
+  'exp.duration.years': { fr: 'ans', en: 'yrs' },
   'exp.cta2.title':           { fr: 'Construisons votre prochaine solution data ou web', en: 'Let\'s build your next data or web solution' },
   'exp.cta2.text':            { fr: 'Je développe des solutions robustes: backend, frontend et intégration data pour transformer des besoins métier en produits utiles.', en: 'I build robust solutions: backend, frontend and data integration to turn business needs into useful products.' },
   'exp.cta2.btn':             { fr: 'Me contacter',                            en: 'Contact me'                          },
@@ -128,6 +119,7 @@ const T: Record<string, Record<Lang, string>> = {
   'skills.subtitle':  { fr: 'Outils et technologies utilisés en production pour construire des solutions data-driven de bout en bout.', en: 'Tools and technologies used in production to build end-to-end data-driven solutions.' },
   'skills.cta':       { fr: 'Demander une mission',                                          en: 'Request a mission'                                                   },
   'skills.loading':   { fr: 'Chargement des compétences...',                                 en: 'Loading skills...'                                                   },
+  'skills.error': { fr: 'Impossible de charger les compétences. Réessayez dans un instant.', en: 'Could not load skills. Please try again shortly.' },
   'skills.count':     { fr: 'skills',                                                        en: 'skills'                                                              },
   'skills.years':     { fr: 'an(s)',                                                         en: 'yr(s)'                                                               },
   'skills.cta2.title': { fr: 'Transformons vos données en solutions intelligentes',          en: 'Let\'s turn your data into intelligent solutions'                    },
@@ -139,6 +131,7 @@ const T: Record<string, Record<Lang, string>> = {
   'contact.title':              { fr: 'Parlons de votre besoin',                      en: 'Let\'s talk about your needs'                  },
   'contact.subtitle':           { fr: 'Décrivez votre contexte et je vous reviens avec une proposition claire.', en: 'Describe your context and I\'ll come back with a clear proposal.' },
   'contact.form.title':         { fr: 'Envoyer un message',                           en: 'Send a message'                                },
+  'contact.form.error': { fr: 'Une erreur est survenue lors de l’envoi. Merci de réessayer ou de m’écrire directement par email.', en: 'Something went wrong while sending. Please try again or email me directly.' },
   'contact.form.success':       { fr: 'Votre message a été envoyé. Merci.',           en: 'Your message has been sent. Thank you.'        },
   'contact.form.name':          { fr: 'Nom complet *',                                en: 'Full name *'                                   },
   'contact.form.name.error':    { fr: 'Votre nom est requis.',                        en: 'Your name is required.'                        },
@@ -152,7 +145,6 @@ const T: Record<string, Record<Lang, string>> = {
   'contact.form.message.error': { fr: 'Merci de détailler votre demande.',           en: 'Please detail your request.'                   },
   'contact.form.submit':        { fr: 'Envoyer',                                      en: 'Send'                                          },
   'contact.form.sending':       { fr: 'Envoi en cours...',                            en: 'Sending...'                                    },
-  'contact.form.privacy':       { fr: 'Vos informations sont utilisées uniquement pour traiter votre message.', en: 'Your information is used only to process your message.' },
   'contact.info.email':         { fr: 'Email',                                        en: 'Email'                                         },
   'contact.info.phone':         { fr: 'Téléphone',                                   en: 'Phone'                                         },
   'contact.info.location':      { fr: 'Localisation',                                 en: 'Location'                                      },
@@ -172,6 +164,22 @@ const T: Record<string, Record<Lang, string>> = {
   'project.impact':   { fr: 'Impact & Résultats',   en: 'Impact & Results'  },
   'project.cta.text': { fr: 'Vous avez un projet similaire ?', en: 'Have a similar project?' },
   'project.cta.btn':  { fr: 'Démarrer une discussion',         en: 'Start a discussion'      },
+  'project.back': { fr: 'Tous les projets', en: 'All projects' },
+  'project.loading': { fr: 'Chargement du projet…', en: 'Loading project…' },
+  'project.notfound': { fr: 'Projet introuvable', en: 'Project not found' },
+  'project.notfound.text': { fr: 'Ce projet n’existe pas ou n’est plus public.', en: 'This project does not exist or is no longer public.' },
+  'project.about': { fr: 'À propos du projet', en: 'About the project' },
+  'project.case': { fr: 'Étude de cas', en: 'Case study' },
+  'project.gallery': { fr: 'Galerie', en: 'Gallery' },
+  'project.stack': { fr: 'Stack technique', en: 'Tech stack' },
+  'project.period': { fr: 'Période', en: 'Period' },
+  'project.status': { fr: 'Statut', en: 'Status' },
+  'project.views': { fr: 'Vues', en: 'Views' },
+  'project.links': { fr: 'Liens', en: 'Links' },
+  'project.code': { fr: 'Code source', en: 'Source code' },
+  'project.demo': { fr: 'Démo en ligne', en: 'Live demo' },
+  'project.today': { fr: 'aujourd’hui', en: 'today' },
+  'project.screenshot': { fr: 'Capture', en: 'Screenshot' },
 
   // ── Blog / Article list page ──────────────────────────────────────────────────
   'blog.eyebrow':          { fr: 'Blog',                                              en: 'Blog'                                          },
@@ -186,6 +194,14 @@ const T: Record<string, Record<Lang, string>> = {
   'blog.status.published': { fr: 'Publié',                                            en: 'Published'                                     },
   'blog.status.archived':  { fr: 'Archivé',                                           en: 'Archived'                                      },
   'blog.status.draft':     { fr: 'Brouillon',                                         en: 'Draft'                                         },
+  'blog.error': { fr: 'Impossible de charger les articles. Réessayez dans un instant.', en: 'Could not load articles. Please try again shortly.' },
+  'blog.back': { fr: 'Tous les articles', en: 'All articles' },
+  'blog.notfound': { fr: 'Article introuvable', en: 'Article not found' },
+  'blog.notfound.text': { fr: 'Cet article n’existe pas ou n’est plus publié.', en: 'This article does not exist or is no longer published.' },
+  'blog.share': { fr: 'Partager l’article', en: 'Share this article' },
+  'blog.tags': { fr: 'Tags', en: 'Tags' },
+  'blog.copy': { fr: 'Copier le lien', en: 'Copy link' },
+  'blog.copied': { fr: 'Lien copié', en: 'Link copied' },
   'blog.empty':            { fr: 'Aucun article publié pour le moment.',              en: 'No articles published yet.'                    },
 
   // ── Admin Shell (Sidebar) ─────────────────────────────────────────────────────
@@ -193,6 +209,7 @@ const T: Record<string, Record<Lang, string>> = {
   'admin.nav.section.content':  { fr: 'Gestion contenu',   en: 'Content'              },
   'admin.nav.projects':         { fr: 'Projets',            en: 'Projects'             },
   'admin.nav.experiences':      { fr: 'Expériences',        en: 'Experiences'          },
+  'admin.nav.blog':           { fr: 'Blog',               en: 'Blog'                 },
   'admin.nav.skills':           { fr: 'Compétences',        en: 'Skills'               },
   'admin.nav.section.prefs':    { fr: 'Préférences',        en: 'Preferences'          },
   'admin.nav.theme.light':      { fr: 'Mode clair',         en: 'Light mode'           },
@@ -242,6 +259,8 @@ const T: Record<string, Record<Lang, string>> = {
   'admin.ph.project_search':    { fr: 'Titre, techno...',   en: 'Title, tech...'       },
   'admin.ph.message_search':    { fr: 'Nom, email...',      en: 'Name, email...'       },
   'admin.pagination.page':      { fr: 'Page',               en: 'Page'                 },
+  'admin.back_dashboard': { fr: 'Retour au dashboard', en: 'Back to dashboard' },
+  'admin.empty.search': { fr: 'Aucun résultat pour cette recherche.', en: 'No results for this search.' },
   'admin.empty.projects':       { fr: 'Aucun projet actif.', en: 'No active projects.' },
   'admin.empty.messages':       { fr: 'Aucun message récent.', en: 'No recent messages.' },
   'admin.loading.messages':     { fr: 'Chargement des messages...', en: 'Loading messages...' },
@@ -262,7 +281,7 @@ const T: Record<string, Record<Lang, string>> = {
   'admin.form.title':           { fr: 'Titre',                    en: 'Title'                  },
   'admin.form.excerpt':         { fr: 'Extrait',                  en: 'Excerpt'                },
   'admin.form.content':         { fr: 'Contenu',                  en: 'Content'                },
-  'admin.form.category':        { fr: 'Categorie',                en: 'Category'               },
+  'admin.form.category':        { fr: 'Catégorie',                en: 'Category'               },
   'admin.form.none':            { fr: 'Aucune',                   en: 'None'                   },
   'admin.form.status':          { fr: 'Statut',                   en: 'Status'                 },
   'admin.form.reading_time':    { fr: 'Lecture (min)',            en: 'Reading (min)'          },
@@ -270,7 +289,7 @@ const T: Record<string, Record<Lang, string>> = {
   'admin.form.cover_image':     { fr: 'Image de couverture',      en: 'Cover image'            },
   'admin.form.tags':            { fr: 'Tags',                     en: 'Tags'                   },
   'admin.form.cancel':          { fr: 'Annuler',                  en: 'Cancel'                 },
-  'admin.form.create':          { fr: 'Creer',                    en: 'Create'                 },
+  'admin.form.create':          { fr: 'Créer',                    en: 'Create'                 },
   'admin.form.update':          { fr: 'Mettre a jour',            en: 'Update'                 },
   'admin.form.publish':         { fr: 'Publier',                  en: 'Publish'                },
   'admin.form.save':            { fr: 'Enregistrer',              en: 'Save'                   },
@@ -278,8 +297,8 @@ const T: Record<string, Record<Lang, string>> = {
   // ── Admin Blog ────────────────────────────────────────────────────────────────
   'admin.blog.back':            { fr: 'Retour dashboard',         en: 'Back to dashboard'      },
   'admin.blog.subtitle':        { fr: 'Articles, categories et tags avec workflow editorial complet.', en: 'Articles, categories and tags with a complete editorial workflow.' },
-  'admin.blog.cat.new':         { fr: 'Nouvelle categorie',       en: 'New category'           },
-  'admin.blog.cat.edit':        { fr: 'Modifier categorie',       en: 'Edit category'          },
+  'admin.blog.cat.new':         { fr: 'Nouvelle catégorie',       en: 'New category'           },
+  'admin.blog.cat.edit':        { fr: 'Modifier catégorie',       en: 'Edit category'          },
   'admin.blog.tag.new':         { fr: 'Nouveau tag',              en: 'New tag'                },
   'admin.blog.tag.edit':        { fr: 'Modifier tag',             en: 'Edit tag'               },
   'admin.blog.art.new':         { fr: 'Nouvel article',           en: 'New article'            },
@@ -287,11 +306,11 @@ const T: Record<string, Record<Lang, string>> = {
   'admin.blog.art.meta':        { fr: 'Tous les champs editables du modele Article', en: 'All editable fields of the Article model' },
   'admin.blog.art.featured':    { fr: 'Mettre en avant cet article', en: 'Feature this article' },
   'admin.blog.ph.cat':          { fr: 'Nom, slug...',             en: 'Name, slug...'          },
-  'admin.blog.ph.article':      { fr: 'Titre, categorie...',      en: 'Title, category...'     },
+  'admin.blog.ph.article':      { fr: 'Titre, catégorie...',      en: 'Title, category...'     },
   'admin.blog.th.article':      { fr: 'Article',                  en: 'Article'                },
-  'admin.blog.th.category':     { fr: 'Categorie',                en: 'Category'               },
+  'admin.blog.th.category':     { fr: 'Catégorie',                en: 'Category'               },
   'admin.blog.th.reading':      { fr: 'Lecture',                  en: 'Reading'                },
-  'admin.blog.empty.cat':       { fr: 'Aucune categorie.',        en: 'No categories.'         },
+  'admin.blog.empty.cat':       { fr: 'Aucune catégorie.',        en: 'No categories.'         },
   'admin.blog.empty.tag':       { fr: 'Aucun tag.',               en: 'No tags.'               },
   'admin.blog.empty.art':       { fr: 'Aucun article disponible.', en: 'No articles available.' },
   'admin.blog.loading':         { fr: 'Chargement...',            en: 'Loading...'             },
@@ -301,30 +320,30 @@ const T: Record<string, Record<Lang, string>> = {
 
   // ── Admin Skills ──────────────────────────────────────────────────────────────
   'admin.skills.stat.cat':          { fr: 'Categories',                        en: 'Categories'                  },
-  'admin.skills.stat.skill':        { fr: 'Competences',                       en: 'Skills'                      },
-  'admin.skills.cat.new':           { fr: 'Nouvelle categorie',                en: 'New category'                },
-  'admin.skills.cat.edit':          { fr: 'Modifier categorie',                en: 'Edit category'               },
-  'admin.skills.skill.new':         { fr: 'Nouvelle competence',               en: 'New skill'                   },
-  'admin.skills.skill.edit':        { fr: 'Modifier competence',               en: 'Edit skill'                  },
-  'admin.skills.cat.create':        { fr: 'Creer la categorie',                en: 'Create category'             },
-  'admin.skills.skill.create':      { fr: 'Creer la competence',               en: 'Create skill'                },
+  'admin.skills.stat.skill':        { fr: 'Compétences',                       en: 'Skills'                      },
+  'admin.skills.cat.new':           { fr: 'Nouvelle catégorie',                en: 'New category'                },
+  'admin.skills.cat.edit':          { fr: 'Modifier catégorie',                en: 'Edit category'               },
+  'admin.skills.skill.new':         { fr: 'Nouvelle compétence',               en: 'New skill'                   },
+  'admin.skills.skill.edit':        { fr: 'Modifier compétence',               en: 'Edit skill'                  },
+  'admin.skills.cat.create':        { fr: 'Créer la catégorie',                en: 'Create category'             },
+  'admin.skills.skill.create':      { fr: 'Créer la compétence',               en: 'Create skill'                },
   'admin.skills.ph.cat':            { fr: 'Nom, icone...',                     en: 'Name, icon...'               },
-  'admin.skills.ph.skill':          { fr: 'Nom, categorie...',                 en: 'Name, category...'           },
-  'admin.skills.select_cat':        { fr: 'Selectionnez une categorie',        en: 'Select a category'           },
+  'admin.skills.ph.skill':          { fr: 'Nom, catégorie...',                 en: 'Name, category...'           },
+  'admin.skills.select_cat':        { fr: 'Sélectionnez une catégorie',        en: 'Select a category'           },
   'admin.skills.level.1':           { fr: 'Debutant',                          en: 'Beginner'                    },
   'admin.skills.level.2':           { fr: 'Intermediaire',                     en: 'Intermediate'                },
   'admin.skills.level.3':           { fr: 'Avance',                            en: 'Advanced'                    },
   'admin.skills.level.4':           { fr: 'Expert',                            en: 'Expert'                      },
   'admin.skills.sans_icone':        { fr: 'sans icone',                        en: 'no icon'                     },
-  'admin.skills.empty.cat':         { fr: 'Aucune categorie pour le moment.',  en: 'No categories yet.'          },
-  'admin.skills.empty.skill':       { fr: 'Aucune competence pour le moment.', en: 'No skills yet.'              },
+  'admin.skills.empty.cat':         { fr: 'Aucune catégorie pour le moment.',  en: 'No categories yet.'          },
+  'admin.skills.empty.skill':       { fr: 'Aucune compétence pour le moment.', en: 'No skills yet.'              },
 
   // ── Admin Sort options (extra) ────────────────────────────────────────────────
   'admin.sort.order_asc':           { fr: 'Ordre croissant',                   en: 'Ascending order'             },
   'admin.sort.proficiency_desc':    { fr: 'Niveau desc',                       en: 'Level desc'                  },
-  'admin.sort.start_date_desc':     { fr: 'Date debut (recent)',                en: 'Start date (recent)'         },
-  'admin.sort.start_date_asc':      { fr: 'Date debut (ancien)',                en: 'Start date (oldest)'         },
-  'admin.sort.archive_desc':        { fr: 'Archivage recent',                   en: 'Recently archived'           },
+  'admin.sort.start_date_desc':     { fr: 'Date début (récent)',                en: 'Start date (recent)'         },
+  'admin.sort.start_date_asc':      { fr: 'Date début (ancien)',                en: 'Start date (oldest)'         },
+  'admin.sort.archive_desc':        { fr: 'Archivage récent',                   en: 'Recently archived'           },
   'admin.sort.archive_asc':         { fr: 'Archivage ancien',                   en: 'Oldest archived'             },
 
   // ── Admin Table headers (extra) ───────────────────────────────────────────────
@@ -332,105 +351,105 @@ const T: Record<string, Record<Lang, string>> = {
   'admin.th.type':                  { fr: 'Type',                               en: 'Type'                        },
   'admin.th.company':               { fr: 'Societe',                            en: 'Company'                     },
   'admin.th.period':                { fr: 'Periode',                            en: 'Period'                      },
-  'admin.th.category':              { fr: 'Categorie',                          en: 'Category'                    },
+  'admin.th.category':              { fr: 'Catégorie',                          en: 'Category'                    },
   'admin.th.icon':                  { fr: 'Icone',                              en: 'Icon'                        },
   'admin.th.order':                 { fr: 'Ordre',                              en: 'Order'                       },
   'admin.th.level':                 { fr: 'Niveau',                             en: 'Level'                       },
   'admin.th.progress':              { fr: 'Progression',                        en: 'Progress'                    },
-  'admin.th.exp_years':             { fr: 'Experience',                         en: 'Experience'                  },
+  'admin.th.exp_years':             { fr: 'Expérience',                         en: 'Experience'                  },
   'admin.th.technologies':          { fr: 'Technologies',                       en: 'Technologies'                },
   'admin.th.archive_date':          { fr: 'Date archivage',                     en: 'Archive date'                },
-  'admin.th.skill':                 { fr: 'Competence',                         en: 'Skill'                       },
+  'admin.th.skill':                 { fr: 'Compétence',                         en: 'Skill'                       },
 
   // ── Admin Field labels (extra) ────────────────────────────────────────────────
   'admin.field.icon':               { fr: 'Icone',                              en: 'Icon'                        },
   'admin.field.order':              { fr: 'Ordre',                              en: 'Order'                       },
   'admin.field.level':              { fr: 'Niveau',                             en: 'Level'                       },
   'admin.field.percentage':         { fr: 'Pourcentage',                        en: 'Percentage'                  },
-  'admin.field.years_exp':          { fr: 'Annees d experience',                en: 'Years of experience'         },
+  'admin.field.years_exp':          { fr: 'Années d\'expérience',                en: 'Years of experience'         },
   'admin.field.type':               { fr: 'Type',                               en: 'Type'                        },
-  'admin.field.company':            { fr: 'Entreprise / Ecole',                 en: 'Company / School'            },
+  'admin.field.company':            { fr: 'Entreprise / École',                 en: 'Company / School'            },
   'admin.field.location':           { fr: 'Lieu',                               en: 'Location'                    },
-  'admin.field.start_date':         { fr: 'Date debut',                         en: 'Start date'                  },
+  'admin.field.start_date':         { fr: 'Date début',                         en: 'Start date'                  },
   'admin.field.end_date':           { fr: 'Date fin',                           en: 'End date'                    },
   'admin.field.display_order':      { fr: 'Ordre affichage',                    en: 'Display order'               },
   'admin.field.logo':               { fr: 'Logo entreprise',                    en: 'Company logo'                },
   'admin.field.certificate':        { fr: 'Certificat (PDF/image)',             en: 'Certificate (PDF/image)'     },
   'admin.field.cert_help':          { fr: 'Pour une certification, vous pouvez joindre un PDF.', en: 'For a certification, you can attach a PDF.' },
-  'admin.field.is_current':         { fr: 'Experience en cours',                en: 'Current experience'          },
-  'admin.field.first_name':         { fr: 'Prenom',                             en: 'First name'                  },
+  'admin.field.is_current':         { fr: 'Expérience en cours',                en: 'Current experience'          },
+  'admin.field.first_name':         { fr: 'Prénom',                             en: 'First name'                  },
   'admin.field.last_name':          { fr: 'Nom',                                en: 'Last name'                   },
   'admin.field.email':              { fr: 'Email',                              en: 'Email'                       },
-  'admin.field.phone':              { fr: 'Telephone',                          en: 'Phone'                       },
+  'admin.field.phone':              { fr: 'Téléphone',                          en: 'Phone'                       },
   'admin.field.website':            { fr: 'Site web',                           en: 'Website'                     },
   'admin.field.bio':                { fr: 'Bio courte',                         en: 'Short bio'                   },
   'admin.field.context':            { fr: 'Contexte client',                    en: 'Client context'              },
-  'admin.field.problem':            { fr: 'Probleme a resoudre',                en: 'Problem to solve'            },
-  'admin.field.solution':           { fr: 'Solution apportee',                  en: 'Solution provided'           },
-  'admin.field.impact':             { fr: 'Resultat / Impact',                  en: 'Result / Impact'             },
+  'admin.field.problem':            { fr: 'Problème à résoudre',                en: 'Problem to solve'            },
+  'admin.field.solution':           { fr: 'Solution apportée',                  en: 'Solution provided'           },
+  'admin.field.impact':             { fr: 'Résultat / Impact',                  en: 'Result / Impact'             },
   'admin.field.featured':           { fr: 'Projet mis en avant',                en: 'Featured project'            },
   'admin.field.views':              { fr: 'Vues',                               en: 'Views'                       },
 
   // ── Admin Experience ──────────────────────────────────────────────────────────
-  'admin.exp.subtitle':             { fr: 'Gestion des experiences professionnelles et formations.', en: 'Manage professional experiences and training.' },
-  'admin.exp.form.new':             { fr: 'Nouvelle experience ou formation',   en: 'New experience or training'  },
-  'admin.exp.form.edit':            { fr: 'Modifier une experience',            en: 'Edit an experience'          },
-  'admin.exp.list.title':           { fr: 'Liste des experiences',              en: 'Experience list'             },
+  'admin.exp.subtitle':             { fr: 'Gestion des expériences professionnelles et formations.', en: 'Manage professional experiences and training.' },
+  'admin.exp.form.new':             { fr: 'Nouvelle expérience ou formation',   en: 'New experience or training'  },
+  'admin.exp.form.edit':            { fr: 'Modifier une expérience',            en: 'Edit an experience'          },
+  'admin.exp.list.title':           { fr: 'Liste des expériences',              en: 'Experience list'             },
   'admin.exp.ph.search':            { fr: 'Titre, entreprise, lieu...',         en: 'Title, company, location...' },
-  'admin.exp.elements':             { fr: 'elements',                           en: 'items'                       },
+  'admin.exp.elements':             { fr: 'éléments',                           en: 'items'                       },
   'admin.exp.current':              { fr: 'en cours',                           en: 'active'                      },
-  'admin.exp.done':                 { fr: 'termine',                            en: 'done'                        },
+  'admin.exp.done':                 { fr: 'terminé',                            en: 'done'                        },
   'admin.exp.cert_view':            { fr: 'Voir certificat',                    en: 'View certificate'            },
   'admin.exp.present':              { fr: 'Present',                            en: 'Present'                     },
-  'admin.exp.empty':                { fr: 'Aucune experience disponible.',      en: 'No experiences available.'   },
+  'admin.exp.empty':                { fr: 'Aucune expérience disponible.',      en: 'No experiences available.'   },
   'admin.btn.add':                  { fr: 'Ajouter',                            en: 'Add'                         },
 
   // ── Admin Project Form ────────────────────────────────────────────────────────
   'admin.project.section.main':     { fr: 'Informations principales',           en: 'Main information'            },
   'admin.project.section.main.sub': { fr: 'Titre, slug, descriptions',          en: 'Title, slug, descriptions'   },
-  'admin.project.section.case':     { fr: 'Etude de cas (optionnel)',            en: 'Case study (optional)'       },
-  'admin.project.section.case.sub': { fr: 'Remplis ces champs pour transformer ce projet en etude de cas percutante.', en: 'Fill in these fields to transform this project into a compelling case study.' },
-  'admin.project.section.media':    { fr: 'Medias',                             en: 'Media'                       },
+  'admin.project.section.case':     { fr: 'Étude de cas (optionnel)',            en: 'Case study (optional)'       },
+  'admin.project.section.case.sub': { fr: 'Remplis ces champs pour transformer ce projet en étude de cas percutante.', en: 'Fill in these fields to transform this project into a compelling case study.' },
+  'admin.project.section.media':    { fr: 'Médias',                             en: 'Media'                       },
   'admin.project.section.media.sub':{ fr: 'Couverture + 3 images additionnelles', en: 'Cover + 3 additional images' },
   'admin.project.section.pub':      { fr: 'Publication',                        en: 'Publication'                 },
   'admin.project.section.pub.sub':  { fr: 'Statut, dates, liens et mise en avant', en: 'Status, dates, links and featuring' },
   'admin.project.status.in_progress':{ fr: 'En cours',                          en: 'In progress'                 },
-  'admin.project.status.completed': { fr: 'Termine',                            en: 'Completed'                   },
-  'admin.project.status.archived':  { fr: 'Archive',                            en: 'Archived'                    },
-  'admin.project.success.created':  { fr: 'Projet cree avec succes.',           en: 'Project created successfully.' },
-  'admin.project.success.updated':  { fr: 'Projet modifie avec succes.',        en: 'Project updated successfully.' },
+  'admin.project.status.completed': { fr: 'Terminé',                            en: 'Completed'                   },
+  'admin.project.status.archived':  { fr: 'Archivé',                            en: 'Archived'                    },
+  'admin.project.success.created':  { fr: 'Projet créé avec succès.',           en: 'Project created successfully.' },
+  'admin.project.success.updated':  { fr: 'Projet modifié avec succès.',        en: 'Project updated successfully.' },
   'admin.btn.saving':               { fr: 'Enregistrement...',                   en: 'Saving...'                   },
-  'admin.btn.create_project':       { fr: 'Creer le projet',                    en: 'Create project'              },
+  'admin.btn.create_project':       { fr: 'Créer le projet',                    en: 'Create project'              },
 
   // ── Admin Message Archives ────────────────────────────────────────────────────
   'admin.msg_archives.title':       { fr: 'Archives messages',                  en: 'Message archives'            },
-  'admin.msg_archives.subtitle':    { fr: 'Restaurer un message ou le supprimer definitivement.', en: 'Restore a message or delete it permanently.' },
-  'admin.msg_archives.list':        { fr: 'Liste des messages archives',        en: 'Archived messages list'      },
-  'admin.msg_archives.empty':       { fr: 'Aucun message archive.',             en: 'No archived messages.'       },
+  'admin.msg_archives.subtitle':    { fr: 'Restaurer un message ou le supprimer définitivement.', en: 'Restore a message or delete it permanently.' },
+  'admin.msg_archives.list':        { fr: 'Liste des messages archivés',        en: 'Archived messages list'      },
+  'admin.msg_archives.empty':       { fr: 'Aucun message archivé.',             en: 'No archived messages.'       },
   'admin.action.restore':           { fr: 'Restaurer',                          en: 'Restore'                     },
-  'admin.action.delete_perm':       { fr: 'Supprimer definitivement',           en: 'Delete permanently'          },
+  'admin.action.delete_perm':       { fr: 'Supprimer définitivement',           en: 'Delete permanently'          },
 
   // ── Admin Project Archives ────────────────────────────────────────────────────
   'admin.proj_archives.title':      { fr: 'Archives projets',                   en: 'Project archives'            },
-  'admin.proj_archives.subtitle':   { fr: 'Restaurer un projet ou le supprimer definitivement.', en: 'Restore a project or delete it permanently.' },
-  'admin.proj_archives.list':       { fr: 'Liste des projets archives',         en: 'Archived projects list'      },
-  'admin.proj_archives.empty':      { fr: 'Aucun projet archive.',              en: 'No archived projects.'       },
+  'admin.proj_archives.subtitle':   { fr: 'Restaurer un projet ou le supprimer définitivement.', en: 'Restore a project or delete it permanently.' },
+  'admin.proj_archives.list':       { fr: 'Liste des projets archivés',         en: 'Archived projects list'      },
+  'admin.proj_archives.empty':      { fr: 'Aucun projet archivé.',              en: 'No archived projects.'       },
 
   // ── Admin Profile ─────────────────────────────────────────────────────────────
   'admin.profile.title':            { fr: 'Mon profil',                         en: 'My profile'                  },
-  'admin.profile.subtitle':         { fr: 'Mettez a jour vos informations et la photo affichee sur la page d\'accueil.', en: 'Update your information and the photo displayed on the home page.' },
+  'admin.profile.subtitle':         { fr: 'Mettez à jour vos informations et la photo affichée sur la page d\'accueil.', en: 'Update your information and the photo displayed on the home page.' },
   'admin.profile.public_info':      { fr: 'Informations publiques',             en: 'Public information'          },
   'admin.profile.photo':            { fr: 'Photo',                              en: 'Photo'                       },
   'admin.profile.change_photo':     { fr: 'Changer la photo',                   en: 'Change photo'                },
-  'admin.profile.photo_hint':       { fr: 'Image affichee sur la page d\'accueil.', en: 'Image displayed on the home page.' },
+  'admin.profile.photo_hint':       { fr: 'Image affichée sur la page d\'accueil.', en: 'Image displayed on the home page.' },
   'admin.profile.cv':               { fr: 'CV telechargeable (PDF)',             en: 'Downloadable CV (PDF)'       },
   'admin.profile.cv_choose':        { fr: 'Choisir un PDF',                     en: 'Choose a PDF'                },
   'admin.profile.cv_view':          { fr: 'Voir CV actuel',                     en: 'View current CV'             },
-  'admin.profile.cv_empty':         { fr: 'Aucun CV enregistre',                en: 'No CV saved'                 },
+  'admin.profile.cv_empty':         { fr: 'Aucun CV enregistré',                en: 'No CV saved'                 },
   'admin.profile.loading':          { fr: 'Chargement du profil...',            en: 'Loading profile...'          },
   'admin.btn.reload':               { fr: 'Recharger',                          en: 'Reload'                      },
   'admin.field.github':             { fr: 'Lien GitHub',                        en: 'GitHub link'                 },
-  'admin.field.demo':               { fr: 'Lien demo',                          en: 'Demo link'                   },
+  'admin.field.demo':               { fr: 'Lien démo',                          en: 'Demo link'                   },
   'admin.project.new':              { fr: 'Nouveau projet',                     en: 'New project'                 },
   'admin.project.edit':             { fr: 'Modifier le projet',                 en: 'Edit project'                },
 
@@ -460,6 +479,42 @@ const T: Record<string, Record<Lang, string>> = {
   'home.certs.title':               { fr: 'Certifié sur les outils du marché',  en: 'Certified on industry tools' },
   'home.certs.all':                 { fr: 'Tout le parcours',                   en: 'Full background'             },
   'home.certs.view':                { fr: 'Voir le certificat',                 en: 'View certificate'            },
+
+  // ── Admin : surtitres et types ───────────────────────────────────────────────
+  'admin.eyebrow.content':          { fr: 'Contenu',                            en: 'Content'                     },
+  'admin.eyebrow.messages':         { fr: 'Messagerie',                         en: 'Inbox'                       },
+  'admin.eyebrow.account':          { fr: 'Compte',                             en: 'Account'                     },
+  'admin.eyebrow.security':         { fr: 'Sécurité',                           en: 'Security'                    },
+  'admin.nav.testimonials':         { fr: 'Témoignages',                        en: 'Testimonials'                },
+
+  // ── Témoignages ──────────────────────────────────────────────────────────────
+  'tst.subtitle':                   { fr: 'Recommandations de collègues, enseignants ou clients. Seuls les témoignages publiés apparaissent sur le site.', en: 'Recommendations from colleagues, teachers or clients. Only published ones appear on the site.' },
+  'tst.form.new':                   { fr: 'Nouveau témoignage',                 en: 'New testimonial'             },
+  'tst.form.edit':                  { fr: 'Modifier le témoignage',             en: 'Edit testimonial'            },
+  'tst.field.name':                 { fr: 'Auteur',                             en: 'Author'                      },
+  'tst.field.role':                 { fr: 'Poste',                              en: 'Role'                        },
+  'tst.field.company':              { fr: 'Entreprise ou école',                en: 'Company or school'           },
+  'tst.field.content':              { fr: 'Témoignage',                         en: 'Testimonial'                 },
+  'tst.field.linkedin':             { fr: 'LinkedIn de l\'auteur',              en: 'Author\'s LinkedIn'          },
+  'tst.field.avatar':               { fr: 'Photo (optionnelle)',                en: 'Photo (optional)'            },
+  'tst.field.published':            { fr: 'Publier sur le site',                en: 'Publish on the site'         },
+  'tst.list':                       { fr: 'Témoignages',                        en: 'Testimonials'                },
+  'tst.published_count':            { fr: 'publiés',                            en: 'published'                   },
+  'tst.empty':                      { fr: 'Aucun témoignage. Demandez une recommandation à un tuteur, un enseignant ou un client.', en: 'No testimonials yet. Ask a mentor, teacher or client for a recommendation.' },
+  'tst.status.published':           { fr: 'Publié',                             en: 'Published'                   },
+  'tst.status.draft':               { fr: 'Brouillon',                          en: 'Draft'                       },
+  'tst.action.publish':             { fr: 'Publier',                            en: 'Publish'                     },
+  'tst.action.unpublish':           { fr: 'Dépublier',                          en: 'Unpublish'                   },
+  'tst.confirm_delete':             { fr: 'Supprimer le témoignage de',         en: 'Delete the testimonial from' },
+  'tst.created':                    { fr: 'Témoignage ajouté.',                 en: 'Testimonial added.'          },
+  'tst.saved':                      { fr: 'Témoignage mis à jour.',             en: 'Testimonial updated.'        },
+  'tst.error':                      { fr: 'L\'opération a échoué.',             en: 'The operation failed.'       },
+  'home.tst.eyebrow':               { fr: 'Recommandations',                    en: 'Recommendations'             },
+  'home.tst.title':                 { fr: 'Ce qu\'ils en disent',               en: 'What people say'             },
+  'home.gh.eyebrow':                { fr: 'Open source',                        en: 'Open source'                 },
+  'home.gh.title':                  { fr: 'Activité récente sur GitHub',        en: 'Recent GitHub activity'      },
+  'home.gh.profile':                { fr: 'Voir mon GitHub',                    en: 'View my GitHub'              },
+  'home.gh.updated':                { fr: 'Mis à jour',                         en: 'Updated'                     },
 
   // ── Erreurs globales ─────────────────────────────────────────────────────────
   'error.network':                  { fr: 'Connexion au serveur impossible. Vérifiez votre réseau.', en: 'Cannot reach the server. Check your connection.' },
@@ -544,17 +599,30 @@ const T: Record<string, Record<Lang, string>> = {
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
   private readonly KEY = 'lang';
-  lang$ = new BehaviorSubject<Lang>((localStorage.getItem('lang') as Lang) ?? 'fr');
+  private readonly _lang = signal<Lang>(LanguageService.initial());
 
-  get current(): Lang { return this.lang$.value; }
+  /** Langue courante (signal) : un template qui appelle t() se met à jour seul. */
+  readonly lang = this._lang.asReadonly();
+  /** Version Observable, pour le code non-signal (SEO...). */
+  readonly lang$ = toObservable(this._lang);
+
+  get current(): Lang { return this._lang(); }
 
   toggle(): void {
-    const next: Lang = this.lang$.value === 'fr' ? 'en' : 'fr';
-    localStorage.setItem(this.KEY, next);
-    this.lang$.next(next);
+    const next: Lang = this._lang() === 'fr' ? 'en' : 'fr';
+    try { localStorage.setItem(this.KEY, next); } catch { /* stockage indisponible */ }
+    this._lang.set(next);
   }
 
   t(key: string): string {
-    return T[key]?.[this.current] ?? key;
+    return T[key]?.[this._lang()] ?? key;
+  }
+
+  private static initial(): Lang {
+    try {
+      return localStorage.getItem('lang') === 'en' ? 'en' : 'fr';
+    } catch {
+      return 'fr';
+    }
   }
 }

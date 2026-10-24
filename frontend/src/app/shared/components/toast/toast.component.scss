@@ -5,7 +5,7 @@
   z-index: var(--z-toast);
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: var(--space-2);
   max-width: 380px;
   width: calc(100vw - 2.5rem);
   pointer-events: none;
@@ -14,8 +14,8 @@
 .toast {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  padding: 0.8rem 1rem;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
   border-radius: 12px;
   border: 1px solid transparent;
   box-shadow: 0 4px 20px rgba(15, 23, 42, 0.12), 0 1px 4px rgba(15, 23, 42, 0.06);

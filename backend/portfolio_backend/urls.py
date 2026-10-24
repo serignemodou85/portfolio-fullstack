@@ -23,6 +23,9 @@ from experience.views import ExperienceViewSet
 from skills.views import SkillCategoryViewSet, SkillViewSet
 from blog.views import CategoryViewSet, TagViewSet, ArticleViewSet
 from contact.views import ContactMessageViewSet
+from testimonials.views import TestimonialViewSet
+from portfolio_backend.github import github_repos
+from portfolio_backend.sitemap import sitemap_xml
 
 # Vue pour la racine
 def api_root(request):
@@ -72,11 +75,14 @@ router.register(r'blog/tags', TagViewSet, basename='tag')
 router.register(r'blog/articles', ArticleViewSet, basename='article')
 router.register(r'contact', ContactMessageViewSet, basename='contact')
 router.register(r'audit-logs', AuditLogViewSet, basename='audit-log')
+router.register(r'testimonials', TestimonialViewSet, basename='testimonial')
 
 urlpatterns = [
     # Page d'accueil de l'API
     path('', api_root, name='api-root'),
     path('health/', health_check, name='health-check'),
+    path('sitemap.xml', sitemap_xml, name='sitemap'),
+    path('api/github/repos/', github_repos, name='github-repos'),
     
     # Admin Django (optionnel en prod)
     path('admin/', admin.site.urls) if settings.DJANGO_ADMIN_ENABLED else path('admin/', admin_block),

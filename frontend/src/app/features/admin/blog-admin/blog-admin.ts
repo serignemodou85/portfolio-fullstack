@@ -1,6 +1,6 @@
 // src/app/features/admin/blog-admin/blog-admin.ts
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { BlogService } from '../../../core/services/blog.service';
@@ -8,440 +8,273 @@ import { ArticleList } from '../../../core/models/article.model';
 import { BlogCategory, BlogTag } from '../../../core/models/blog.model';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
+import { PagerComponent } from '../../../shared/components/pager/pager.component';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { apiErrorMessage } from '../../../core/utils/api-error';
+import { byDate, byText, tableState } from '../../../core/utils/table-state';
+
+type NameSort = 'name_asc' | 'name_desc';
+type ArticleSort = 'date_desc' | 'date_asc' | 'title_asc' | 'title_desc';
+
+const emptyArticle = () => ({
+  title: '',
+  slug: '',
+  excerpt: '',
+  content: '',
+  category: '',
+  tags_ids: [] as number[],
+  status: 'draft' as ArticleList['status'],
+  is_featured: false,
+  reading_time: 5,
+  published_at: ''
+});
+
+const nameCompare = <T extends { name: string }>(sort: NameSort) => byText<T>(item => item.name, sort === 'name_asc' ? 1 : -1);
+const articleDate = (a: ArticleList) => a.published_at || a.created_at;
 
 @Component({
   selector: 'app-blog-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, IconComponent, AdminShell],
+  imports: [DatePipe, FormsModule, RouterLink, IconComponent, AdminShell, PagerComponent],
   templateUrl: './blog-admin.html',
   styleUrl: './blog-admin.scss'
 })
 export class BlogAdmin implements OnInit {
-  categories: BlogCategory[] = [];
-  tags: BlogTag[] = [];
-  articles: ArticleList[] = [];
-  error: string | null = null;
-  loading = false;
-  pageSize = 5;
-  pageSizeOptions = [4, 5, 10, 20];
-  categoryPage = 1;
-  tagPage = 1;
-  articlePage = 1;
-  categorySearch = '';
-  tagSearch = '';
-  articleSearch = '';
-  categorySort: 'name_asc' | 'name_desc' = 'name_asc';
-  tagSort: 'name_asc' | 'name_desc' = 'name_asc';
-  articleSort: 'date_desc' | 'date_asc' | 'title_asc' | 'title_desc' = 'date_desc';
+  private blogService = inject(BlogService);
+  private toastService = inject(ToastService);
+  private confirmService = inject(ConfirmService);
+  lang = inject(LanguageService);
 
-  editingCategorySlug: string | null = null;
-  editingTagSlug: string | null = null;
-  editingArticleSlug: string | null = null;
-  featuredImage: File | null = null;
+  readonly categories = signal<BlogCategory[]>([]);
+  readonly tags = signal<BlogTag[]>([]);
+  readonly articles = signal<ArticleList[]>([]);
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
+  readonly editingCategorySlug = signal<string | null>(null);
+  readonly editingTagSlug = signal<string | null>(null);
+  readonly editingArticleSlug = signal<string | null>(null);
 
+  /** Modèles des formulaires (template-driven, liés par ngModel). */
   categoryForm = { name: '', slug: '', description: '' };
   tagForm = { name: '', slug: '' };
+  articleForm = emptyArticle();
+  private featuredImage: File | null = null;
 
-  articleForm = {
-    title: '',
-    slug: '',
-    excerpt: '',
-    content: '',
-    category: '',
-    tags_ids: [] as number[],
-    status: 'draft',
-    is_featured: false,
-    reading_time: 5,
-    published_at: ''
-  };
+  readonly categoryTable = tableState<BlogCategory, NameSort>(this.categories, {
+    sort: 'name_asc',
+    searchIn: c => [c.name, c.slug, c.description],
+    compare: nameCompare,
+  });
 
-  constructor(
-    private blogService: BlogService,
-    private toastService: ToastService,
-    private confirmService: ConfirmService,
-    public lang: LanguageService
-  ) {}
+  readonly tagTable = tableState<BlogTag, NameSort>(this.tags, {
+    sort: 'name_asc',
+    searchIn: t => [t.name, t.slug],
+    compare: nameCompare,
+  });
+
+  readonly articleTable = tableState<ArticleList, ArticleSort>(this.articles, {
+    sort: 'date_desc',
+    searchIn: a => [a.title, a.excerpt, a.category_name],
+    compare: sort => ({
+      date_desc: byDate<ArticleList>(articleDate, -1),
+      date_asc: byDate<ArticleList>(articleDate, 1),
+      title_asc: byText<ArticleList>(a => a.title, 1),
+      title_desc: byText<ArticleList>(a => a.title, -1),
+    })[sort],
+  });
 
   ngOnInit(): void {
     this.loadAll();
   }
 
   loadAll(): void {
-    this.loading = true;
+    this.loading.set(true);
     this.blogService.getCategories({ page_size: 1000 }).subscribe({
-      next: (items) => {
-        this.categories = items;
-        this.syncCategoryPage();
-      },
-      error: () => (this.error = 'Erreur chargement categories.')
+      next: (items) => this.categories.set(items),
+      error: () => this.error.set('Erreur de chargement des catégories.')
     });
     this.blogService.getTags({ page_size: 1000 }).subscribe({
-      next: (items) => {
-        this.tags = items;
-        this.syncTagPage();
-      },
-      error: () => (this.error = 'Erreur chargement tags.')
+      next: (items) => this.tags.set(items),
+      error: () => this.error.set('Erreur de chargement des tags.')
     });
     this.blogService.getArticles({ page_size: 1000 }).subscribe({
       next: (items) => {
-        this.articles = items;
-        this.syncArticlePage();
-        this.loading = false;
+        this.articles.set(items);
+        this.loading.set(false);
       },
       error: () => {
-        this.error = 'Erreur chargement articles.';
-        this.loading = false;
+        this.error.set('Erreur de chargement des articles.');
+        this.loading.set(false);
       }
     });
   }
 
-  get pagedCategories(): BlogCategory[] {
-    this.syncCategoryPage();
-    return this.paginate(this.processedCategories, this.categoryPage);
-  }
-
-  get pagedTags(): BlogTag[] {
-    this.syncTagPage();
-    return this.paginate(this.processedTags, this.tagPage);
-  }
-
-  get pagedArticles(): ArticleList[] {
-    this.syncArticlePage();
-    return this.paginate(this.processedArticles, this.articlePage);
-  }
-
-  get categoryTotalPages(): number {
-    return Math.max(1, Math.ceil(this.processedCategories.length / this.pageSize));
-  }
-
-  get tagTotalPages(): number {
-    return Math.max(1, Math.ceil(this.processedTags.length / this.pageSize));
-  }
-
-  get articleTotalPages(): number {
-    return Math.max(1, Math.ceil(this.processedArticles.length / this.pageSize));
-  }
-
-  setCategoryPage(page: number): void {
-    this.categoryPage = this.clampPage(page, this.categoryTotalPages);
-  }
-
-  setTagPage(page: number): void {
-    this.tagPage = this.clampPage(page, this.tagTotalPages);
-  }
-
-  setArticlePage(page: number): void {
-    this.articlePage = this.clampPage(page, this.articleTotalPages);
-  }
-
-  setPageSize(size: number): void {
-    this.pageSize = size;
-    this.syncCategoryPage();
-    this.syncTagPage();
-    this.syncArticlePage();
-  }
-
-  get processedCategories(): BlogCategory[] {
-    const query = this.categorySearch.trim().toLowerCase();
-    let items = this.categories;
-    if (query) {
-      items = items.filter((cat) =>
-        [cat.name, cat.slug, cat.description].filter(Boolean).some((v) => String(v).toLowerCase().includes(query))
-      );
-    }
-    return this.sortCategories(items);
-  }
-
-  get processedTags(): BlogTag[] {
-    const query = this.tagSearch.trim().toLowerCase();
-    let items = this.tags;
-    if (query) {
-      items = items.filter((tag) =>
-        [tag.name, tag.slug].filter(Boolean).some((v) => String(v).toLowerCase().includes(query))
-      );
-    }
-    return this.sortTags(items);
-  }
-
-  get processedArticles(): ArticleList[] {
-    const query = this.articleSearch.trim().toLowerCase();
-    let items = this.articles;
-    if (query) {
-      items = items.filter((article) =>
-        [article.title, article.excerpt, article.category_name]
-          .filter(Boolean)
-          .some((v) => String(v).toLowerCase().includes(query))
-      );
-    }
-    return this.sortArticles(items);
-  }
+  // ── Catégories ───────────────────────────────────────────────────────────
 
   submitCategory(): void {
-    const request$ = this.editingCategorySlug
-      ? this.blogService.updateCategory(this.editingCategorySlug, this.categoryForm)
+    const slug = this.editingCategorySlug();
+    const request$ = slug
+      ? this.blogService.updateCategory(slug, this.categoryForm)
       : this.blogService.createCategory(this.categoryForm);
-
     request$.subscribe({
       next: () => {
+        this.toastService.success(slug ? 'Catégorie mise à jour.' : 'Catégorie créée.');
         this.resetCategory();
         this.loadAll();
       },
-      error: () => (this.error = 'Erreur sauvegarde categorie.')
+      error: (err) => this.error.set(apiErrorMessage(err, 'Erreur lors de la sauvegarde de la catégorie.'))
     });
   }
 
   editCategory(cat: BlogCategory): void {
-    this.editingCategorySlug = cat.slug;
-    this.categoryForm = {
-      name: cat.name,
-      slug: cat.slug,
-      description: cat.description || ''
-    };
+    this.editingCategorySlug.set(cat.slug);
+    this.categoryForm = { name: cat.name, slug: cat.slug, description: cat.description || '' };
   }
 
   deleteCategory(cat: BlogCategory): void {
-    this.confirmService.confirm({
-      title: 'Supprimer la catégorie',
-      message: `Supprimer "${cat.name}" ? Les articles associés perdront leur catégorie.`,
-      confirmLabel: 'Supprimer'
-    }).subscribe(confirmed => {
-      if (!confirmed) return;
+    this.confirmDelete('Supprimer la catégorie', `Supprimer "${cat.name}" ? Les articles associés perdront leur catégorie.`, () =>
       this.blogService.deleteCategory(cat.slug).subscribe({
         next: () => { this.toastService.success('Catégorie supprimée.'); this.loadAll(); },
-        error: () => this.toastService.error('Erreur suppression catégorie.')
-      });
-    });
+        error: () => this.toastService.error('Erreur lors de la suppression de la catégorie.')
+      })
+    );
   }
 
   resetCategory(): void {
-    this.editingCategorySlug = null;
+    this.editingCategorySlug.set(null);
     this.categoryForm = { name: '', slug: '', description: '' };
   }
 
-  submitTag(): void {
-    const request$ = this.editingTagSlug
-      ? this.blogService.updateTag(this.editingTagSlug, this.tagForm)
-      : this.blogService.createTag(this.tagForm);
+  // ── Tags ─────────────────────────────────────────────────────────────────
 
+  submitTag(): void {
+    const slug = this.editingTagSlug();
+    const request$ = slug ? this.blogService.updateTag(slug, this.tagForm) : this.blogService.createTag(this.tagForm);
     request$.subscribe({
       next: () => {
+        this.toastService.success(slug ? 'Tag mis à jour.' : 'Tag créé.');
         this.resetTag();
         this.loadAll();
       },
-      error: () => (this.error = 'Erreur sauvegarde tag.')
+      error: (err) => this.error.set(apiErrorMessage(err, 'Erreur lors de la sauvegarde du tag.'))
     });
   }
 
   editTag(tag: BlogTag): void {
-    this.editingTagSlug = tag.slug;
-    this.tagForm = {
-      name: tag.name,
-      slug: tag.slug
-    };
+    this.editingTagSlug.set(tag.slug);
+    this.tagForm = { name: tag.name, slug: tag.slug };
   }
 
   deleteTag(tag: BlogTag): void {
-    this.confirmService.confirm({
-      title: 'Supprimer le tag',
-      message: `Supprimer le tag "${tag.name}" ?`,
-      confirmLabel: 'Supprimer'
-    }).subscribe(confirmed => {
-      if (!confirmed) return;
+    this.confirmDelete('Supprimer le tag', `Supprimer le tag "${tag.name}" ?`, () =>
       this.blogService.deleteTag(tag.slug).subscribe({
         next: () => { this.toastService.success('Tag supprimé.'); this.loadAll(); },
-        error: () => this.toastService.error('Erreur suppression tag.')
-      });
-    });
+        error: () => this.toastService.error('Erreur lors de la suppression du tag.')
+      })
+    );
   }
 
   resetTag(): void {
-    this.editingTagSlug = null;
+    this.editingTagSlug.set(null);
     this.tagForm = { name: '', slug: '' };
   }
 
-  onImageSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      this.featuredImage = file;
-    }
+  // ── Articles ─────────────────────────────────────────────────────────────
+
+  onImageSelected(event: Event): void {
+    this.featuredImage = (event.target as HTMLInputElement).files?.[0] ?? null;
   }
 
-  onTagSelectionChange(tagId: number, checked: boolean): void {
-    if (checked) {
-      if (!this.articleForm.tags_ids.includes(tagId)) {
-        this.articleForm.tags_ids.push(tagId);
-      }
-      return;
-    }
-    this.articleForm.tags_ids = this.articleForm.tags_ids.filter((id) => id !== tagId);
+  toggleTag(tagId: number, checked: boolean): void {
+    const ids = this.articleForm.tags_ids.filter(id => id !== tagId);
+    this.articleForm.tags_ids = checked ? [...ids, tagId] : ids;
   }
 
   submitArticle(): void {
     const payload = new FormData();
     Object.entries(this.articleForm).forEach(([key, value]) => {
       if (key === 'tags_ids') {
-        (value as number[]).forEach((id) => payload.append('tags_ids', String(id)));
+        (value as number[]).forEach(id => payload.append('tags_ids', String(id)));
       } else if (value !== null && value !== '') {
-        payload.append(key, value as any);
+        payload.append(key, String(value));
       }
     });
     if (this.featuredImage) {
       payload.append('featured_image', this.featuredImage);
     }
 
-    const request$ = this.editingArticleSlug
-      ? this.blogService.partialUpdateArticle(this.editingArticleSlug, payload)
-      : this.blogService.createArticle(payload);
-
+    const slug = this.editingArticleSlug();
+    const request$ = slug ? this.blogService.partialUpdateArticle(slug, payload) : this.blogService.createArticle(payload);
     request$.subscribe({
       next: () => {
+        this.toastService.success(slug ? 'Article mis à jour.' : 'Article créé.');
         this.resetArticleForm();
         this.loadAll();
       },
-      error: () => (this.error = 'Erreur sauvegarde article.')
+      error: (err) => this.error.set(apiErrorMessage(err, 'Erreur lors de la sauvegarde de l\'article.'))
     });
   }
 
   editArticle(article: ArticleList): void {
-    this.editingArticleSlug = article.slug;
+    this.editingArticleSlug.set(article.slug);
     this.featuredImage = null;
     this.blogService.getArticle(article.slug).subscribe({
-      next: (detail: any) => {
+      next: (detail) => {
         this.articleForm = {
           title: detail.title,
           slug: detail.slug,
           excerpt: detail.excerpt,
           content: detail.content || '',
           category: detail.category?.id ? String(detail.category.id) : '',
-          tags_ids: detail.tags?.map((t: any) => t.id) || [],
+          tags_ids: detail.tags?.map(t => t.id) || [],
           status: detail.status,
-          is_featured: detail.is_featured,
+          is_featured: !!detail.is_featured,
           reading_time: detail.reading_time,
           published_at: this.toDateTimeLocalValue(detail.published_at)
         };
       },
-      error: () => (this.error = 'Erreur chargement article.')
+      error: () => this.error.set('Erreur de chargement de l\'article.')
     });
   }
 
   deleteArticle(article: ArticleList): void {
-    this.confirmService.confirm({
-      title: 'Supprimer l\'article',
-      message: `Supprimer "${article.title}" ? Cette action est irréversible.`,
-      confirmLabel: 'Supprimer'
-    }).subscribe(confirmed => {
-      if (!confirmed) return;
+    this.confirmDelete('Supprimer l\'article', `Supprimer "${article.title}" ? Cette action est irréversible.`, () =>
       this.blogService.deleteArticle(article.slug).subscribe({
-        next: () => { this.toastService.success('Article supprimé.'); this.loadAll(); },
-        error: () => this.toastService.error('Erreur suppression article.')
-      });
-    });
+        next: () => {
+          this.toastService.success('Article supprimé.');
+          this.articles.update(list => list.filter(a => a.slug !== article.slug));
+        },
+        error: () => this.toastService.error('Erreur lors de la suppression de l\'article.')
+      })
+    );
   }
 
   resetArticleForm(): void {
-    this.editingArticleSlug = null;
+    this.editingArticleSlug.set(null);
     this.featuredImage = null;
-    this.articleForm = {
-      title: '',
-      slug: '',
-      excerpt: '',
-      content: '',
-      category: '',
-      tags_ids: [],
-      status: 'draft',
-      is_featured: false,
-      reading_time: 5,
-      published_at: ''
-    };
+    this.articleForm = emptyArticle();
   }
 
   statusLabel(status: string): string {
-    if (status === 'published') return this.lang.t('admin.blog.art.published');
-    if (status === 'archived') return this.lang.t('admin.blog.art.archived');
-    return this.lang.t('admin.blog.art.draft');
+    return this.lang.t(`admin.blog.art.${status === 'published' || status === 'archived' ? status : 'draft'}`);
   }
 
+  private confirmDelete(title: string, message: string, action: () => void): void {
+    this.confirmService.confirm({ title, message, confirmLabel: 'Supprimer' }).subscribe(confirmed => {
+      if (confirmed) {
+        action();
+      }
+    });
+  }
+
+  /** ISO → valeur d'un <input type="datetime-local"> dans le fuseau du navigateur. */
   private toDateTimeLocalValue(value?: string | null): string {
-    if (!value) {
+    const date = value ? new Date(value) : null;
+    if (!date || Number.isNaN(date.getTime())) {
       return '';
     }
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) {
-      return '';
-    }
-    const offset = date.getTimezoneOffset();
-    const localDate = new Date(date.getTime() - (offset * 60000));
-    return localDate.toISOString().slice(0, 16);
-  }
-
-  private paginate<T>(items: T[], page: number): T[] {
-    const start = (page - 1) * this.pageSize;
-    return items.slice(start, start + this.pageSize);
-  }
-
-  private clampPage(page: number, total: number): number {
-    return Math.min(Math.max(page, 1), total);
-  }
-
-  private syncCategoryPage(): void {
-    this.categoryPage = this.clampPage(this.categoryPage, this.categoryTotalPages);
-  }
-
-  private syncTagPage(): void {
-    this.tagPage = this.clampPage(this.tagPage, this.tagTotalPages);
-  }
-
-  private syncArticlePage(): void {
-    this.articlePage = this.clampPage(this.articlePage, this.articleTotalPages);
-  }
-
-  private sortCategories(items: BlogCategory[]): BlogCategory[] {
-    return [...items].sort((a, b) => {
-      if (this.categorySort === 'name_desc') {
-        return b.name.localeCompare(a.name);
-      }
-      return a.name.localeCompare(b.name);
-    });
-  }
-
-  private sortTags(items: BlogTag[]): BlogTag[] {
-    return [...items].sort((a, b) => {
-      if (this.tagSort === 'name_desc') {
-        return b.name.localeCompare(a.name);
-      }
-      return a.name.localeCompare(b.name);
-    });
-  }
-
-  private sortArticles(items: ArticleList[]): ArticleList[] {
-    return [...items].sort((a, b) => {
-      if (this.articleSort === 'title_asc') {
-        return a.title.localeCompare(b.title);
-      }
-      if (this.articleSort === 'title_desc') {
-        return b.title.localeCompare(a.title);
-      }
-      const dateA = new Date(a.published_at || a.created_at || '').getTime();
-      const dateB = new Date(b.published_at || b.created_at || '').getTime();
-      if (this.articleSort === 'date_asc') {
-        return dateA - dateB;
-      }
-      return dateB - dateA;
-    });
-  }
-
-  trackByCategory(index: number, item: BlogCategory): string {
-    return item.slug || `${index}`;
-  }
-
-  trackByTag(index: number, item: BlogTag): string {
-    return item.slug || `${index}`;
-  }
-
-  trackByArticle(index: number, item: ArticleList): string {
-    return item.slug || `${index}`;
+    return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
   }
 }

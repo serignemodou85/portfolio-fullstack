@@ -1,19 +1,13 @@
 <div class="toast-container" aria-live="polite" aria-atomic="false">
-  <div
-    *ngFor="let toast of toastService.toasts$ | async; trackBy: trackByToast"
-    class="toast"
-    [class]="'toast toast-' + toast.type"
-    role="alert"
-  >
-    <span class="toast-icon">
-      <app-icon *ngIf="toast.type === 'success'" name="check-circle" [size]="18"></app-icon>
-      <app-icon *ngIf="toast.type === 'error'" name="alert" [size]="18"></app-icon>
-      <app-icon *ngIf="toast.type === 'info'" name="info" [size]="18"></app-icon>
-      <app-icon *ngIf="toast.type === 'warning'" name="warning" [size]="18"></app-icon>
-    </span>
-    <span class="toast-message">{{ toast.message }}</span>
-    <button class="toast-close" type="button" (click)="toastService.dismiss(toast.id)" aria-label="Fermer">
-      <app-icon name="x" [size]="14"></app-icon>
-    </button>
-  </div>
+  @for (toast of toastService.toasts(); track toast.id) {
+    <div [class]="'toast toast-' + toast.type" role="alert">
+      <span class="toast-icon">
+        <app-icon [name]="icons[toast.type]" [size]="18"></app-icon>
+      </span>
+      <span class="toast-message">{{ toast.message }}</span>
+      <button class="toast-close" type="button" (click)="toastService.dismiss(toast.id)" aria-label="Fermer">
+        <app-icon name="x" [size]="14"></app-icon>
+      </button>
+    </div>
+  }
 </div>

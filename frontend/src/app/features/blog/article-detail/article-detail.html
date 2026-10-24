@@ -1,51 +1,69 @@
-<div *ngIf="loading" class="loading">
-  <div class="spinner"></div>
-  <p>Chargement de l'article...</p>
-</div>
-
-<div *ngIf="error" class="error-page">
-  <h1>{{ error }}</h1>
-  <a routerLink="/blog" class="btn btn-outline">Retour au blog</a>
-</div>
-
-<article *ngIf="article && !loading" class="article-detail">
-  <header class="hero">
-    <div class="container hero-content fade-up">
-      <a routerLink="/blog" class="back-link">Retour au blog</a>
-      <span class="category">{{ article.category?.name || 'General' }}</span>
-      <h1>{{ article.title }}</h1>
-
-      <div class="meta">
-        <span>{{ article.author?.first_name || article.author?.username }} {{ article.author?.last_name || '' }}</span>
-        <span>{{ article.published_at | date:'dd/MM/yyyy' }}</span>
-        <span>{{ article.reading_time }} min</span>
-        <span>{{ article.views_count }} vues</span>
-      </div>
-    </div>
-  </header>
-
-  <section class="cover container">
-    <img [src]="article.featured_image" [alt]="article.title" />
-  </section>
-
-  <section class="content container">
-    <div class="panel fade-up">
-      <p class="text">{{ article.content }}</p>
-    </div>
-
-    <div class="panel fade-up" *ngIf="article.tags.length > 0">
-      <h2>Tags</h2>
-      <div class="tags">
-        <span *ngFor="let tag of article.tags">#{{ tag.name }}</span>
-      </div>
-    </div>
-
-    <div class="panel fade-up">
-      <h2>Partager</h2>
-      <div class="share-actions">
-        <a [href]="'https://twitter.com/intent/tweet?url=' + getCurrentUrl() + '&text=' + article.title" target="_blank" class="btn btn-soft">Twitter</a>
-        <a [href]="'https://www.linkedin.com/sharing/share-offsite/?url=' + getCurrentUrl()" target="_blank" class="btn btn-soft">LinkedIn</a>
-      </div>
+@if (loading()) {
+  <div class="container article-loading" aria-busy="true">
+    <div class="card-skeleton"></div>
+  </div>
+} @else if (notFound()) {
+  <section class="page-hero">
+    <div class="container">
+      <p class="eyebrow">404</p>
+      <h1>{{ t('blog.notfound') }}</h1>
+      <p class="lead">{{ t('blog.notfound.text') }}</p>
+      <a routerLink="/blog" class="btn btn-primary not-found-btn">
+        <app-icon name="arrow-left" [size]="16"></app-icon>
+        {{ t('blog.back') }}
+      </a>
     </div>
   </section>
-</article>
+} @else if (article(); as a) {
+  <article class="article-detail">
+    <header class="page-hero">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="container article-narrow fade-up">
+        <a routerLink="/blog" class="back-link">
+          <app-icon name="arrow-left" [size]="15"></app-icon>
+          {{ t('blog.back') }}
+        </a>
+        <p class="eyebrow">{{ a.category?.name || t('blog.general') }}</p>
+        <h1>{{ a.title }}</h1>
+        @if (a.excerpt) {
+          <p class="lead">{{ a.excerpt }}</p>
+        }
+        <p class="article-meta-row">
+          <span class="author">{{ a.author?.first_name || a.author?.username }} {{ a.author?.last_name || '' }}</span>
+          <span><app-icon name="calendar" [size]="14"></app-icon>{{ a.published_at | date: 'dd/MM/yyyy' }}</span>
+          <span>{{ a.reading_time }} {{ t('blog.min') }}</span>
+          <span><app-icon name="eye" [size]="14"></app-icon>{{ a.views_count }}</span>
+        </p>
+      </div>
+    </header>
+
+    <div class="container article-narrow article-body">
+      @if (a.featured_image) {
+        <figure class="cover">
+          <img [src]="a.featured_image" [alt]="a.title" decoding="async" fetchpriority="high" />
+        </figure>
+      }
+
+      <div class="prose">{{ a.content }}</div>
+
+      <footer class="article-footer">
+        @if (a.tags.length) {
+          <ul class="tags">
+            @for (tag of a.tags; track tag.name) {
+              <li>#{{ tag.name }}</li>
+            }
+          </ul>
+        }
+        <div class="share">
+          <span class="share-label">{{ t('blog.share') }}</span>
+          <a class="btn btn-icon btn-outline" [href]="'https://www.linkedin.com/sharing/share-offsite/?url=' + shareUrl()" target="_blank" rel="noopener" aria-label="LinkedIn">
+            <app-icon name="linkedin" [size]="16"></app-icon>
+          </a>
+          <button type="button" class="btn btn-icon btn-outline" (click)="copyLink()" [attr.aria-label]="t('blog.copy')" [title]="t('blog.copy')">
+            <app-icon name="copy" [size]="16"></app-icon>
+          </button>
+        </div>
+      </footer>
+    </div>
+  </article>
+}

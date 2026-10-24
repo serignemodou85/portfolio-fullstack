@@ -1,95 +1,68 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
+import { PagerComponent } from '../../../shared/components/pager/pager.component';
 import { ContactService } from '../../../core/services/contact.service';
 import { ContactMessage } from '../../../core/models/contact.model';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmService } from '../../../core/services/confirm.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { byDate, byText, tableState } from '../../../core/utils/table-state';
+
+type SortKey = 'date_desc' | 'date_asc' | 'name_asc' | 'name_desc';
 
 @Component({
   selector: 'app-message-archives',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, AdminShell, IconComponent],
+  imports: [DatePipe, FormsModule, RouterLink, AdminShell, IconComponent, PagerComponent],
   templateUrl: './message-archives.html',
   styleUrl: './message-archives.scss'
 })
 export class MessageArchives implements OnInit {
-  archivedMessages: ContactMessage[] = [];
-  loading = true;
-  error: string | null = null;
-  pageSize = 5;
-  pageSizeOptions = [4, 5, 10, 20];
-  page = 1;
-  searchTerm = '';
-  sortKey: 'date_desc' | 'date_asc' | 'name_asc' | 'name_desc' = 'date_desc';
+  private contactService = inject(ContactService);
+  private toastService = inject(ToastService);
+  private confirmService = inject(ConfirmService);
+  lang = inject(LanguageService);
 
-  constructor(
-    private contactService: ContactService,
-    private toastService: ToastService,
-    private confirmService: ConfirmService,
-    public lang: LanguageService
-  ) {}
+  readonly archivedMessages = signal<ContactMessage[]>([]);
+  readonly loading = signal(true);
+  readonly error = signal(false);
+
+  readonly table = tableState<ContactMessage, SortKey>(this.archivedMessages, {
+    sort: 'date_desc',
+    searchIn: m => [m.name, m.email, m.subject, m.message],
+    compare: sort => ({
+      date_desc: byDate<ContactMessage>(m => m.created_at, -1),
+      date_asc: byDate<ContactMessage>(m => m.created_at, 1),
+      name_asc: byText<ContactMessage>(m => m.name, 1),
+      name_desc: byText<ContactMessage>(m => m.name, -1),
+    })[sort],
+  });
 
   ngOnInit(): void {
     this.loadArchivedMessages();
   }
 
   loadArchivedMessages(): void {
-    this.loading = true;
-    this.error = null;
-
+    this.loading.set(true);
+    this.error.set(false);
     this.contactService.getMessages({ page_size: 1000 }).subscribe({
       next: (messages) => {
-        this.archivedMessages = messages.filter((msg) => msg.status === 'archived');
-        this.syncPage();
-        this.loading = false;
+        this.archivedMessages.set(messages.filter(msg => msg.status === 'archived'));
+        this.loading.set(false);
       },
-      error: (err) => {
-        console.error('Erreur chargement messages archives:', err);
-        this.error = 'Impossible de charger les messages archives.';
-        this.loading = false;
+      error: () => {
+        this.error.set(true);
+        this.loading.set(false);
       }
     });
   }
 
-  get pagedMessages(): ContactMessage[] {
-    this.syncPage();
-    return this.paginate(this.processedMessages, this.page);
-  }
-
-  get totalPages(): number {
-    return Math.max(1, Math.ceil(this.processedMessages.length / this.pageSize));
-  }
-
-  setPage(page: number): void {
-    this.page = this.clampPage(page, this.totalPages);
-  }
-
-  setPageSize(size: number): void {
-    this.pageSize = size;
-    this.syncPage();
-  }
-
-  get processedMessages(): ContactMessage[] {
-    const query = this.searchTerm.trim().toLowerCase();
-    let items = this.archivedMessages;
-    if (query) {
-      items = items.filter((message) =>
-        [message.name, message.email, message.subject, message.message]
-          .filter(Boolean)
-          .some((v) => String(v).toLowerCase().includes(query))
-      );
-    }
-    return this.sortMessages(items);
-  }
-
   restoreMessage(message: ContactMessage): void {
-    if (!message?.id) return;
-
+    if (!message.id) return;
     this.confirmService.confirm({
       title: 'Restaurer le message',
       message: `Restaurer le message de ${message.name} dans la boîte de réception ?`,
@@ -99,21 +72,16 @@ export class MessageArchives implements OnInit {
       if (!confirmed) return;
       this.contactService.restore(message.id!).subscribe({
         next: () => {
-          this.archivedMessages = this.archivedMessages.filter((item) => item.id !== message.id);
-          this.syncPage();
+          this.removeLocally(message);
           this.toastService.success('Message restauré.');
         },
-        error: (err) => {
-          console.error('Erreur restauration message:', err);
-          this.toastService.error('La restauration a échoué.');
-        }
+        error: () => this.toastService.error('La restauration a échoué.')
       });
     });
   }
 
   deleteMessage(message: ContactMessage): void {
-    if (!message?.id) return;
-
+    if (!message.id) return;
     this.confirmService.confirm({
       title: 'Supprimer le message',
       message: `Supprimer définitivement le message de ${message.name} ? Cette action est irréversible.`,
@@ -122,49 +90,15 @@ export class MessageArchives implements OnInit {
       if (!confirmed) return;
       this.contactService.deleteMessage(message.id!).subscribe({
         next: () => {
-          this.archivedMessages = this.archivedMessages.filter((item) => item.id !== message.id);
-          this.syncPage();
+          this.removeLocally(message);
           this.toastService.success('Message supprimé.');
         },
-        error: (err) => {
-          console.error('Erreur suppression message:', err);
-          this.toastService.error('La suppression a échoué.');
-        }
+        error: () => this.toastService.error('La suppression a échoué.')
       });
     });
   }
 
-  private paginate<T>(items: T[], page: number): T[] {
-    const start = (page - 1) * this.pageSize;
-    return items.slice(start, start + this.pageSize);
-  }
-
-  private clampPage(page: number, total: number): number {
-    return Math.min(Math.max(page, 1), total);
-  }
-
-  private syncPage(): void {
-    this.page = this.clampPage(this.page, this.totalPages);
-  }
-
-  private sortMessages(items: ContactMessage[]): ContactMessage[] {
-    return [...items].sort((a, b) => {
-      if (this.sortKey === 'name_asc') {
-        return a.name.localeCompare(b.name);
-      }
-      if (this.sortKey === 'name_desc') {
-        return b.name.localeCompare(a.name);
-      }
-      const dateA = new Date(a.created_at || '').getTime();
-      const dateB = new Date(b.created_at || '').getTime();
-      if (this.sortKey === 'date_asc') {
-        return dateA - dateB;
-      }
-      return dateB - dateA;
-    });
-  }
-
-  trackByMessage(index: number, item: ContactMessage): number {
-    return item.id ?? index;
+  private removeLocally(message: ContactMessage): void {
+    this.archivedMessages.update(list => list.filter(item => item.id !== message.id));
   }
 }

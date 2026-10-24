@@ -40,7 +40,7 @@
 }
 
 .mfa-status {
-  padding: 0.1rem 0.5rem;
+  padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-full);
   font-size: var(--text-xs);
   font-weight: 700;
@@ -90,7 +90,7 @@
   color: var(--muted, #64748b);
 
   code {
-    padding: 0.2rem 0.45rem;
+    padding: var(--space-1) var(--space-2);
     border-radius: var(--radius-sm);
     background: var(--soft, #eef2ff);
     color: var(--text, #0f172a);

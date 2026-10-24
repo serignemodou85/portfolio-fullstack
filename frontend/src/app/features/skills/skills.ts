@@ -1,57 +1,54 @@
 // src/app/features/skills/skills.ts
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { SkillService } from '../../core/services/skill.service';
 import { SkillCategoryWithSkills } from '../../core/models/skill.model';
 import { IconComponent } from '../../shared/components/icon/icon.component';
 import { RevealDirective } from '../../shared/directives/reveal.directive';
 import { resolveIconFromKeyword } from '../../shared/utils/icon-keyword';
-import { LanguageService, Lang } from '../../core/services/language.service';
+import { LanguageService } from '../../core/services/language.service';
 
 @Component({
   selector: 'app-skills',
   standalone: true,
-  imports: [CommonModule, RouterLink, IconComponent, RevealDirective],
+  imports: [RouterLink, IconComponent, RevealDirective],
   templateUrl: './skills.html',
   styleUrl: './skills.scss'
 })
-export class Skills implements OnInit, OnDestroy {
-  categories: SkillCategoryWithSkills[] = [];
-  loading = true;
-  error: string | null = null;
-  lang: Lang = 'fr';
-  private destroy$ = new Subject<void>();
+export class Skills implements OnInit {
+  private skillService = inject(SkillService);
+  private destroyRef = inject(DestroyRef);
+  readonly lang = inject(LanguageService);
 
-  constructor(
-    private skillService: SkillService,
-    private langService: LanguageService
-  ) {
-    this.langService.lang$.pipe(takeUntil(this.destroy$)).subscribe(l => this.lang = l);
-  }
+  readonly categories = signal<SkillCategoryWithSkills[]>([]);
+  readonly loading = signal(true);
+  readonly error = signal(false);
 
   t(key: string): string {
-    return this.langService.t(key);
+    return this.lang.t(key);
+  }
+
+  /** "2 ans", "1 an", "< 1 an" ; vide si non renseigné (la colonne reste pour aligner les niveaux). */
+  yearsLabel(years: number | null | undefined): string {
+    if (!years || years <= 0) return '';
+    const fr = this.lang.lang() === 'fr';
+    if (years < 1) return fr ? '< 1 an' : '< 1 yr';
+    const n = Math.round(years);
+    return fr ? `${n} an${n > 1 ? 's' : ''}` : `${n} yr${n > 1 ? 's' : ''}`;
   }
 
   ngOnInit(): void {
-    this.skillService.getCategoriesWithSkills().pipe(takeUntil(this.destroy$)).subscribe({
+    this.skillService.getCategoriesWithSkills().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (categories) => {
-        this.categories = categories;
-        this.loading = false;
+        this.categories.set(categories);
+        this.loading.set(false);
       },
       error: () => {
-        this.error = 'Impossible de charger les compétences.';
-        this.loading = false;
+        this.error.set(true);
+        this.loading.set(false);
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   proficiencyClass(level: number): string {

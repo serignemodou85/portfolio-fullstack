@@ -1,0 +1,115 @@
+<app-admin-shell>
+  <div class="admin-page">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">{{ lang.t('admin.eyebrow.content') }}</p>
+        <h1>{{ lang.t('admin.nav.testimonials') }}</h1>
+        <p class="subtitle">{{ lang.t('tst.subtitle') }}</p>
+      </div>
+    </header>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>{{ lang.t(editingId() ? 'tst.form.edit' : 'tst.form.new') }}</h2>
+      </div>
+
+      <form (ngSubmit)="submit()">
+        <div class="grid three">
+          <div class="field">
+            <label for="tst_name">{{ lang.t('tst.field.name') }} *</label>
+            <input id="tst_name" name="author_name" [(ngModel)]="form.author_name" required maxlength="120" />
+          </div>
+          <div class="field">
+            <label for="tst_role">{{ lang.t('tst.field.role') }}</label>
+            <input id="tst_role" name="author_role" [(ngModel)]="form.author_role" maxlength="120" placeholder="Tech Lead" />
+          </div>
+          <div class="field">
+            <label for="tst_company">{{ lang.t('tst.field.company') }}</label>
+            <input id="tst_company" name="company" [(ngModel)]="form.company" maxlength="120" placeholder="EPSI Paris" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="tst_content">{{ lang.t('tst.field.content') }} *</label>
+          <textarea id="tst_content" name="content" rows="4" [(ngModel)]="form.content" required [maxlength]="maxLength"></textarea>
+          <p class="field-help">{{ form.content.length }} / {{ maxLength }}</p>
+        </div>
+
+        <div class="grid three">
+          <div class="field">
+            <label for="tst_linkedin">{{ lang.t('tst.field.linkedin') }}</label>
+            <input id="tst_linkedin" name="linkedin_url" type="url" [(ngModel)]="form.linkedin_url" placeholder="https://www.linkedin.com/in/..." />
+          </div>
+          <div class="field">
+            <label for="tst_avatar">{{ lang.t('tst.field.avatar') }}</label>
+            <input id="tst_avatar" type="file" accept="image/*" (change)="onAvatar($event)" />
+          </div>
+          <div class="field">
+            <label for="tst_order">{{ lang.t('admin.field.display_order') }}</label>
+            <input id="tst_order" name="order" type="number" min="0" [(ngModel)]="form.order" />
+          </div>
+        </div>
+
+        <label class="check publish-check">
+          <input type="checkbox" name="is_published" [(ngModel)]="form.is_published" />
+          <span>{{ lang.t('tst.field.published') }}</span>
+        </label>
+
+        <div class="actions">
+          @if (editingId()) {
+            <button class="btn btn-soft" type="button" (click)="reset()">{{ lang.t('admin.form.cancel') }}</button>
+          }
+          <button class="btn btn-primary" type="submit" [disabled]="saving() || !form.author_name.trim() || !form.content.trim()">
+            {{ lang.t(editingId() ? 'admin.form.update' : 'admin.btn.add') }}
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>{{ lang.t('tst.list') }}</h2>
+        <span class="panel-meta">{{ publishedCount() }} / {{ items().length }} {{ lang.t('tst.published_count') }}</span>
+      </div>
+
+      @if (loading()) {
+        <div class="loading-state">…</div>
+      } @else if (!items().length) {
+        <div class="empty-state">{{ lang.t('tst.empty') }}</div>
+      } @else {
+        <ul class="tst-list">
+          @for (item of items(); track item.id) {
+            <li class="tst-item" [class.is-draft]="!item.is_published">
+              @if (item.avatar) {
+                <img class="tst-avatar" [src]="item.avatar" [alt]="item.author_name" />
+              } @else {
+                <span class="tst-avatar tst-initials">{{ initials(item.author_name) }}</span>
+              }
+              <div class="tst-body">
+                <p class="cell-title">
+                  {{ item.author_name }}
+                  <span class="badge" [class.badge-success]="item.is_published">
+                    {{ lang.t(item.is_published ? 'tst.status.published' : 'tst.status.draft') }}
+                  </span>
+                </p>
+                <p class="cell-sub">{{ item.author_role }}{{ item.author_role && item.company ? ' · ' : '' }}{{ item.company }}</p>
+                <p class="tst-quote">« {{ item.content }} »</p>
+              </div>
+              <div class="row-actions">
+                <button type="button" class="btn btn-soft" (click)="togglePublished(item)">
+                  {{ lang.t(item.is_published ? 'tst.action.unpublish' : 'tst.action.publish') }}
+                </button>
+                <button type="button" class="btn btn-icon btn-soft" (click)="edit(item)" [title]="lang.t('admin.action.edit')">
+                  <app-icon name="edit" [size]="16"></app-icon>
+                </button>
+                <button type="button" class="btn btn-icon btn-danger" (click)="remove(item)" [title]="lang.t('admin.action.delete')">
+                  <app-icon name="trash" [size]="16"></app-icon>
+                </button>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  </div>
+</app-admin-shell>

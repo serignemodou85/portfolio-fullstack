@@ -1,126 +1,98 @@
 // src/app/features/admin/project-form/project-form.ts
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectService } from '../../projects/services/project';
+import { ProjectDetail } from '../../../core/models/project.model';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
 import { LanguageService } from '../../../core/services/language.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { apiErrorMessage } from '../../../core/utils/api-error';
+
+const emptyProject = () => ({
+  title: '',
+  slug: '',
+  description: '',
+  full_description: '',
+  context: '',
+  problem: '',
+  solution: '',
+  impact: '',
+  technologies: '',
+  github_url: '',
+  live_url: '',
+  status: 'in_progress' as ProjectDetail['status'],
+  start_date: '',
+  end_date: '',
+  is_featured: false,
+  order: 0,
+  views: 0
+});
+
+type ImageSlot = 'thumbnail' | 'image_1' | 'image_2' | 'image_3';
 
 @Component({
   selector: 'app-project-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, AdminShell],
+  imports: [FormsModule, AdminShell],
   templateUrl: './project-form.html',
   styleUrl: './project-form.scss'
 })
 export class ProjectForm implements OnInit {
-  isEditMode = false;
-  projectSlug: string | null = null;
-  loading = false;
-  error: string | null = null;
-  success = false;
+  private projectService = inject(ProjectService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private toast = inject(ToastService);
+  lang = inject(LanguageService);
 
-  formData = {
-    title: '',
-    slug: '',
-    description: '',
-    full_description: '',
-    context: '',
-    problem: '',
-    solution: '',
-    impact: '',
-    technologies: '',
-    github_url: '',
-    live_url: '',
-    status: 'in_progress',
-    start_date: '',
-    end_date: '',
-    is_featured: false,
-    order: 0,
-    views: 0
-  };
+  readonly projectSlug = this.route.snapshot.paramMap.get('slug');
+  readonly isEditMode = signal(!!this.projectSlug);
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
+  readonly thumbnailPreview = signal<string | null>(null);
 
-  thumbnailFile: File | null = null;
-  thumbnailPreview: string | null = null;
-  image1File: File | null = null;
-  image2File: File | null = null;
-  image3File: File | null = null;
-
-  constructor(
-    private projectService: ProjectService,
-    private router: Router,
-    private route: ActivatedRoute,
-    public lang: LanguageService
-  ) {}
+  /** Modèle du formulaire (template-driven, lié par ngModel). */
+  formData = emptyProject();
+  private files: Partial<Record<ImageSlot, File>> = {};
 
   ngOnInit(): void {
-    this.projectSlug = this.route.snapshot.paramMap.get('slug');
     if (this.projectSlug) {
-      this.isEditMode = true;
       this.loadProject(this.projectSlug);
     }
   }
 
   loadProject(slug: string): void {
-    this.loading = true;
+    this.loading.set(true);
     this.projectService.getProjectBySlug(slug).subscribe({
       next: (project) => {
-        this.formData = {
-          title: project.title,
-          slug: project.slug,
-          description: project.description,
-          full_description: project.full_description || '',
-          context: project.context || '',
-          problem: project.problem || '',
-          solution: project.solution || '',
-          impact: project.impact || '',
-          technologies: project.technologies,
-          github_url: project.github_url || '',
-          live_url: project.live_url || '',
-          status: project.status,
-          start_date: project.start_date || '',
-          end_date: project.end_date || '',
-          is_featured: project.is_featured ?? false,
-          order: project.order ?? 0,
-          views: project.views ?? 0
-        };
-        this.thumbnailPreview = project.thumbnail ?? null;
-        this.loading = false;
+        const form = emptyProject();
+        for (const key of Object.keys(form) as (keyof typeof form)[]) {
+          const value = project[key as keyof ProjectDetail];
+          if (value !== null && value !== undefined) {
+            (form as Record<string, unknown>)[key] = value;
+          }
+        }
+        this.formData = form;
+        this.thumbnailPreview.set(project.thumbnail ?? null);
+        this.loading.set(false);
       },
-      error: (err) => {
-        this.error = 'Projet introuvable';
-        this.loading = false;
-        console.error(err);
+      error: () => {
+        this.error.set('Projet introuvable.');
+        this.loading.set(false);
       }
     });
   }
 
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      this.thumbnailFile = file;
-
-      // Prévisualisation
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.thumbnailPreview = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-  onAdditionalImageSelected(event: any, slot: 1 | 2 | 3): void {
-    const file = event.target.files[0];
+  onFileSelected(event: Event, slot: ImageSlot = 'thumbnail'): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) {
       return;
     }
-    if (slot === 1) {
-      this.image1File = file;
-    } else if (slot === 2) {
-      this.image2File = file;
-    } else {
-      this.image3File = file;
+    this.files[slot] = file;
+    if (slot === 'thumbnail') {
+      const reader = new FileReader();
+      reader.onload = () => this.thumbnailPreview.set(reader.result as string);
+      reader.readAsDataURL(file);
     }
   }
 
@@ -128,81 +100,45 @@ export class ProjectForm implements OnInit {
     this.formData.slug = this.formData.title
       .toLowerCase()
       .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[̀-ͯ]/g, '')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
   }
 
   onSubmit(): void {
-    this.loading = true;
-    this.error = null;
-    this.success = false;
+    this.loading.set(true);
+    this.error.set(null);
 
-    // Crée FormData pour envoyer les fichiers
-    const formData = new FormData();
-    Object.keys(this.formData).forEach(key => {
-      const value = (this.formData as any)[key];
+    const payload = new FormData();
+    Object.entries(this.formData).forEach(([key, value]) => {
       if (value !== null && value !== '') {
-        formData.append(key, value);
+        payload.append(key, String(value));
       }
     });
-
-    if (this.thumbnailFile) {
-      formData.append('thumbnail', this.thumbnailFile);
-    }
-    if (this.image1File) {
-      formData.append('image_1', this.image1File);
-    }
-    if (this.image2File) {
-      formData.append('image_2', this.image2File);
-    }
-    if (this.image3File) {
-      formData.append('image_3', this.image3File);
+    for (const [slot, file] of Object.entries(this.files)) {
+      payload.append(slot, file);
     }
 
-    if (this.isEditMode && this.projectSlug) {
-      // Mode édition
-      this.projectService.partialUpdateProject(this.projectSlug, formData).subscribe({
-        next: () => {
-          this.success = true;
-          this.loading = false;
-          setTimeout(() => {
-            this.router.navigate(['/admin/dashboard']);
-          }, 1500);
-        },
-        error: (err) => {
-          const backendError = typeof err?.error === 'string'
-            ? err.error
-            : JSON.stringify(err?.error || {});
-          this.error = `Erreur lors de la mise à jour : ${backendError}`;
-          this.loading = false;
-          console.error(err);
-        }
-      });
-    } else {
-      // Mode création
-      this.projectService.createProject(formData).subscribe({
-        next: () => {
-          this.success = true;
-          this.loading = false;
-          setTimeout(() => {
-            this.router.navigate(['/admin/dashboard']);
-          }, 1500);
-        },
-        error: (err) => {
-          this.error = 'Erreur lors de la création';
-          this.loading = false;
-          console.error(err);
-        }
-      });
-    }
+    const editing = this.isEditMode() && this.projectSlug;
+    const request$ = editing
+      ? this.projectService.partialUpdateProject(this.projectSlug!, payload)
+      : this.projectService.createProject(payload);
+
+    request$.subscribe({
+      next: () => {
+        this.toast.success(this.lang.t(editing ? 'admin.project.success.updated' : 'admin.project.success.created'));
+        this.router.navigate(['/admin/dashboard']);
+      },
+      error: (err) => {
+        this.error.set(apiErrorMessage(err, editing ? 'Erreur lors de la mise à jour.' : 'Erreur lors de la création.'));
+        this.loading.set(false);
+      }
+    });
   }
 
   onCancel(): void {
-    if (this.loading) {
-      return;
+    if (!this.loading()) {
+      this.router.navigate(['/admin/dashboard']);
     }
-    this.router.navigate(['/admin/dashboard']);
   }
 }
-

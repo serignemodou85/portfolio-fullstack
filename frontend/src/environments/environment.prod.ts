@@ -1,5 +1,7 @@
 export const environment = {
   production: true,
   apiUrl: 'https://portfolio-fullstack-acg1.onrender.com/api',
-  authUrl: 'https://portfolio-fullstack-acg1.onrender.com/api/auth'
+  authUrl: 'https://portfolio-fullstack-acg1.onrender.com/api/auth',
+  // DSN public du projet Sentry (frontend). Vide = monitoring désactivé.
+  sentryDsn: ''
 };

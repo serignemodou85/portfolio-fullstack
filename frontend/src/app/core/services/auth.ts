@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, finalize, shareReplay, tap } from 'rxjs';
+import { Observable, finalize, shareReplay, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   LoginRequest,
@@ -15,8 +15,11 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
-  public currentUser$ = this.currentUserSubject.asObservable();
+  private http = inject(HttpClient);
+
+  private readonly _currentUser = signal<User | null>(null);
+  /** Utilisateur connecté (null hors session). */
+  readonly currentUser = this._currentUser.asReadonly();
 
   // Access token en mémoire uniquement — invisible au JS après rechargement de page.
   // La session est restaurée par le cookie HttpOnly de refresh via refreshToken().
@@ -25,8 +28,6 @@ export class AuthService {
   // Refresh en cours, partagé : avec la rotation + blacklist côté serveur, deux refresh
   // parallèles feraient échouer le second (jeton déjà consommé) et déconnecteraient l'admin.
   private refreshInFlight$: Observable<TokenResponse> | null = null;
-
-  constructor(private http: HttpClient) {}
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.http
@@ -46,7 +47,7 @@ export class AuthService {
 
   logout(): void {
     this._accessToken = null;
-    this.currentUserSubject.next(null);
+    this._currentUser.set(null);
     this.http.post(`${environment.authUrl}/logout/`, {}, { withCredentials: true }).subscribe();
   }
 
@@ -89,12 +90,12 @@ export class AuthService {
 
   fetchCurrentUser(): Observable<User> {
     return this.http.get<User>(`${environment.apiUrl}/users/me/`).pipe(
-      tap(user => this.currentUserSubject.next(user))
+      tap(user => this._currentUser.set(user))
     );
   }
 
   getCurrentUserSnapshot(): User | null {
-    return this.currentUserSubject.value;
+    return this._currentUser();
   }
 
   getAccessToken(): string | null {
@@ -111,10 +112,7 @@ export class AuthService {
   }
 
   private patchCurrentUser(patch: Partial<User>): void {
-    const current = this.currentUserSubject.value;
-    if (current) {
-      this.currentUserSubject.next({ ...current, ...patch });
-    }
+    this._currentUser.update(current => (current ? { ...current, ...patch } : current));
   }
 
   private isTokenExpired(token: string): boolean {

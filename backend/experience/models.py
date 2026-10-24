@@ -2,7 +2,7 @@
 from django.db import models
 from django.conf import settings
 from cloudinary.models import CloudinaryField
-from portfolio_backend.validators import validate_image_file, validate_doc_or_image
+from portfolio_backend.validators import validate_image_file
 
 class Experience(models.Model):
     """

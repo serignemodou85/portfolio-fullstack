@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { firstValueFrom, skip } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { ConfirmService } from './confirm.service';
 
 describe('ConfirmService', () => {
@@ -17,23 +17,21 @@ describe('ConfirmService', () => {
   });
 
   it('should have null state initially', async () => {
-    const state = await firstValueFrom(service.state$);
+    const state = service.state();
     expect(state).toBeNull();
   });
 
   // ── confirm() ────────────────────────────────────────────────────────────────
 
   it('should open a confirm dialog with the right config', async () => {
-    const nextState = firstValueFrom(service.state$.pipe(skip(1)));
     service.confirm({ message: 'Supprimer cet élément ?' }).subscribe();
 
-    const state = await nextState;
+    const state = service.state();
     expect(state).not.toBeNull();
     expect(state!.message).toBe('Supprimer cet élément ?');
   });
 
   it('should include optional title and labels in state', async () => {
-    const nextState = firstValueFrom(service.state$.pipe(skip(1)));
     service.confirm({
       title: 'Confirmation',
       message: 'Continuer ?',
@@ -42,7 +40,7 @@ describe('ConfirmService', () => {
       danger: true
     }).subscribe();
 
-    const state = await nextState;
+    const state = service.state();
     expect(state!.title).toBe('Confirmation');
     expect(state!.confirmLabel).toBe('Oui');
     expect(state!.cancelLabel).toBe('Non');
@@ -64,14 +62,14 @@ describe('ConfirmService', () => {
   it('should close the modal after accept()', async () => {
     service.confirm({ message: 'Test' }).subscribe();
     service.accept();
-    const state = await firstValueFrom(service.state$);
+    const state = service.state();
     expect(state).toBeNull();
   });
 
   it('should close the modal after cancel()', async () => {
     service.confirm({ message: 'Test' }).subscribe();
     service.cancel();
-    const state = await firstValueFrom(service.state$);
+    const state = service.state();
     expect(state).toBeNull();
   });
 
@@ -85,10 +83,9 @@ describe('ConfirmService', () => {
   // ── prompt() ─────────────────────────────────────────────────────────────────
 
   it('should mark state as withInput for prompt()', async () => {
-    const nextState = firstValueFrom(service.state$.pipe(skip(1)));
     service.prompt({ message: 'Votre réponse' }).subscribe();
 
-    const state = await nextState;
+    const state = service.state();
     expect(state!.withInput).toBe(true);
   });
 

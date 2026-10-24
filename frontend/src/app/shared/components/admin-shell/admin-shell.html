@@ -29,7 +29,7 @@
         </a>
         <a routerLink="/admin/blog" routerLinkActive="active" class="nav-link">
           <app-icon name="edit" [size]="16"></app-icon>
-          <span>Blog</span>
+          <span>{{ langService.t('admin.nav.blog') }}</span>
         </a>
         <a routerLink="/admin/experiences" routerLinkActive="active" class="nav-link">
           <app-icon name="user" [size]="16"></app-icon>
@@ -38,6 +38,10 @@
         <a routerLink="/admin/skills" routerLinkActive="active" class="nav-link">
           <app-icon name="settings" [size]="16"></app-icon>
           <span>{{ langService.t('admin.nav.skills') }}</span>
+        </a>
+        <a routerLink="/admin/testimonials" routerLinkActive="active" class="nav-link">
+          <app-icon name="quote" [size]="16"></app-icon>
+          <span>{{ langService.t('admin.nav.testimonials') }}</span>
         </a>
         <a routerLink="/admin/projects/archives" routerLinkActive="active" class="nav-link">
           <app-icon name="archive" [size]="16"></app-icon>
@@ -52,9 +56,8 @@
       <div class="nav-section sidebar-prefs">
         <p class="nav-label">{{ langService.t('admin.nav.section.prefs') }}</p>
         <button class="nav-link pref-btn" type="button" (click)="theme.toggle()">
-          <app-icon *ngIf="theme.isDark" name="sun" [size]="16"></app-icon>
-          <app-icon *ngIf="!theme.isDark" name="moon" [size]="16"></app-icon>
-          <span>{{ theme.isDark ? langService.t('admin.nav.theme.light') : langService.t('admin.nav.theme.dark') }}</span>
+          <app-icon [name]="theme.isDark() ? 'sun' : 'moon'" [size]="16"></app-icon>
+          <span>{{ theme.isDark() ? langService.t('admin.nav.theme.light') : langService.t('admin.nav.theme.dark') }}</span>
         </button>
         <button class="nav-link pref-btn" type="button" (click)="langService.toggle()">
           <app-icon name="globe" [size]="16"></app-icon>
@@ -69,11 +72,11 @@
 
   </aside>
 
-  <main class="admin-main">
+  <div class="admin-main">
     <div class="admin-content">
       <ng-content></ng-content>
     </div>
-  </main>
+  </div>
 
   <app-confirm-modal></app-confirm-modal>
 </div>

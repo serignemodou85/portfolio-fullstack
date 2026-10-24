@@ -1,6 +1,5 @@
 // src/app/features/admin/profile-admin/profile-admin.ts
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { UserService } from '../../../core/services/user.service';
@@ -8,113 +7,90 @@ import { AuthService } from '../../../core/services/auth';
 import { User } from '../../../core/models/auth.model';
 import { AdminShell } from '../../../shared/components/admin-shell/admin-shell';
 import { LanguageService } from '../../../core/services/language.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { apiErrorMessage } from '../../../core/utils/api-error';
 import { MfaSettings } from './mfa-settings/mfa-settings';
+
+const PROFILE_FIELDS = [
+  'first_name', 'last_name', 'email', 'bio', 'location', 'phone',
+  'github_url', 'linkedin_url', 'twitter_url', 'website_url'
+] as const;
+
+type ProfileForm = Record<(typeof PROFILE_FIELDS)[number], string>;
 
 @Component({
   selector: 'app-profile-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, AdminShell, MfaSettings],
+  imports: [FormsModule, RouterLink, AdminShell, MfaSettings],
   templateUrl: './profile-admin.html',
   styleUrl: './profile-admin.scss'
 })
 export class ProfileAdmin implements OnInit {
-  currentUser: User | null = null;
-  loading = true;
-  saving = false;
-  error: string | null = null;
-  success: string | null = null;
+  private userService = inject(UserService);
+  private authService = inject(AuthService);
+  private toast = inject(ToastService);
+  lang = inject(LanguageService);
 
-  formData: {
-    first_name: string;
-    last_name: string;
-    email: string;
-    bio: string;
-    location: string;
-    phone: string;
-    github_url: string;
-    linkedin_url: string;
-    twitter_url: string;
-    website_url: string;
-  } = {
-    first_name: '',
-    last_name: '',
-    email: '',
-    bio: '',
-    location: '',
-    phone: '',
-    github_url: '',
-    linkedin_url: '',
-    twitter_url: '',
-    website_url: ''
-  };
+  readonly currentUser = signal<User | null>(null);
+  readonly loading = signal(true);
+  readonly saving = signal(false);
+  readonly error = signal<string | null>(null);
+  readonly previewUrl = signal<string | null>(null);
+  readonly cvName = signal<string | null>(null);
+  readonly currentCvUrl = signal<string | null>(null);
 
-  profileImage: File | null = null;
-  previewUrl: string | null = null;
-  cvFile: File | null = null;
-  cvName: string | null = null;
-  currentCvUrl: string | null = null;
+  /** Modèle du formulaire (template-driven, lié par ngModel). */
+  formData = this.toForm(null);
+  private profileImage: File | null = null;
+  private cvFile: File | null = null;
+  private objectUrl: string | null = null;
 
-  constructor(private userService: UserService, private authService: AuthService, public lang: LanguageService) {}
+  constructor() {
+    // Libère l'aperçu local de la photo en quittant la page.
+    inject(DestroyRef).onDestroy(() => this.revokePreview());
+  }
 
   ngOnInit(): void {
     this.loadProfile();
   }
 
   loadProfile(): void {
-    this.loading = true;
-    this.success = null;
+    this.loading.set(true);
+    this.error.set(null);
     this.userService.getMe().subscribe({
       next: (user) => {
-        this.currentUser = user;
-        this.formData = {
-          first_name: user.first_name || '',
-          last_name: user.last_name || '',
-          email: user.email || '',
-          bio: user.bio || '',
-          location: user.location || '',
-          phone: user.phone || '',
-          github_url: user.github_url || '',
-          linkedin_url: user.linkedin_url || '',
-          twitter_url: user.twitter_url || '',
-          website_url: user.website_url || ''
-        };
-        this.previewUrl = user.profile_picture || null;
-        this.currentCvUrl = user.cv_file || null;
-        this.loading = false;
+        this.applyUser(user);
+        this.loading.set(false);
       },
       error: () => {
-        this.error = 'Impossible de charger le profil.';
-        this.loading = false;
+        this.error.set('Impossible de charger le profil.');
+        this.loading.set(false);
       }
     });
   }
 
-  onImageSelected(event: any): void {
-    const file = event.target.files?.[0];
+  onImageSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
     this.profileImage = file;
-    this.previewUrl = URL.createObjectURL(file);
+    this.revokePreview();
+    this.objectUrl = URL.createObjectURL(file);
+    this.previewUrl.set(this.objectUrl);
   }
 
-  onCvSelected(event: any): void {
-    const file = event.target.files?.[0];
+  onCvSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
     this.cvFile = file;
-    this.cvName = file.name;
+    this.cvName.set(file.name);
   }
 
   submit(): void {
-    this.saving = true;
-    this.error = null;
-    this.success = null;
+    this.saving.set(true);
+    this.error.set(null);
 
     const payload = new FormData();
-    Object.entries(this.formData).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) {
-        payload.append(key, value as string);
-      }
-    });
-
+    Object.entries(this.formData).forEach(([key, value]) => payload.append(key, value ?? ''));
     if (this.profileImage) {
       payload.append('profile_picture', this.profileImage);
     }
@@ -124,37 +100,43 @@ export class ProfileAdmin implements OnInit {
 
     this.userService.updateMe(payload).subscribe({
       next: (user) => {
-        this.currentUser = user;
-        this.previewUrl = user.profile_picture || this.previewUrl;
-        this.currentCvUrl = user.cv_file || this.currentCvUrl;
+        this.applyUser(user);
+        this.profileImage = null;
         this.cvFile = null;
-        this.cvName = null;
-        this.success = 'Profil mis à jour.';
-        this.saving = false;
+        this.cvName.set(null);
+        this.saving.set(false);
+        this.toast.success('Profil mis à jour.');
         this.authService.fetchCurrentUser().subscribe();
       },
       error: (err) => {
-        this.error = this.getErrorMessage(err, 'Erreur lors de la mise à jour du profil.');
-        this.saving = false;
+        this.error.set(apiErrorMessage(err, 'Erreur lors de la mise à jour du profil.'));
+        this.saving.set(false);
       }
     });
   }
 
-  private getErrorMessage(err: any, fallback: string): string {
-    if (!err?.error) {
-      return fallback;
+  private applyUser(user: User): void {
+    this.currentUser.set(user);
+    this.formData = this.toForm(user);
+    if (user.profile_picture) {
+      this.revokePreview();
+      this.previewUrl.set(user.profile_picture);
     }
-    if (typeof err.error.detail === 'string') {
-      return err.error.detail;
+    this.currentCvUrl.set(user.cv_file || null);
+  }
+
+  private toForm(user: User | null): ProfileForm {
+    const form = {} as ProfileForm;
+    for (const field of PROFILE_FIELDS) {
+      form[field] = (user?.[field] as string | undefined) || '';
     }
-    if (Array.isArray(err.error.non_field_errors) && err.error.non_field_errors.length) {
-      return err.error.non_field_errors[0];
+    return form;
+  }
+
+  private revokePreview(): void {
+    if (this.objectUrl) {
+      URL.revokeObjectURL(this.objectUrl);
+      this.objectUrl = null;
     }
-    for (const value of Object.values(err.error)) {
-      if (Array.isArray(value) && value.length && typeof value[0] === 'string') {
-        return value[0];
-      }
-    }
-    return fallback;
   }
 }

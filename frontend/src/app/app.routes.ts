@@ -103,6 +103,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/profile-admin/profile-admin').then(m => m.ProfileAdmin)
       },
       {
+        path: 'testimonials',
+        loadComponent: () => import('./features/admin/testimonials-admin/testimonials-admin').then(m => m.TestimonialsAdmin)
+      },
+      {
         path: 'audit',
         loadComponent: () => import('./features/admin/audit-log/audit-log').then(m => m.AuditLog)
       }

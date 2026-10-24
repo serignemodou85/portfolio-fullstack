@@ -1,32 +1,32 @@
-import { Component, HostListener, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IconComponent } from '../icon/icon.component';
+import { Component, HostListener, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ConfirmService, ConfirmConfig } from '../../../core/services/confirm.service';
+import { IconComponent } from '../icon/icon.component';
+import { ConfirmService } from '../../../core/services/confirm.service';
 
 @Component({
   selector: 'app-confirm-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconComponent],
+  imports: [FormsModule, IconComponent],
   templateUrl: './confirm-modal.component.html',
   styleUrl: './confirm-modal.component.scss'
 })
-export class ConfirmModalComponent implements OnInit {
-  state: ConfirmConfig | null = null;
-  inputValue = '';
+export class ConfirmModalComponent {
+  readonly confirmService = inject(ConfirmService);
+  readonly state = this.confirmService.state;
+  readonly inputValue = signal('');
 
-  constructor(public confirmService: ConfirmService) {}
-
-  ngOnInit(): void {
-    this.confirmService.state$.subscribe(config => {
-      this.state = config;
-      if (config) this.inputValue = '';
+  constructor() {
+    // Champ vidé à chaque ouverture.
+    effect(() => {
+      if (this.state()) {
+        this.inputValue.set('');
+      }
     });
   }
 
   accept(): void {
-    if (this.state?.withInput) {
-      this.confirmService.accept(this.inputValue);
+    if (this.state()?.withInput) {
+      this.confirmService.accept(this.inputValue());
     } else {
       this.confirmService.accept();
     }
@@ -38,8 +38,9 @@ export class ConfirmModalComponent implements OnInit {
 
   @HostListener('window:keydown', ['$event'])
   onKeydown(event: KeyboardEvent): void {
-    if (!this.state) return;
+    const state = this.state();
+    if (!state) return;
     if (event.key === 'Escape') { event.preventDefault(); this.cancel(); }
-    if (event.key === 'Enter' && !this.state.withInput) { event.preventDefault(); this.accept(); }
+    if (event.key === 'Enter' && !state.withInput) { event.preventDefault(); this.accept(); }
   }
 }

@@ -1,4 +1,4 @@
-import { Component, Input, inject, signal } from '@angular/core';
+import { Component, inject, input, linkedSignal, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth';
@@ -21,17 +21,16 @@ export class MfaSettings {
   private toast = inject(ToastService);
   lang = inject(LanguageService);
 
-  readonly enabled = signal(false);
+  /** État 2FA du compte, fourni par le parent. */
+  readonly isEnabled = input<boolean | undefined>(false);
+  /** Suit le parent, et bascule localement après activation / désactivation. */
+  readonly enabled = linkedSignal(() => !!this.isEnabled());
   readonly step = signal<Step>('idle');
   readonly setup = signal<MfaSetupResponse | null>(null);
   readonly backupCodes = signal<string[]>([]);
   readonly busy = signal(false);
   readonly error = signal<string | null>(null);
   code = '';
-
-  @Input() set isEnabled(value: boolean | undefined) {
-    this.enabled.set(!!value);
-  }
 
   startSetup(): void {
     this.run(this.auth.setupMfa(), (res) => {

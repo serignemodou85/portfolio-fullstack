@@ -1,8 +1,8 @@
 // src/app/shared/components/icon/icon.component.ts
-import { Component, Input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import {
   LucideAngularModule, LucideIconData,
-  Archive, ArrowRight, Award, GraduationCap, ArrowUp, ChartColumn, Check, ChevronLeft, ChevronRight, CircleAlert, CircleCheck,
+  Archive, ArrowLeft, ArrowRight, Briefcase, Calendar, Award, GraduationCap, Quote, Star, GitFork, ArrowUp, ChartColumn, Check, ChevronLeft, ChevronRight, CircleAlert, CircleCheck,
   Cloud, Code, Copy, Cpu, Database, Download, ExternalLink, Eye, EyeOff, File, Folder, FolderPlus, Globe, History, Info,
   LayoutDashboard, Lock, LogOut, Mail, MapPin, Menu, Monitor, Moon, Phone, Plus, RotateCw, Search, Send,
   Server, Settings, ShieldCheck, SquarePen, Sun, Trash2, TriangleAlert, User, X, Github, Linkedin
@@ -16,7 +16,10 @@ const ICONS: Record<string, LucideIconData> = {
   'alert': CircleAlert,
   'archive': Archive,
   'award': Award,
+  'arrow-left': ArrowLeft,
   'arrow-right': ArrowRight,
+  'briefcase': Briefcase,
+  'calendar': Calendar,
   'arrow-up': ArrowUp,
   'chart': ChartColumn,
   'check': Check,
@@ -52,6 +55,9 @@ const ICONS: Record<string, LucideIconData> = {
   'moon': Moon,
   'phone': Phone,
   'plus': Plus,
+  'quote': Quote,
+  'star': Star,
+  'fork': GitFork,
   'refresh': RotateCw,
   'search': Search,
   'send': Send,
@@ -70,13 +76,7 @@ const ICONS: Record<string, LucideIconData> = {
   standalone: true,
   imports: [LucideAngularModule],
   template: `
-    <lucide-icon
-      [img]="icon"
-      [size]="size"
-      [strokeWidth]="strokeWidth"
-      [class]="customClass"
-      aria-hidden="true"
-    ></lucide-icon>
+    <lucide-icon [img]="icon()" [size]="size()" [strokeWidth]="2" aria-hidden="true"></lucide-icon>
   `,
   styles: [`
     :host {
@@ -89,12 +89,8 @@ const ICONS: Record<string, LucideIconData> = {
   `]
 })
 export class IconComponent {
-  @Input() name: string = '';
-  @Input() size: number | string = 20;
-  @Input() strokeWidth: number | string = 2;
-  @Input() customClass: string = '';
+  readonly name = input('');
+  readonly size = input<number | string>(20);
 
-  get icon(): LucideIconData {
-    return ICONS[(this.name || '').toLowerCase().trim()] ?? CircleAlert;
-  }
+  readonly icon = computed<LucideIconData>(() => ICONS[(this.name() || '').toLowerCase().trim()] ?? CircleAlert);
 }

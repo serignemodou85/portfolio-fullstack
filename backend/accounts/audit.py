@@ -5,11 +5,14 @@ faites par un utilisateur connecté (les visites anonymes ne sont pas tracées).
 """
 import datetime
 import decimal
+import json
 import logging
 import uuid
 
+from cloudinary import CloudinaryResource
 from django.apps import apps
 from django.db import models
+from django.db.models.fields.files import FieldFile
 from django.db.models.signals import post_delete, post_save, pre_save
 
 from portfolio_backend.middleware import get_current_request
@@ -26,6 +29,7 @@ AUDITED_MODELS = [
     'blog.Tag',
     'blog.Article',
     'contact.ContactMessage',
+    'testimonials.Testimonial',
 ]
 
 # Jamais de valeur en clair dans le journal : on note seulement que le champ a changé.
@@ -78,10 +82,13 @@ def _serializable(value):
         return str(value)
     if isinstance(value, models.Model):
         return value.pk
-    if hasattr(value, 'name') and hasattr(value, 'url'):  # fichiers / images
-        return getattr(value, 'name', None) or None
+    # Fichiers : on garde le chemin. Ne jamais toucher .url, qui lève une erreur
+    # quand le champ est vide (hasattr ne rattrape que AttributeError).
+    if isinstance(value, FieldFile):
+        return value.name or None
+    if isinstance(value, CloudinaryResource):
+        return value.public_id or None
     try:
-        import json
         json.dumps(value)
         return value
     except TypeError:

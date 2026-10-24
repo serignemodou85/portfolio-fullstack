@@ -1,0 +1,65 @@
+// Composants génériques : voir src/styles/_admin.scss.
+
+.publish-check {
+  margin-top: var(--space-4);
+}
+
+.tst-list {
+  list-style: none;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.tst-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--a-line);
+  border-radius: var(--radius-md);
+
+  &.is-draft {
+    background: var(--a-elev);
+  }
+}
+
+.tst-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+}
+
+.tst-initials {
+  display: grid;
+  place-items: center;
+  background: var(--a-accent-soft);
+  color: var(--a-accent);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.tst-body .cell-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.tst-quote {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--a-text);
+}
+
+@media (max-width: 700px) {
+  .tst-item {
+    grid-template-columns: auto 1fr;
+
+    .row-actions {
+      grid-column: 1 / -1;
+      justify-content: flex-start;
+    }
+  }
+}

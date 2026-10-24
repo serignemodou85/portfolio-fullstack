@@ -1,5 +1,5 @@
 // src/app/core/services/user.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -10,11 +10,11 @@ import { User } from '../models/auth.model';
   providedIn: 'root'
 })
 export class UserService {
+  private http = inject(HttpClient);
+
   private apiUrl = `${environment.apiUrl}/users`;
   private publicProfileCache: { ts: number; data: User } | null = null;
   private cacheTtlMs = 60_000;
-
-  constructor(private http: HttpClient) {}
 
   getPublicProfile(): Observable<User> {
     if (this.publicProfileCache && Date.now() - this.publicProfileCache.ts < this.cacheTtlMs) {

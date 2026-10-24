@@ -1,5 +1,5 @@
 // src/app/features/blog/services/article.service.ts
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -11,12 +11,12 @@ import { PaginatedResponse } from '../../../core/models/paginated-response.model
   providedIn: 'root'
 })
 export class ArticleService {
+  private http = inject(HttpClient);
+
   private apiUrl = `${environment.apiUrl}/blog/articles`;
   private featuredCache: { ts: number; data: ArticleList[] } | null = null;
   private listCache: { ts: number; data: ArticleList[] } | null = null;
-  private cacheTtlMs = 600_000; // 10 min
-
-  constructor(private http: HttpClient) {}
+  private cacheTtlMs = 600_000;
 
   private toArray<T>(res: T[] | PaginatedResponse<T>): T[] {
     return Array.isArray(res) ? res : (res.results ?? []);
